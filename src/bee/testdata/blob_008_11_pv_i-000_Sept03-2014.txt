@@ -1,0 +1,359 @@
+(File "images-in-039_04_pv.xml_data/image-1.jpg" 
+imageHeight 525 
+imageWidth 408 
+numBlobs 25 
+numGroups 12 
+Blobs 
+	( 
+		 (ID 0
+		  Area 61003.000000 
+		  Centroid (202 389) 
+		  BoundingBox (6 301 399 221) 
+		  MajorAxisLength 214.470047 
+		  MinorAxisLength 381.282349 
+		  Eccentricity 0.826800
+		  Solidity 0.873378
+		  MeanRed 178.285150
+		  MeanGreen 176.895415
+		  MeanBlue 183.027408
+		  isHighTexture 0
+		  GroupIndex 1
+		 ) 
+		 (ID 1
+		  Area 1112.000000 
+		  Centroid (120 115) 
+		  BoundingBox (102 97 37 35) 
+		  MajorAxisLength 32.830078 
+		  MinorAxisLength 50.920658 
+		  Eccentricity 0.764410
+		  Solidity 0.951274
+		  MeanRed 248.889680
+		  MeanGreen 212.066726
+		  MeanBlue 228.398577
+		  isHighTexture 0
+		  GroupIndex 2
+		 ) 
+		 (ID 2
+		  Area 1110.000000 
+		  Centroid (203 116) 
+		  BoundingBox (187 97 35 35) 
+		  MajorAxisLength 35.386490 
+		  MinorAxisLength 45.328903 
+		  Eccentricity 0.624955
+		  Solidity 0.969571
+		  MeanRed 249.887387
+		  MeanGreen 211.327928
+		  MeanBlue 228.970270
+		  isHighTexture 0
+		  GroupIndex 2
+		 ) 
+		 (ID 3
+		  Area 1391.000000 
+		  Centroid (27 204) 
+		  BoundingBox (1 189 52 29) 
+		  MajorAxisLength 30.956442 
+		  MinorAxisLength 65.572891 
+		  Eccentricity 0.881549
+		  Solidity 0.976701
+		  MeanRed 240.353702
+		  MeanGreen 108.232926
+		  MeanBlue 155.052480
+		  isHighTexture 0
+		  GroupIndex 3
+		 ) 
+		 (ID 4
+		  Area 1149.000000 
+		  Centroid (95 199) 
+		  BoundingBox (71 189 49 25) 
+		  MajorAxisLength 29.911024 
+		  MinorAxisLength 54.476856 
+		  Eccentricity 0.835783
+		  Solidity 0.991324
+		  MeanRed 241.288077
+		  MeanGreen 104.422977
+		  MeanBlue 153.233246
+		  isHighTexture 0
+		  GroupIndex 3
+		 ) 
+		 (ID 5
+		  Area 1143.000000 
+		  Centroid (71 239) 
+		  BoundingBox (48 230 50 24) 
+		  MajorAxisLength 28.025158 
+		  MinorAxisLength 58.017742 
+		  Eccentricity 0.875596
+		  Solidity 0.992637
+		  MeanRed 241.545932
+		  MeanGreen 103.374453
+		  MeanBlue 152.626422
+		  isHighTexture 0
+		  GroupIndex 3
+		 ) 
+		 (ID 6
+		  Area 1222.000000 
+		  Centroid (182 241) 
+		  BoundingBox (158 230 51 25) 
+		  MajorAxisLength 35.302402 
+		  MinorAxisLength 54.265064 
+		  Eccentricity 0.759459
+		  Solidity 0.996550
+		  MeanRed 241.297872
+		  MeanGreen 108.007365
+		  MeanBlue 155.769231
+		  isHighTexture 0
+		  GroupIndex 3
+		 ) 
+		 (ID 7
+		  Area 1018.000000 
+		  Centroid (115 342) 
+		  BoundingBox (92 332 50 22) 
+		  MajorAxisLength 32.387352 
+		  MinorAxisLength 52.862217 
+		  Eccentricity 0.790335
+		  Solidity 0.954955
+		  MeanRed 242.261297
+		  MeanGreen 107.853635
+		  MeanBlue 155.649312
+		  isHighTexture 0
+		  GroupIndex 3
+		 ) 
+		 (ID 8
+		  Area 1532.000000 
+		  Centroid (117 366) 
+		  BoundingBox (90 353 55 29) 
+		  MajorAxisLength 36.672596 
+		  MinorAxisLength 62.933586 
+		  Eccentricity 0.812674
+		  Solidity 0.997265
+		  MeanRed 206.350522
+		  MeanGreen 138.297650
+		  MeanBlue 179.903394
+		  isHighTexture 0
+		  GroupIndex 4
+		 ) 
+		 (ID 9
+		  Area 1025.000000 
+		  Centroid (177 439) 
+		  BoundingBox (153 430 48 23) 
+		  MajorAxisLength 33.690430 
+		  MinorAxisLength 51.046112 
+		  Eccentricity 0.751266
+		  Solidity 0.976154
+		  MeanRed 242.560976
+		  MeanGreen 108.314146
+		  MeanBlue 156.145366
+		  isHighTexture 0
+		  GroupIndex 3
+		 ) 
+		 (ID 10
+		  Area 1527.000000 
+		  Centroid (176 466) 
+		  BoundingBox (149 452 55 29) 
+		  MajorAxisLength 36.565037 
+		  MinorAxisLength 62.405907 
+		  Eccentricity 0.810367
+		  Solidity 0.997257
+		  MeanRed 204.980354
+		  MeanGreen 140.106745
+		  MeanBlue 180.743942
+		  isHighTexture 0
+		  GroupIndex 4
+		 ) 
+		 (ID 11
+		  Area 974.000000 
+		  Centroid (290 369) 
+		  BoundingBox (266 356 46 24) 
+		  MajorAxisLength 27.298420 
+		  MinorAxisLength 48.246735 
+		  Eccentricity 0.824537
+		  Solidity 0.959162
+		  MeanRed 71.376797
+		  MeanGreen 183.093429
+		  MeanBlue 113.736140
+		  isHighTexture 0
+		  GroupIndex 5
+		 ) 
+		 (ID 12
+		  Area 982.000000 
+		  Centroid (226 465) 
+		  BoundingBox (202 454 44 24) 
+		  MajorAxisLength 33.595970 
+		  MinorAxisLength 44.491405 
+		  Eccentricity 0.655596
+		  Solidity 0.992485
+		  MeanRed 70.137475
+		  MeanGreen 182.493890
+		  MeanBlue 115.390020
+		  isHighTexture 0
+		  GroupIndex 5
+		 ) 
+		 (ID 13
+		  Area 894.000000 
+		  Centroid (27 111) 
+		  BoundingBox (6 98 41 28) 
+		  MajorAxisLength 27.877832 
+		  MinorAxisLength 42.039989 
+		  Eccentricity 0.748507
+		  Solidity 0.950728
+		  MeanRed 170.227525
+		  MeanGreen 210.366260
+		  MeanBlue 108.278579
+		  isHighTexture 0
+		  GroupIndex 6
+		 ) 
+		 (ID 14
+		  Area 1532.000000 
+		  Centroid (117 366) 
+		  BoundingBox (90 353 55 29) 
+		  MajorAxisLength 36.672596 
+		  MinorAxisLength 62.933586 
+		  Eccentricity 0.812674
+		  Solidity 0.997265
+		  MeanRed 206.350522
+		  MeanGreen 138.297650
+		  MeanBlue 179.903394
+		  isHighTexture 0
+		  GroupIndex 4
+		 ) 
+		 (ID 15
+		  Area 1527.000000 
+		  Centroid (176 466) 
+		  BoundingBox (149 452 55 29) 
+		  MajorAxisLength 36.565037 
+		  MinorAxisLength 62.405907 
+		  Eccentricity 0.810367
+		  Solidity 0.997257
+		  MeanRed 204.980354
+		  MeanGreen 140.106745
+		  MeanBlue 180.743942
+		  isHighTexture 0
+		  GroupIndex 4
+		 ) 
+		 (ID 16
+		  Area 862.000000 
+		  Centroid (244 113) 
+		  BoundingBox (224 104 42 23) 
+		  MajorAxisLength 23.322374 
+		  MinorAxisLength 50.416981 
+		  Eccentricity 0.886572
+		  Solidity 0.971137
+		  MeanRed 67.361949
+		  MeanGreen 186.056845
+		  MeanBlue 221.406032
+		  isHighTexture 0
+		  GroupIndex 7
+		 ) 
+		 (ID 17
+		  Area 823.000000 
+		  Centroid (272 193) 
+		  BoundingBox (252 184 44 22) 
+		  MajorAxisLength 24.088095 
+		  MinorAxisLength 44.951206 
+		  Eccentricity 0.844299
+		  Solidity 0.974067
+		  MeanRed 65.049818
+		  MeanGreen 186.596598
+		  MeanBlue 222.530984
+		  isHighTexture 0
+		  GroupIndex 7
+		 ) 
+		 (ID 18
+		  Area 839.000000 
+		  Centroid (180 215) 
+		  BoundingBox (162 206 42 22) 
+		  MajorAxisLength 25.258945 
+		  MinorAxisLength 45.219826 
+		  Eccentricity 0.829450
+		  Solidity 0.990548
+		  MeanRed 64.383790
+		  MeanGreen 187.283671
+		  MeanBlue 221.587604
+		  isHighTexture 0
+		  GroupIndex 7
+		 ) 
+		 (ID 19
+		  Area 928.000000 
+		  Centroid (360 229) 
+		  BoundingBox (336 216 44 23) 
+		  MajorAxisLength 26.039072 
+		  MinorAxisLength 48.514221 
+		  Eccentricity 0.843754
+		  Solidity 0.979213
+		  MeanRed 62.371767
+		  MeanGreen 185.205819
+		  MeanBlue 221.413793
+		  isHighTexture 0
+		  GroupIndex 7
+		 ) 
+		 (ID 20
+		  Area 783.000000 
+		  Centroid (357 226) 
+		  BoundingBox (337 217 42 21) 
+		  MajorAxisLength 21.227457 
+		  MinorAxisLength 48.017349 
+		  Eccentricity 0.896976
+		  Solidity 0.966292
+		  MeanRed 66.839080
+		  MeanGreen 188.121328
+		  MeanBlue 222.242656
+		  isHighTexture 0
+		  GroupIndex 7
+		 ) 
+		 (ID 21
+		  Area 891.000000 
+		  Centroid (289 343) 
+		  BoundingBox (268 334 44 22) 
+		  MajorAxisLength 24.059914 
+		  MinorAxisLength 49.247326 
+		  Eccentricity 0.872534
+		  Solidity 0.989349
+		  MeanRed 59.453423
+		  MeanGreen 185.065095
+		  MeanBlue 220.455668
+		  isHighTexture 0
+		  GroupIndex 7
+		 ) 
+		 (ID 22
+		  Area 856.000000 
+		  Centroid (224 444) 
+		  BoundingBox (204 432 42 22) 
+		  MajorAxisLength 22.941692 
+		  MinorAxisLength 51.964642 
+		  Eccentricity 0.897268
+		  Solidity 0.970909
+		  MeanRed 60.760514
+		  MeanGreen 185.738318
+		  MeanBlue 221.531542
+		  isHighTexture 0
+		  GroupIndex 7
+		 ) 
+		 (ID 23
+		  Area 1564.000000 
+		  Centroid (225 112) 
+		  BoundingBox (191 98 74 28) 
+		  MajorAxisLength 27.420441 
+		  MinorAxisLength 90.697914 
+		  Eccentricity 0.953204
+		  Solidity 0.000000
+		  MeanRed 163.918886
+		  MeanGreen 200.586562
+		  MeanBlue 220.779661
+		  isHighTexture 1
+		  GroupIndex 8
+		 ) 
+		 (ID 24
+		  Area 900.500000 
+		  Centroid (288 354) 
+		  BoundingBox (273 339 33 32) 
+		  MajorAxisLength 31.790430 
+		  MinorAxisLength 91.971458 
+		  Eccentricity 0.938362
+		  Solidity 0.000000
+		  MeanRed 82.125000
+		  MeanGreen 192.488542
+		  MeanBlue 179.635417
+		  isHighTexture 1
+		  GroupIndex 9
+		 ) 
+	) 
+)

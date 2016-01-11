@@ -1,0 +1,1 @@
+java -jar ${BASH_SOURCE%/*}/target/drae-0.0.9-SNAPSHOT-standalone.jar $@
