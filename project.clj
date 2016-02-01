@@ -21,7 +21,7 @@
       ["pattern.repo" "http://maven-repo.biopax-pattern.googlecode.com/hg/"]
       ["sonatype-snapshots" "https://oss.sonatype.org/content/repositories/snapshots/"]
       ["apache-snapshots" "https://repository.apache.org/content/groups/snapshots/"] ] 
-      ;["pathwaycards-snapshots" "C:/dev/BigMechanism/pathway-cards-master" :extension pom] ]
+      ;["pathwaycards-snapshots" "C:/dev/BigMechanism/pathway-cards-master" :extension pom] 
   :min-lein-version "2.0.0"
   ; :pedantic? :warn ;; Warn on library version conflicts
   :dependencies 
@@ -36,15 +36,10 @@
       [org.clojure/tools.logging "0.3.1"]
       [me.raynes/conch "0.8.0"]
       [seesaw "1.4.5"]
-      #_[clj-http "1.0.1"]
       [clj-http-lite "0.2.1"]
       [org.biopax.paxtools/paxtools-core "4.3.1-SNAPSHOT"]
       [org.biopax.paxtools/pattern "1.1.1-20141208.200840-3" :exclusions [org.biopax.paxtools/paxtools-core]]
-      #_[incanter "1.5.5" :exclusions [xml-apis joda-time]]
       [incanter "1.5.4"]
-      ;;[edu.arizona.sista/processors_2.10 "4.0-SNAPSHOT"]
-      ;;[edu.arizona.sista/processors_2.10 "4.0-SNAPSHOT" :classifier "models"]
-      ;[org.mskcc.cbio.pathwaycards/pathwaycards "1.0-SNAPSHOT"]
       [org.scala-lang/scala-library "2.11.6"]
       [args4j/args4j "2.0.25"]
       [com.google.protobuf/protobuf-java "2.6.1"]
@@ -82,8 +77,7 @@
                    "com.leidos.bmech.view"]
    :output-dir "doc/gui/"
    :java-source-paths ["src/gui/BigMechViewer/src"]
-;   :additional-args ["-classpath" "target/classes"]
-   }
+  }
     
   ;; Platform-specific java settings - Do not uncomment unless desperate! :)
   ;;
