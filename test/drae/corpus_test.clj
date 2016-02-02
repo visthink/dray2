@@ -1,8 +1,6 @@
 (ns drae.corpus-test
   (:import (java.io File))
   (:require [clojure.test :refer :all]
-           ; [clojure.repl :refer :all]
-           ; [clojure.inspector :refer :all]
             [drae.corpus :refer :all]
             ))
 
