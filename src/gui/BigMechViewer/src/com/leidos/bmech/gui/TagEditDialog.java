@@ -7,9 +7,9 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+//import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.html.HTML.Tag;
+//import javax.swing.text.html.HTML.Tag;
 import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.AbstractAction;
@@ -22,10 +22,16 @@ import javax.swing.Action;
 
 public class TagEditDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2471204031276037497L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
 	private final Action addAction = new AddAction();
+	@SuppressWarnings("rawtypes")
 	private DefaultListModel listModel;
+	@SuppressWarnings("rawtypes")
 	private JList list;
 	private final Action removeAction = new RemoveAction();
 	private final Action okAction = new OkAction();
@@ -49,6 +55,7 @@ public class TagEditDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public TagEditDialog(List<String> data, String name) {
 		setModal(true);
 		//save the list incase the user cancels
@@ -114,10 +121,15 @@ public class TagEditDialog extends JDialog {
 	}
 	
 	private class AddAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1720678939224547324L;
 		public AddAction() {
 			putValue(NAME, "Add");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
+		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent e) {
 			String str = textField.getText().replaceAll("[^a-zA-Z\\s0-9]", "");
 			for(String token : str.split("\\s+")){	
@@ -129,6 +141,10 @@ public class TagEditDialog extends JDialog {
 		}
 	}
 	private class RemoveAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -8169215852422710101L;
 		public RemoveAction() {
 			putValue(NAME, "Remove");
 			putValue(SHORT_DESCRIPTION, "Some short description");
@@ -140,6 +156,10 @@ public class TagEditDialog extends JDialog {
 		}
 	}
 	private class OkAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4382439560279118291L;
 		public OkAction() {
 			putValue(NAME, "OK");
 			putValue(SHORT_DESCRIPTION, "Some short description");
@@ -156,6 +176,10 @@ public class TagEditDialog extends JDialog {
 		}
 	}
 	private class CancelAction extends AbstractAction {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6578350625229901655L;
 		public CancelAction() {
 			putValue(NAME, "Cancel");
 			putValue(SHORT_DESCRIPTION, "Some short description");

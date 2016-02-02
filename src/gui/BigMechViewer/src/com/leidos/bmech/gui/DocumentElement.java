@@ -1,9 +1,9 @@
 package com.leidos.bmech.gui;
 
-import java.awt.Graphics;
+//import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
+//import java.awt.image.ImageObserver;
+//import java.awt.image.ImageProducer;
 
 public class DocumentElement {
 	private Image sourceImage;

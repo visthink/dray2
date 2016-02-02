@@ -18,7 +18,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
-import java.awt.geom.Line2D.Double;
+//import java.awt.geom.Line2D.Double;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+//import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -54,8 +54,8 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
+//import javax.swing.event.TreeModelEvent;
+//import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -80,26 +80,16 @@ import clojure.lang.IFn;
 import drae.j.BoundingBox;
 import drae.j.Doc;
 import drae.j.Producer.Table;
-import drae.j.Producer.Entry;
+//import drae.j.Producer.Entry;
 import drae.j.VisualElement.El;
 // import drae.j.VisualElement.SplittableEl;
 import drae.j.VisualElement.VPage;
-import drae.j.VisualElement.VTable;
-import drae.j.VisualElement.VDocument;
-
-
-
-
-
-
-
-
-
-
+//import drae.j.VisualElement.VTable;
+//import drae.j.VisualElement.VDocument;
 
 //import drae.core;
 //import org.biopax.paxtools.io.pathwayCommons.PathwayCommons2Client;
-import java.awt.event.KeyListener;
+//import java.awt.event.KeyListener;
 /**
  * the GUI for interacting with PDF Documents.
  * All interractions with the data are done through the 
@@ -113,8 +103,9 @@ public class ViewerApp implements Observer, ActionListener {
 	public JFrame frame;
 	DocumentCanvas canvas;
 	public CheckBoxList  layerCheckList;
-	private int currentIndex=-1;
+	// private int currentIndex=-1;
 	JTextArea textArea;
+	@SuppressWarnings("rawtypes")
 	JList pagePickerList;
 	private CanvasButtonPanel canvasButtonPanel;
 	private DataManager dataManager;
@@ -124,7 +115,7 @@ public class ViewerApp implements Observer, ActionListener {
 	JTabbedPane tabbedPane;
 	JSlider offsetSliderH;
 	JSlider offsetSliderV;
-	private boolean wsChangedAlready = false;
+//	private boolean wsChangedAlready = false;
 	private List<Task> taskHistory;
 
 	/**
@@ -221,6 +212,7 @@ public class ViewerApp implements Observer, ActionListener {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initialize() {
 		taskHistory = new ArrayList<Task>();
 		/*
@@ -492,6 +484,11 @@ public class ViewerApp implements Observer, ActionListener {
             	else
             		fileBrowseStart = dataManager.getPdfFile().getParent();
             	JFileChooser fc = new JFileChooser(fileBrowseStart){
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 3381557651546148634L;
+
 					@Override
 				    public void approveSelection(){
 				        //confirmation when overwriting unsaved changes
@@ -551,6 +548,7 @@ public class ViewerApp implements Observer, ActionListener {
             public void actionPerformed(ActionEvent e)
             {
             	//Handle open button action.
+				@SuppressWarnings("serial")
 				JFileChooser fc = new JFileChooser(dataManager.getPdfFile().getParent()){
 					@Override
 				    public void approveSelection(){
@@ -628,6 +626,7 @@ public class ViewerApp implements Observer, ActionListener {
 	 * Triggers the reloading of the page icons into the page icon list
 	 * the pages should already be in memory
 	 */
+	@SuppressWarnings("unchecked")
 	private void refreshPageIconList(){
 		List<JPanel> pageArray = new ArrayList<JPanel>();
 		
@@ -645,9 +644,9 @@ public class ViewerApp implements Observer, ActionListener {
 		refreshLayerChecklist();
 		this.canvasButtonPanel.setQuickTags(WorkingSet.getSuggestedTags(this.getView().getCurrentWS().getTags()));
 		this.repTree.reload();
-		wsChangedAlready = true;
+//		wsChangedAlready = true;
 		workingSetTree.refresh();
-		wsChangedAlready = false;		
+//		wsChangedAlready = false;		
 		frame.setTitle(dataManager.getPdfFile().getName() + " - " + getView().getCurrentWS().getName());
 		//refreshLayerList();
 		//refreshLayerChecklist();
@@ -660,13 +659,14 @@ public class ViewerApp implements Observer, ActionListener {
 	 * @author powelldan
 	 *
 	 */
+	@SuppressWarnings("serial")
 	public class ImageListRenderer extends DefaultListCellRenderer {
 
 	 Font font = new Font("helvitica", Font.BOLD, 24);
 	
 	 @Override
 	 public Component getListCellRendererComponent(
-	         JList list, Object value, int index,
+	         @SuppressWarnings("rawtypes") JList list, Object value, int index,
 	         boolean isSelected, boolean cellHasFocus) {
 		 Component component = (Component) value;
 		 //component.setForeground(Color.white);
@@ -773,7 +773,8 @@ public class ViewerApp implements Observer, ActionListener {
 	public void selectedChanged(){
 		List<TreePath> paths = new ArrayList<TreePath>();
 
-		for (Enumeration e = ((DefaultMutableTreeNode)visualTree.getModel().getRoot()).depthFirstEnumeration(); e.hasMoreElements();) {
+		for (@SuppressWarnings("rawtypes")
+		Enumeration e = ((DefaultMutableTreeNode)visualTree.getModel().getRoot()).depthFirstEnumeration(); e.hasMoreElements();) {
 		    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
 		    if (getView().getSelected().contains(node.getUserObject())) {
 		        paths.add(new TreePath(node.getPath()));
@@ -829,6 +830,7 @@ public class ViewerApp implements Observer, ActionListener {
 	public void createAndAddLayers(final WorkingSet ws, final String command) {
 
 		SwingWorker<List<Layer>, Void> worker = new SwingWorker<List<Layer>, Void>() {
+			@SuppressWarnings("unchecked")
 			@Override
 			protected List<Layer> doInBackground() throws Exception {
 				return (List<Layer>) Table.applyLayerProducer(command, ws);

@@ -3,7 +3,7 @@ package com.leidos.bmech.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.List;
 
 import drae.j.Producer.Table;
@@ -15,11 +15,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import com.leidos.bmech.model.Layer;
+//import com.leidos.bmech.model.Layer;
 import com.leidos.bmech.model.TypeTag;
 import com.leidos.bmech.model.WorkingSet;
 import com.leidos.bmech.view.DataManagerView;
 
+@SuppressWarnings("serial")
 public class DocumentMenu extends JPopupMenu implements ActionListener{
 	JMenuItem createWS;
 	JMenuItem deleteWS;
@@ -54,7 +55,8 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
 	DataManagerView view;
 	
 	
-    public DocumentMenu(ViewerApp p, WorkingSet ws, El el){
+    @SuppressWarnings({ "static-access", "unchecked" })
+	public DocumentMenu(ViewerApp p, WorkingSet ws, El el){
     	mainApp = p;
     	view = p.getDataManager().getView();
     	targetWS = ws;
@@ -172,7 +174,8 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
         JMenu toysMenu = new JMenu("Toys");
         add(toysMenu);
         Toys toys = new Toys();
-        List cmdList = null;
+        @SuppressWarnings("rawtypes")
+		List cmdList = null;
         if(mode == CURRENT_WS || mode == OTHER_WS){
         	toysMenu.setText("WS Toys");
         	cmdList = toys.getWSToyList();
@@ -199,7 +202,7 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
 	        cmdList = Table.allWSProducers();
 	        if(cmdList != null){
 		        for(Entry cmd : (List<Entry>)cmdList){
-		        	String cmdStr = (String) cmd.key;
+		       // 	String cmdStr = (String) cmd.key;
 		        	JMenuItem producerCmd = new JMenuItem((String)cmd.name);
 		        	producerCmd.setActionCommand((String) cmd.key);
 		        	producerCmd.setToolTipText((String)cmd.doc);
@@ -281,7 +284,8 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
 	        		//check if the action is a ws producer
 	        		if(source.getActionCommand().equals((String)((Entry)obj).key)){
 	        			stop = true;
-	        			List<WorkingSet> wsets = (List<WorkingSet>)Table.applyWSProducer(source.getActionCommand(), targetWS);
+	        			@SuppressWarnings("unchecked")
+						List<WorkingSet> wsets = (List<WorkingSet>)Table.applyWSProducer(source.getActionCommand(), targetWS);
 	                	for(WorkingSet ws : wsets){
 	                		mainApp.appendToLog("Created Working Set: "+ws);
 		        			mainApp.insertWS(ws);

@@ -6,7 +6,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -30,7 +29,6 @@ import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 
 import com.leidos.bmech.model.Layer;
-import com.leidos.bmech.model.TypeTag;
 import com.leidos.bmech.model.WorkingSet;
 import com.leidos.bmech.view.DataManagerView;
 
@@ -44,6 +42,7 @@ import drae.j.VisualElement.*;
  * @author powelldan
  *
  */
+@SuppressWarnings("serial")
 public class DocumentCanvas extends JPanel {
 	List<DocumentElement> currentlySelected;
 	DocumentElement lastSelected;
@@ -131,7 +130,7 @@ public class DocumentCanvas extends JPanel {
 					}
 				} else if(SwingUtilities.isRightMouseButton(e)){
 					boolean selectionClicked = false;
-					Object clickedObj = null;
+	//				Object clickedObj = null;
 					if(dragRect != null){
 						Rectangle2D dragRectDescaled = new Rectangle(
 								(int) (dragRect.getX() + offX() ),
@@ -383,6 +382,7 @@ public class DocumentCanvas extends JPanel {
 			retainViewZoom = false;
 		}
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+		@SuppressWarnings("rawtypes")
 		List pages = (List)mainApp.getDataManager().getVDocument().getItems();
 		VPage page = (VPage)pages.get(view.getCurrentPage()-1);
 		BoundingBox pagebb = (BoundingBox)page.getBbox();
@@ -490,9 +490,11 @@ public class DocumentCanvas extends JPanel {
 		        		double bee2pdfX = imageBB.getWidth()/((Long)hm.get("imageWidth")).doubleValue();
 		        		double bee2pdfY = imageBB.getHeight()/((Long)hm.get("imageHeight")).doubleValue();
 		        		if(hm.containsKey("Blobs")){
-		        			List blobs = (List)hm.get("Blobs");
+		        			@SuppressWarnings("rawtypes")
+							List blobs = (List)hm.get("Blobs");
 		        			for(Object obj : blobs){
-		        				Map<String, Object> blob = (Map<String, Object>)obj;
+		        				@SuppressWarnings("unchecked")
+								Map<String, Object> blob = (Map<String, Object>)obj;
 			        			g2.setColor((Color)blob.get("color"));
 			        			/*
 			        					(float)((Double)blob.get("MeanRed")).floatValue()/255.0f, 
@@ -545,6 +547,7 @@ public class DocumentCanvas extends JPanel {
     }
     private void setZoom(float zoom){
     	this.scale = zoom;
+		@SuppressWarnings("rawtypes")
 		List pages = (List)mainApp.getDataManager().getVDocument().getItems();
 		VPage page = (VPage)pages.get(view.getCurrentPage()-1);
 		BoundingBox pagebb = (BoundingBox)page.getBbox();

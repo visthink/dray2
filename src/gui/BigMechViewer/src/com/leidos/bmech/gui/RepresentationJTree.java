@@ -3,27 +3,31 @@ package com.leidos.bmech.gui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+//import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+//import java.util.Set;
 
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
+//import javax.swing.tree.TreePath;
 
-import com.leidos.bmech.gui.WorkingSetJTree.MyTreeModelListener;
+//import com.leidos.bmech.gui.WorkingSetJTree.MyTreeModelListener;
 import com.leidos.bmech.model.Layer;
 
-import drae.j.VisualElement.El;
-import drae.j.VisualElement.VTable;
+//import drae.j.VisualElement.El;
+//import drae.j.VisualElement.VTable;
 import drae.j.VisualElement.VText;
-import clojure.lang.Named;
+//import clojure.lang.Named;
 public class RepresentationJTree extends JTree {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6900161300006440929L;
 	RepresentationJTree pthis;
 	ViewerApp app;
 	public boolean wsChangedAlready = false;
@@ -61,7 +65,7 @@ public class RepresentationJTree extends JTree {
 		for(Layer layer : app.getView().getCurrentWS().getLayerList().values()){
 			RepTreeNode layerNode = new RepTreeNode(layer.getName());
 			top.add(layerNode);
-			int count = 1;
+	//		int count = 1;
 			addObject(layer.getRep(), layerNode);
 			/*for(Map<String, Object> repMap : layer.getRep()){
 				String name;
@@ -81,6 +85,7 @@ public class RepresentationJTree extends JTree {
 
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void addObject(Object obj, RepTreeNode parentNode){
 		if(obj instanceof VText){
 			RepTreeNode elNode = new RepTreeNode(obj);		

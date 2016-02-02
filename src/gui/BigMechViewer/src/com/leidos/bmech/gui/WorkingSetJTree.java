@@ -2,7 +2,7 @@ package com.leidos.bmech.gui;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+//import java.awt.event.MouseListener;
 import java.util.Enumeration;
 
 import javax.swing.JTree;
@@ -19,6 +19,10 @@ import com.leidos.bmech.model.WorkingSet;
 
 
 public class WorkingSetJTree extends JTree {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3901405746865572882L;
 	WorkingSetJTree pthis;
 	ViewerApp app;
 	public boolean wsChangedAlready = false;
@@ -72,6 +76,7 @@ public class WorkingSetJTree extends JTree {
 		this.expandPath(new TreePath(theNode.getPath()));
 	}
 	
+	@SuppressWarnings("serial")
 	private void addWSRecursive(WorkingSet ws, DefaultMutableTreeNode node){
 		DefaultMutableTreeNode subNode = new DefaultMutableTreeNode(ws);
 		if(node!=null){
@@ -119,7 +124,8 @@ public class WorkingSetJTree extends JTree {
 	}
 	
 	private WorkingSet getWSFromPath(TreePath path){
-		for (Enumeration e = ((DefaultMutableTreeNode)this.getModel().getRoot()).depthFirstEnumeration(); e.hasMoreElements();) {
+		for (@SuppressWarnings("rawtypes")
+		Enumeration e = ((DefaultMutableTreeNode)this.getModel().getRoot()).depthFirstEnumeration(); e.hasMoreElements();) {
 		    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
 		    if(new TreePath(node.getPath()).equals(path)){
 		    	return (WorkingSet)node.getUserObject();
@@ -130,7 +136,8 @@ public class WorkingSetJTree extends JTree {
 	
 	private DefaultMutableTreeNode getNodeOfWs(WorkingSet ws){
 		//DefaultMutableTreeNode theNode = null;
-		for (Enumeration e = ((DefaultMutableTreeNode)this.getModel().getRoot()).depthFirstEnumeration(); e.hasMoreElements();) {
+		for (@SuppressWarnings("rawtypes")
+		Enumeration e = ((DefaultMutableTreeNode)this.getModel().getRoot()).depthFirstEnumeration(); e.hasMoreElements();) {
 		    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
 		    if (ws == node.getUserObject()) {
 		        return node;

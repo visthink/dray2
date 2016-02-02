@@ -2,11 +2,11 @@ package com.leidos.bmech.gui;
 
 import java.awt.Cursor;
 import java.awt.FlowLayout;
-import java.awt.Image;
+// import java.awt.Image;
 import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
+// import java.awt.Point;
+// import java.awt.Toolkit;
+// import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -15,41 +15,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
-import javax.swing.ButtonGroup;
+// import javax.imageio.ImageIO;
+// import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
+// import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+// import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import com.leidos.bmech.model.TypeTag;
 
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+//import java.awt.event.ActionListener;
+//import java.io.File;
+//import java.io.IOException;
 
+@SuppressWarnings("serial")
 public class CanvasButtonPanel extends JPanel {
 	JButton goBack;
 	JButton merge;
 	JToggleButton split;
 	JToggleButton quickTagToggle;
+	@SuppressWarnings("rawtypes")
 	JComboBox quickTags; 
+	@SuppressWarnings("rawtypes")
 	DefaultComboBoxModel dcm;
 	List<TypeTag> tags;
 	Map<JToggleButton, TypeTag> mapBtnToTag;
@@ -57,10 +47,11 @@ public class CanvasButtonPanel extends JPanel {
 	Cursor scissorCursor;
 	
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public CanvasButtonPanel(ViewerApp app){
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.mainApp = app;
-		Toolkit tk = Toolkit.getDefaultToolkit();
+	//	Toolkit tk = Toolkit.getDefaultToolkit();
 		/*
 		Image image;
 		try {
@@ -140,7 +131,7 @@ public class CanvasButtonPanel extends JPanel {
 		split.setMargin(new Insets(0,0,0,0));
 		add(split);
 		
-		String [] names = new String[TypeTag.values().length];
+	//	String [] names = new String[TypeTag.values().length];
 		for(TypeTag tag : tags){
 			JToggleButton tog = new JToggleButton(tag.name());
 			tog.addItemListener(new ItemListener() {
@@ -167,11 +158,6 @@ public class CanvasButtonPanel extends JPanel {
 		}
 		dcm = new DefaultComboBoxModel();
 		quickTags = new JComboBox(dcm);
-		
-		
-		
-		//add(quickTagToggle);
-		//add(quickTags);
 	}
 	
 	public boolean isQuickTagEnabled(){
