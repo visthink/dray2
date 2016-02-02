@@ -31,7 +31,8 @@ public class CommandLineValues {
     private boolean errorFree = false;
     private boolean hasInput = false;
     private File outFile;
-    public CommandLineValues(String... args) {
+    @SuppressWarnings("static-access")
+	public CommandLineValues(String... args) {
         CmdLineParser parser = new CmdLineParser(this);
         parser.setUsageWidth(80);
         try {

@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+//import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -425,6 +425,7 @@ public class WorkingSet {
 		return ret;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public Rectangle determineHeaderRow(List<Rectangle> columns){
 		ArrayList<Double> headerLines = new ArrayList<Double>();
 		for(Rectangle colBB : columns){
@@ -592,6 +593,7 @@ public class WorkingSet {
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public List<WorkingSet> AutoCols2(){
 		List<WorkingSet> ret = new ArrayList<WorkingSet>();
 		List<El> candidates = new ArrayList<El>(this.getItems());
@@ -735,7 +737,7 @@ public class WorkingSet {
 	
 	public List<WorkingSet> AutoRows(){
 		List<WorkingSet> ret = new ArrayList<WorkingSet>();
-		List<WorkingSet> rows = this.getChildrenWithTag(TypeTag.ROW);
+	//	List<WorkingSet> rows = this.getChildrenWithTag(TypeTag.ROW);
 		List<WorkingSet> cols = this.getChildrenWithTag(TypeTag.COLUMN);
 		List<WorkingSet> headerRows = this.getChildrenWithTag(TypeTag.HEADER_ROW);
 		Set<El> headerEls = new HashSet<El>();

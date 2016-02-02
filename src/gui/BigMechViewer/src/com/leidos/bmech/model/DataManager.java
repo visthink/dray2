@@ -1,10 +1,10 @@
 package com.leidos.bmech.model;
 
-import java.awt.Color;
+//import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
+//import java.awt.Image;
 import java.awt.Point;
-import java.awt.Toolkit;
+//import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,10 +15,10 @@ import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageFilter;
-import java.awt.image.ImageProducer;
-import java.awt.image.RGBImageFilter;
+//import java.awt.image.FilteredImageSource;
+//import java.awt.image.ImageFilter;
+//import java.awt.image.ImageProducer;
+//import java.awt.image.RGBImageFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutionException;
 import javax.imageio.ImageIO;
 import javax.swing.SwingWorker;
 
-import org.apache.commons.io.FilenameUtils;
+//import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -40,15 +40,15 @@ import clojure.java.api.Clojure;
 import clojure.lang.IFn;
 
 import com.leidos.bmech.analysis.EvidenceGatherer;
-import com.leidos.bmech.analysis.GeneGazetteer;
+//import com.leidos.bmech.analysis.GeneGazetteer;
 import com.leidos.bmech.view.DataManagerView;
 
 import drae.j.BoundingBox;
 import drae.j.Doc;
-import drae.j.Producer.Entry;
+//import drae.j.Producer.Entry;
 import drae.j.Producer.Table;
 import drae.j.VisualElement.El;
-import drae.j.VisualElement.VCol;
+//import drae.j.VisualElement.VCol;
 import drae.j.VisualElement.VDocument;
 import drae.j.VisualElement.VImage;
 import drae.j.VisualElement.VPage;
@@ -132,7 +132,8 @@ public class DataManager extends Observable {
         headWS = new WorkingSet(null, "document");
 		headWS.setFilename((String)doc.getFilename());
         view.setCurrentWS(headWS);
-        List vPages = (List)vDocument.getItems();
+        @SuppressWarnings("rawtypes")
+		List vPages = (List)vDocument.getItems();
         pageIconList = new BufferedImage[vPages.size()] ;
 		//pageImageList  = new BufferedImage[vPages.size()];
 
@@ -174,7 +175,8 @@ public class DataManager extends Observable {
 			e1.printStackTrace();
 		}
         view.setCurrentWS(headWS);
-        List vPages = (List)vDocument.getItems();
+        @SuppressWarnings("rawtypes")
+		List vPages = (List)vDocument.getItems();
         pageImageList = new BufferedImage[vPages.size()] ;
         pageIconList = new BufferedImage[vPages.size()] ;
         pageImageStatus = new int[vPages.size()] ;
@@ -193,10 +195,12 @@ public class DataManager extends Observable {
 	}
 
 	private void createPageWS(int pageIndex){
+		@SuppressWarnings("rawtypes")
 		List vPages = (List)vDocument.getItems();
 		VPage vPage = (VPage) vPages.get(pageIndex);
         //Go through and add elements to the Working Set
         WorkingSet pageWS = headWS.createChild("page"+(pageIndex+1));
+        @SuppressWarnings("rawtypes")
         List items = (List)vPage.getItems();
 		for(int j=0; j<items.size();j++){
 			if (items.get(j) instanceof drae.j.VisualElement.El){
@@ -248,14 +252,20 @@ public class DataManager extends Observable {
 		this.pageIconList = pageIconList;
 	}
 	
-	private void runpdf2xml(){
+/**
+  	private void runpdf2xml(){
+
 		/*try {
 			//Process process = new ProcessBuilder(pdf2xmlExePath, pdfFile.getAbsolutePath() ).start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-	}
+		}
+    }
+**/
+
+
+	@SuppressWarnings("unused")
 	private void runBEE(){
 		/*String dataSubDir = FilenameUtils.removeExtension(pdfFile.getAbsolutePath()) + ".xml_data";
 		System.out.println(dataSubDir);*/
@@ -271,6 +281,7 @@ public class DataManager extends Observable {
 		return vDocument;
 	}
 	
+	@SuppressWarnings("unused")
 	private void setVDocument(VDocument vdoc) {
 		this.vDocument = vdoc;
 	}
@@ -349,6 +360,7 @@ public class DataManager extends Observable {
 	 * 
 	 */
 	
+	@SuppressWarnings("unchecked")
 	public List<El> getElsIn(int page, Rectangle2D dragRectDescaled) {
 
 		List<El> ret = new ArrayList<El>();
@@ -688,6 +700,7 @@ public class DataManager extends Observable {
 
     }
 
+	@SuppressWarnings("unchecked")
 	public void addSeparator(int page, Line2D line) {
 		// TODO Auto-generated method stub
 		this.getPageWS(page).addSeparator(line);
@@ -743,6 +756,7 @@ public class DataManager extends Observable {
     	Doc.restoreWSfromOverlay(this, jsonFile);
 		for(WorkingSet pg : this.getHeadWorkingSet().getChildren()){
 			for(WorkingSet table : pg.getChildrenWithTag("TABLE")){
+				@SuppressWarnings("unchecked")
 				List<Layer> layers = (List<Layer>) Table.applyLayerProducer("simple-table", table);
 				System.out.println("Created "+ layers.size() + " layers");
 				PrintWriter writer;

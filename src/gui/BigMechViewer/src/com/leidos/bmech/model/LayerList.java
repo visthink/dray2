@@ -1,7 +1,7 @@
 package com.leidos.bmech.model;
 
-import java.awt.Color;
-import java.util.ArrayList;
+//import java.awt.Color;
+//import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,13 +15,17 @@ import drae.j.VisualElement.El;
 import drae.j.VisualElement.VText;
 
 public class LayerList extends LinkedHashMap<String, Layer>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3668368849271492741L;
 	//private List<Layer> list;
-	private WorkingSet parentWS;
+//	private WorkingSet parentWS;
 	
 	
 	public LayerList(WorkingSet p) {
 		super();
-		parentWS = p;
+//		parentWS = p;
 		//list = new ArrayList<Layer>();
 		addLayer(new Layer("all"));
 	}
@@ -70,6 +74,7 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 		return get("all");
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object getObjectOnPath(Object root, List<TreeNode> path){
 		Object ret = null;
 		String nodeName = path.get(0).toString();
@@ -124,7 +129,9 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void getElsUnder(List<Object> list, Object root){
+		
 		if(root instanceof VText){
 			list.add((El)root);
 		} else if(root instanceof LayerList){
@@ -134,7 +141,7 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 			}
 		} else if(root instanceof Layer){
 			Layer layer = (Layer)root;
-			for(Map map : layer.getRep()){
+			for( Map map : layer.getRep()){
 				getElsUnder(list, map);
 			}	
 		} else if (root instanceof Map){
@@ -149,38 +156,5 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 		}
 	}
 	
-	
-	/*public List<DocumentElement> getElementsAt(int x, int y){
-		List<DocumentElement> ret = new ArrayList<DocumentElement>();
-		for ( Layer layer : list ){
-			if(layer.shouldDraw()){
-				for (DocumentElement el : layer.getElements()){
-					if (x >= el.x1InSource && x <= el.x2InSource
-							&& y >= el.y1InSource && y <=el.y2InSource){
-						ret.add(el);
-					}
-						
-				}
-			}
-		}
-		return ret;
-	}
-	public DocumentElement getNextElementAt(int x, int y, DocumentElement current, int order){
-		List<DocumentElement> candidates = getElementsAt(x, y);
-		if(order >=0)order =1;
-		if(order < 0)order =-1;
-		int indexOfCurrent = candidates.indexOf(current);
-		if (candidates.size() == 0)
-			return null;
-		if (indexOfCurrent == -1 ){//new selection area
-			//return the frontmost element
-			return candidates.get(candidates.size()-1);
-		}
-		if (indexOfCurrent == 0){//got to beginning of list
-			//return nothing
-			return null;
-		}
-		return candidates.get((candidates.indexOf(current)+order)%candidates.size());	
-	}
-	*/
 }
+	
