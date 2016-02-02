@@ -2,7 +2,7 @@ package com.leidos.bmech.analysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+//import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +33,7 @@ public class TextAnalyzer {
 		return getGenesTokens(ws);//buildEntityRep(ws, ret);		
 	}
 	*/
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Layer buildEntityRep(WorkingSet ws, Set<String> geneNames){
 		String combined = "";
 		//map from the character index in the combined string to VText
@@ -245,6 +246,8 @@ public static Layer getGenesTokens(WorkingSet ws){
     return entityLayer;
 }
 */
+	
+/*
 private static void addToEntityMap(Map<String, Object> entityMap, String geneName, List<VTextToken> tokens){
 	List<Map> occurrences = null;
 	if(entityMap.containsKey(geneName)){
@@ -260,6 +263,7 @@ private static void addToEntityMap(Map<String, Object> entityMap, String geneNam
 	thisOccurrence.put("name", geneName + "[" + occurrences.size() + "]");
 	occurrences.add(thisOccurrence);
 }
-
+*/
+	
 
 }

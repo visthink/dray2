@@ -11,9 +11,10 @@ import com.leidos.bmech.model.WorkingSet;
 
 import drae.j.VisualElement.El;
 import drae.j.VisualElement.VText;
-import drae.j.VisualElement.VTextToken;
+// import drae.j.VisualElement.VTextToken;
 
 public class GeneGazetteer implements Gazetteer {
+	@SuppressWarnings("rawtypes")
 	Set set;
 	String thisClassName = "gene_protein";
 	
@@ -27,18 +28,19 @@ public class GeneGazetteer implements Gazetteer {
 		loadWithExceptions(ws,exclusions);
 	}
 	
+	@SuppressWarnings({ "unchecked", "null" })
 	public void load(WorkingSet head){
-		//for now load using Arizona Processors
+		//for now load using Arizona Processors 
 		//System.out.println("Working Set " + head + " " + ws.getItems().size());
-		TextAnalyzer ta = new TextAnalyzer();
-		String combined = "";
+//		TextAnalyzer ta = new TextAnalyzer();
+//		String combined = "";
 		for(WorkingSet page : head.getChildren()){
 			for(El el :  page.getItems()){
 				if (el instanceof VText){
-					for(Object tokObj : (List)el.getItems()){
-						VTextToken tok = (VTextToken) tokObj;
-						combined += tok.text + " ";
-					}
+//					for(Object tokObj : (List)el.getItems()){
+//						VTextToken tok = (VTextToken) tokObj;
+//						combined += tok.text + " ";
+//					}
 					//combined += ((VText) el).text + " ";
 				}
 			}
@@ -72,10 +74,11 @@ public class GeneGazetteer implements Gazetteer {
 		return res;
 	}
 	
- 	public void loadWithExceptions(WorkingSet headWS, Set<El> exclusions){
+ 	@SuppressWarnings({ "unchecked", "null" })
+	public void loadWithExceptions(WorkingSet headWS, Set<El> exclusions){
 		//for now load using Arizona Processors
 		//System.out.println("Working Set " + head + " " + ws.getItems().size());
-		TextAnalyzer ta = new TextAnalyzer();
+//		TextAnalyzer ta = new TextAnalyzer();
 		List<El> elist = allContainedEls(headWS, exclusions);
 		String combined = "";
 		for (El el : elist) {
@@ -126,17 +129,18 @@ public class GeneGazetteer implements Gazetteer {
 	  }
 	}	
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void addItemsToClass(List<Object> items, String destClass) {
 		if(destClass.equalsIgnoreCase(thisClassName))
 			set.addAll(items);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void addItemToClass(Object item, String destClass) {
 		if(destClass.equalsIgnoreCase(thisClassName))
-			set.add(item);
-		
+			set.add(item);	
 	}
 	
 	public String toString(){
@@ -148,6 +152,7 @@ public class GeneGazetteer implements Gazetteer {
 		return ret;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public Set getSet() { return set; };
 	
 }

@@ -10,6 +10,7 @@ import java.util.List;
  * @author powelldan
  *
  */
+@SuppressWarnings("serial")
 public class EvidenceTable extends HashMap<Object, List<Evidence>> {
 	
 	public EvidenceTable(){

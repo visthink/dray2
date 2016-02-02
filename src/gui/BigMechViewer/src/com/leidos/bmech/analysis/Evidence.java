@@ -12,15 +12,15 @@ import java.util.List;
  * @author powelldan
  *
  */
-public class Evidence extends HashMap implements Comparable {
+public class Evidence extends HashMap<String,Object> implements Comparable<Object> {
+
+	private static final long serialVersionUID = 1L;
 
 	public Evidence(Double b , Object support , String classification){
 		this.put("belief" , b);
 		this.put("support", support);
 		this.put("classification", classification);
 		this.put("name", this.toString()); // Modified to use new string method.
-	//	this.put("resolved", false); // Default value is false.
-	//	this.put("group", false);    // Default value is false.
 	}
 	
 	public int compareTo(Object o1){
@@ -118,6 +118,7 @@ public class Evidence extends HashMap implements Comparable {
 	 * nil if there are no parts.
 	 * @return List of objects.
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Object> getParts () {
 		return (List<Object>) this.get("parts");
 	}
