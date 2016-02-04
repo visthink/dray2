@@ -2,11 +2,11 @@
 
 DRAE extracts elements from PDF and other vector files, and attempts to perform reasoning over those files.
 
-Web site: <https://paintbranch.net/root/DRAE>
+Web site: <https://bitbucket.org/rwferguson/drae>
 
 ## License
 
-Copyright © 2015 Leidos Holdings, Ltd.
+Copyright © 2016 Leidos Holdings, Ltd.
 
 ## Documentation and API
 
