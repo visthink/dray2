@@ -33,18 +33,15 @@
   "This function is called automatically when the JVM exits, and removes cache files
    created while the program was running."
   []
-  #_(println "Shutting down DRAE.")
-  #_(println "Emptying cache...")
-  (delete-current-cache-dirs)
-  #_(println "   ...finished."))
-
+  (delete-current-cache-dirs))xss
+  
 (defn -main 
   "Main DRAE function. Runs GUI."
   [& args]
   (println "MAIN FUNCTION: Args " args)
   (.addShutdownHook (Runtime/getRuntime) 
     (Thread. shutdown-tasks))
-  (let [gui (run-gui args)]
+  (let [gui (run-gui (cons "-g" args))]
     (populate-gui-tables)
     gui))
 
