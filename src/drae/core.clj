@@ -33,7 +33,7 @@
   "This function is called automatically when the JVM exits, and removes cache files
    created while the program was running."
   []
-  (delete-current-cache-dirs))xss
+  (delete-current-cache-dirs))
   
 (defn -main 
   "Main DRAE function. Runs GUI."
