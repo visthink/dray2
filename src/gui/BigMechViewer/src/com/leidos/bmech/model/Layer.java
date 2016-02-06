@@ -1,74 +1,68 @@
+/**
+ * com.leidos.bmech.model.Layer Represents a single representation layer in the model.
+ */
 package com.leidos.bmech.model;
 
 import java.awt.Color;
 import java.util.ArrayList;
-//import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import drae.j.VisualElement.El;
 
 public class Layer {
-	private String name;
-	private List<El> elements;
-	private boolean highlight;
-	private Color color;
+	
+	// FIELDS
+	
+	private String   name;
+	private List<El> items;
+	private boolean  highlight;
+	private Color    color;
+	
 	private List<Map<String, Object>> representation;
 
+	// CONSTRUCTOR
+	
 	public Layer(String name) {
 		this.name = name;
-		elements = new ArrayList<El>();
+		items = new ArrayList<El>();
 		representation = new ArrayList<Map<String, Object>>();
 		setColor(Color.BLUE);
 	}
+	
+	// SELECTORS
+	
+	public String    getName()  { return name; }
 
-	public void addElement(El el) {
-		elements.add(el);
-	}
+	public List<El>  getItems() { return items; }
 
-	public String getName() {
-		return name;
-	}
+	public Color     getColor() { return color; }
 
-	public List<El> getItems() {
-		return elements;
-	}
+	public List<Map<String, Object>> 
+	
+	                 getRep()   { return representation; }
 
-	public boolean isEmpty() {
-		return elements.isEmpty();
-	}
+    // SETTERS
 
-	public boolean add(El el) {
-		return elements.add(el);
-	}
+	public void    addElement(El el)  { items.add(el); }
+     
+	public boolean add(El el)         { return items.add(el); }
 
-	public boolean isHighlight() {
-		return highlight;
-	}
+	public void    setColor(Color c)  { this.color = c;}
 
-	public void setHighlight(boolean highlight) {
-		this.highlight = highlight;
-	}
+	public void    setHighlight(boolean highlight) 
+	                                  
+	                                  { this.highlight = highlight; }
+	
+	public void    setRep(List<Map<String, Object>> representation) 
+	
+	                                  { this.representation = representation; }
+	
+    // PREDICATES
+    
+    public boolean isEmpty()          { return items.isEmpty(); }
 
-	public Color getColor() {
-		return color;
-	}
+	public boolean isHighlight()      { return highlight; }
 
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
-	public boolean containsEl(El el) {
-		return elements.contains(el);
-	}
-
-	public List<Map<String, Object>> getRep() {
-		return representation;
-	}
-
-	public void setRep(List<Map<String, Object>> representation) {
-		this.representation = representation;
-	}
-
-
+	public boolean containsEl(El el)  { return items.contains(el); }
+	
 }

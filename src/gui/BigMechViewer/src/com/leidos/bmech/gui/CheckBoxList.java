@@ -12,6 +12,7 @@ public class CheckBoxList extends JList<JCheckBox> {
   protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
 
   public CheckBoxList() {
+	  
     setCellRenderer(new CellRenderer());
     addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
@@ -38,12 +39,7 @@ public class CheckBoxList extends JList<JCheckBox> {
       JCheckBox checkbox = value;
 
       //Drawing checkbox, change the appearance here
-      /*checkbox.setBackground(isSelected ? getSelectionBackground()
-          : getBackground());
-      checkbox.setForeground(isSelected ? getSelectionForeground()
-          : getForeground());*/
       checkbox.setEnabled(isEnabled());
-      //checkbox.setFont(getFont());
       checkbox.setFocusPainted(false);
       checkbox.setBorderPainted(true);
       checkbox.setBorder(isSelected ? UIManager

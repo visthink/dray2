@@ -10,7 +10,6 @@ public enum TypeTag {
 	COLUMN,
 	ROW,
 	TABLE, CAPTION, IGNORE, MERGE, HEADER_ROW, FIGURE;
-
 }
 
 

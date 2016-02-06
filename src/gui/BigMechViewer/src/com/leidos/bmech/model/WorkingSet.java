@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-//import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -15,13 +14,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import com.leidos.bmech.gui.UtiliBuddy;
-
 import drae.j.BoundingBox;
 import drae.j.VisualElement.El;
 import drae.j.VisualElement.VText;
-
 
 /**
  * WorkingSet is a rectangular subsection of a pdf document
@@ -29,30 +25,36 @@ import drae.j.VisualElement.VText;
  *
  */
 public class WorkingSet {
-	private WorkingSet parent;
+	
+	// FIELDS
+	
+	private WorkingSet       parent;
 	private List<WorkingSet> children;
-	private LayerList layerList;
-	private Rectangle bbox;
-	private String name;
-//	private BufferedImage image;
-	private int page;
-	private String filename;
-	private List<String> tags;
-	private List<Line2D> separators;
+	private LayerList        layerList;
+	private Rectangle        bbox;
+	private String           name;
+	private int              page;
+	private String           filename;
+	private List<String>     tags;
+	private List<Line2D>     separators;
+	
+	// CONSTRUCTOR
 	
 	/**
 	 * Create a WorkingSet
 	 * @param p the parent of this working set
 	 * @param n the name of this working set
 	 */
-	public WorkingSet (WorkingSet p, String n){
-		parent = p;
-		children = new ArrayList<WorkingSet>();
-		layerList = new LayerList(this);
+	public WorkingSet (WorkingSet p, String n) {
+
+		parent     = p;
+		children   = new ArrayList<WorkingSet>();
+		layerList  = new LayerList(this);
 		separators = new ArrayList<Line2D>();
-		bbox = new Rectangle();
-		tags = new ArrayList<String>();
-		setName(n);
+		bbox       = new Rectangle();
+		tags       = new ArrayList<String>();
+        name       = n;
+		
 		if(p != null){
 			page = parent.getPage();
 			filename = parent.getFilename();
@@ -62,6 +64,39 @@ public class WorkingSet {
 		}
 	}
 	
+	// ACCESSORS 
+	
+	public List<WorkingSet> getChildren() { return children; }
+	
+	public WorkingSet       getParent()   { return parent; }
+
+	public List<El>         getItems()    { return layerList.getBase().getItems(); }
+
+	public Rectangle        getBbox()     { return bbox; }
+
+	public String           getName()     { return name; }
+
+	public int              getPage()     { return page; }
+	
+	public LayerList        getLayerList() { return layerList; }
+
+	public String           getFilename() { return filename; }
+
+	public List<String>     getTags()     { return tags; }
+
+
+
+	// SETTERS
+	
+	public void setName(String name)      { this.name = name; }
+
+	public void setPage(int page)         { this.page = page; }
+
+	public void setFilename(String filename) { this.filename = filename; }
+
+	public void setTags(List<String> val) { this.tags = val; }
+	
+
 	/**
 	 * add an item to the working set and expand the rectangle to fit this item
 	 * @param el the item to add
@@ -70,6 +105,7 @@ public class WorkingSet {
 		//check if item's bbox should expand the WS bbox
 
 		BoundingBox bb2 = (BoundingBox) el.getBbox();
+		
 		if(layerList.getBase().isEmpty()){ //if empty, WS bbox is items bbox
 			bbox = new Rectangle(bb2.getBounds());
 		}else if(!bbox.contains(bb2)){ //else, expand if necessary
@@ -79,6 +115,7 @@ public class WorkingSet {
 		//since it wont be added in the for loop
 		if(getParent() != null && getParent().getParent() == null)
 			layerList.getBase().add(el);
+		
 		//copy the layer information from the parent to the child
 		for(Layer layer : getParent().getLayerList().values()){
 			if(layer.containsEl(el)){
@@ -94,6 +131,7 @@ public class WorkingSet {
 	public WorkingSet createChild(){
 		return createChild(this.getName()+"."+this.getChildren().size());
 	}
+	
 	/**
 	 * create a working set as a child to this one
 	 * @param name the name of the working set
@@ -184,64 +222,11 @@ public class WorkingSet {
 		return false; //got to the top without finding it
 	}
 	
-	/**
-	 * get the list of working sets that are subsets of this one
-	 * @return
-	 */
-	public List<WorkingSet> getChildren() {
-		return children;
-	}
-	public WorkingSet getParent() {
-		return parent;
-	}
-
-	public List<El> getItems() {
-		return layerList.getBase().getItems();
-	}
-
-	public Rectangle getBbox() {
-		return bbox;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 	public String toString(){
 		//return "<WS "+getName()+" " + getChildren().size() + " children"+" " + getItems().size() + " items>";
 		return getName();
 	}
 
-	public LayerList getLayerList() {
-		return layerList;
-	}
-
-	public int getPage() {
-		return page;
-	}
-
-	public void setPage(int page) {
-		this.page = page;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	public List<String> getTags() {
-		return tags;
-	}
-
-	public void setTags(List<String> val) {
-		this.tags = val;
-	}
 	
 	public void addTag(String tag){
 		if(!tags.contains(tag.toLowerCase())){
@@ -309,10 +294,8 @@ public class WorkingSet {
 				tags.add(TypeTag.MERGE);
 				break;
 			default:
-				break;
-			
+				break;		
 			}
-			
 		}	
 		return tags;
 	}
@@ -501,23 +484,12 @@ public class WorkingSet {
 		}
 		if(headerRow != null){
 			List<El> els =  this.getElsIn(headerRow);
-			/*for(WorkingSet columnWS : this.getChildrenWithTag(TypeTag.COLUMN)){
-				for(El headerEl : els){
-					if(columnWS.getItems().contains(headerEl)){
-						WorkingSet headerWS = columnWS.createChild();
-						headerWS.setName("HEADER" + (columnWS.getChildrenWithTag("header").size()+1));
-						headerWS.addTag("header".toLowerCase());
-						headerWS.addItem(headerEl);
-					}
-				}
-			}*/
 			System.out.println("header row els: " + els);
 			//create and add header_row now
 			WorkingSet headerRowWS = this.createChild("AUTO_HEADER_ROW", headerRow);
 			headerRowWS.setName("HEADER_ROW" + (this.getChildrenWithTag("header_row").size()+1));
 			headerRowWS.addTag("header_row".toLowerCase());
-			ret.add(headerRowWS);
-			
+			ret.add(headerRowWS);			
 		}
 		this.normalize();
 		

@@ -22,20 +22,21 @@ import javax.swing.Action;
 
 public class TagEditDialog extends JDialog {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2471204031276037497L;
+
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
-	private final Action addAction = new AddAction();
 	@SuppressWarnings("rawtypes")
 	private DefaultListModel listModel;
 	@SuppressWarnings("rawtypes")
 	private JList list;
+	
+	// ACTIONS
+	private final Action addAction    = new AddAction();
 	private final Action removeAction = new RemoveAction();
-	private final Action okAction = new OkAction();
+	private final Action okAction     = new OkAction();
 	private final Action cancelAction = new CancelAction();
+	
 	private List<String> returnValue;
 
 	/**
@@ -45,7 +46,6 @@ public class TagEditDialog extends JDialog {
 		try {
 			TagEditDialog dialog = new TagEditDialog(new ArrayList<String>(), "test");
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			//
 			System.out.println(dialog.showDialog());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -121,10 +121,7 @@ public class TagEditDialog extends JDialog {
 	}
 	
 	private class AddAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1720678939224547324L;
+		private static final long serialVersionUID = 1724547324L;
 		public AddAction() {
 			putValue(NAME, "Add");
 			putValue(SHORT_DESCRIPTION, "Some short description");
@@ -141,25 +138,23 @@ public class TagEditDialog extends JDialog {
 		}
 	}
 	private class RemoveAction extends AbstractAction {
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -8169215852422710101L;
+		
 		public RemoveAction() {
 			putValue(NAME, "Remove");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
+		
 		public void actionPerformed(ActionEvent e) {
 			for(Object tagObj : list.getSelectedValuesList()){
 				listModel.removeElement(tagObj);
 			}
 		}
 	}
+	
 	private class OkAction extends AbstractAction {
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 4382439560279118291L;
+		
 		public OkAction() {
 			putValue(NAME, "OK");
 			putValue(SHORT_DESCRIPTION, "Some short description");
@@ -175,15 +170,15 @@ public class TagEditDialog extends JDialog {
 			dispose();
 		}
 	}
+	
 	private class CancelAction extends AbstractAction {
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 6578350625229901655L;
+		
 		public CancelAction() {
 			putValue(NAME, "Cancel");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
+	
 		public void actionPerformed(ActionEvent e) {
 			//Now exit, returning control to the showDialog() function
 			setVisible(false);

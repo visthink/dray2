@@ -1,19 +1,16 @@
 package com.leidos.bmech.model;
 
-import java.util.List;
-//import java.util.Map;
-
-import com.leidos.bmech.analysis.Evidence;
-
-import drae.j.VisualElement.VText;
+//import java.util.List;
+//import com.leidos.bmech.analysis.Evidence;
+//import drae.j.VisualElement.VText;
 
 public class TableEntry {
-	@SuppressWarnings("unused")
-	private VText vtext;
+//	@SuppressWarnings("unused")
+//	private VText vtext;
 	
-	List<Evidence> evidenceList;
+//	List<Evidence> evidenceList;
 	
-	public TableEntry(VText v){
-		vtext = v;
-	}
+//	public TableEntry(VText v){
+//		vtext = v;
+//	}
 }
