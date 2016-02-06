@@ -2,11 +2,11 @@
 
 DRAE extracts elements from PDF and other vector files, and attempts to perform reasoning over those files.
 
-Web site: <https://paintbranch.net/root/DRAE>
+Web site: <https://bitbucket.org/rwferguson/drae>
 
 ## License
 
-Copyright © 2015 Leidos Holdings, Ltd.
+Copyright © 2015-2016 Leidos Holdings, Ltd.
 
 ## Documentation and API
 
@@ -50,10 +50,4 @@ To compile a new uberjar:
 ## Feedback
 
 Feedback can either be sent directly to the developers 
-(*ronald.w.ferguson@leidos.com, daniel.j.powell@leidos.com*), or added as an issue on the developer github site: 
-<https://paintbranch.net/root/DRAE/issues>.
-
-## Additional information
-
-Additional information about the system, including information about new and previous releases,
-can be found on the project wiki: <https://paintbranch.net/root/DRAE/wikis/home>.
+(*ronald.w.ferguson@leidos.com, daniel.j.powell@leidos.com*), or added as an issue on our BitBucket site.
