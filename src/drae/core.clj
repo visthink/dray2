@@ -16,7 +16,8 @@
             [drae.producers :refer [populate-producer-table populate-layer-table]] ;; Just to ensure class creation.
             [drae.corpus :refer [corpus]]
             )
-  (:gen-class))
+  (:gen-class) ; rwf 2/9/16 - do we really need this?
+  )
     
 ;;; MAIN FUNCTION (Test for now)
 
