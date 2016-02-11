@@ -102,9 +102,9 @@
 
 (deftype VDocument [^String filename, ^:volatile-mutable ^java.util.List items]
  Object
- (toString [_] (format "<VDocument2 %s (%d pp)>" filename (count items)))
+ (^String toString [_] (format "<VDocument2 %s (%d pp)>" filename (count items)))
  El
- (getItems [_] items)
+ (getItems [_] ^java.util.List items)
  (setItems [_ new-items] (set! items new-items))
  (withRevisedItems [this new-items] (doto this (.setItems this new-items)))
  (replaceElWith [this-doc old-vtext new-vtexts]
