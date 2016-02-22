@@ -56,8 +56,9 @@ public class WorkingSetJTree extends JTree {
 	            	//from user interaction with the workingSetTree itself
 	            	if(selectedNode != null && !wsChangedAlready){
 	                	//appendToLog(selectedNode.toString());
-	            		app.getDataManager().getView().setCurrentWS((WorkingSet)selectedNode.getUserObject());
-	                	app.viewWSUpdated();
+	            		//app.getDataManager().getView().setCurrentWS((WorkingSet)selectedNode.getUserObject());
+	            		app.getDataManager().setCurrentWS((WorkingSet)selectedNode.getUserObject());
+                        app.viewWSUpdated();
 	                	
 	                }
 	            	
@@ -70,7 +71,7 @@ public class WorkingSetJTree extends JTree {
 	}
 	
 	public void refresh() {		
-		DefaultMutableTreeNode theNode = getNodeOfWs(app.getView().getCurrentWS());
+		DefaultMutableTreeNode theNode = getNodeOfWs(app.getDataManager().getCurrentWS());
 		this.setSelectionPath(new TreePath(theNode.getPath()));
 		//this.expandPath(new TreePath(((DefaultMutableTreeNode)theNode.getParent()).getPath()));
 		this.expandPath(new TreePath(theNode.getPath()));

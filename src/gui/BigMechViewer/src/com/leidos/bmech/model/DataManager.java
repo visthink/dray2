@@ -1,3 +1,10 @@
+/**
+ * The DataManager class manages the working sets, analyses, and selected items in a 
+ * given VDcoument. 
+ * 
+ * @author Daniel Powell
+ * @author Ron Ferguson
+ */
 package com.leidos.bmech.model;
 
 import java.awt.Graphics2D;
@@ -24,6 +31,8 @@ import java.util.concurrent.ExecutionException;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingWorker;
+import javax.swing.event.ListDataListener;
+import javax.swing.ListModel;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -32,7 +41,7 @@ import clojure.java.api.Clojure;
 import clojure.lang.IFn;
 
 import com.leidos.bmech.analysis.EvidenceGatherer;
-import com.leidos.bmech.view.DataManagerView;
+//import com.leidos.bmech.view.DataManagerView;
 
 import drae.j.BoundingBox;
 import drae.j.Doc;
@@ -44,42 +53,95 @@ import drae.j.VisualElement.VPage;
 import drae.j.VisualElement.VTable;
 import drae.j.VisualElement.VText;
 
-/**
- * This class is responsible for managing all of the data, as well as
- * interfacing with the external code (e.g. Clojure)
- * 
- * @author powelldan
- *
- */
-public class DataManager extends Observable {
+//import javax.swing.event.ListDataListener;
 
-  private File                     pdfFile;
-  private VDocument                vDocument;
-  private BufferedImage[]          pageIconList;
-  private BufferedImage[]          pageImageList;
-  private int[]                    pageImageStatus;
-  private int                      offsetX;
-  private int                      offsetY;
-  private WorkingSet               headWS;
+public class DataManager extends Observable 
+                         implements ListModel<VPage> {
+
+  private File                     pdfFile;         // Current PDF file.
+  public  VDocument                vDocument;       // Its VDocument object.
+  private BufferedImage[]          pageImageList;   // ! Move to view ! 
+  private int[]                    pageImageStatus; // ! Move to view !
+  private int                      offsetX;         // ! Move to view !
+  private int                      offsetY;         // ! Move to view !
+  private WorkingSet               headWS;          // Top working set (of all working sets).
+  public  WorkingSet               currentWS;       // Current working set.
+  public  int                      currentPage;     // Current page.
+  public  List<El>                 selectedEls;     // Currently selected elements.
+
   private Map<String, Rectangle2D> imageBBMap;
-  private DataManagerView          view;
+  // private DataManagerView          view;
   BufferedImage                    defaultImage;
   EvidenceGatherer                 eg;
   int                              preprocessState; // -1: not started; 0:
                                                     // underway; 1: done
-
+  List<ListDataListener> listeners;
+  
   public DataManager() {
+    
     super();
-    pageIconList = new BufferedImage[0];
-    pageImageList = new BufferedImage[0];
-    pageImageStatus = new int[0];
-    view = new DataManagerView(this);
+    
+   // view = new DataManagerView(this);
+    
     imageBBMap = new HashMap<String, Rectangle2D>();
     defaultImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
     eg = new EvidenceGatherer();
     preprocessState = -1;// not started
+    pageImageList   = new BufferedImage[0];
+    pageImageStatus = new int[0];
+    
   }
 
+  @SuppressWarnings("unchecked")
+
+  public List<VPage> getPages() {
+    return (List<VPage>) vDocument.getItems();
+  }
+  
+  public List<El> getSelectedEls () {
+    return selectedEls;
+  }
+  
+  public void setSelectedEls (List<El> els) {
+    selectedEls = els;
+  }
+  
+  public int getCurrentPage () {
+    return currentPage;
+  }
+  
+  public void setCurrentPage (int p) {
+    currentPage = p;
+  }
+  
+  // Interface ModelList methods
+  // -----------------------------------------------------------
+  public VPage getElementAt(int pagenum) {
+    return this.getPages().get(pagenum);
+  }
+  
+  public int getSize() {
+    @SuppressWarnings("unchecked")
+    List<VPage> pages = (List<VPage>) vDocument.getItems();
+    return pages.size();
+  }
+  
+  public WorkingSet getCurrentWS () {
+     return currentWS;
+  }
+  
+  public void setCurrentWS (WorkingSet ws) {
+    currentWS = ws;
+  }
+  
+  public void addListDataListener(ListDataListener l) {
+    listeners.add(l);
+  }
+  
+  public void removeListDataListener(ListDataListener l) {
+    listeners.remove(l);
+  }
+  
   /**
    * initialize DataManager with data from a vdocument
    * 
@@ -91,7 +153,7 @@ public class DataManager extends Observable {
   }
 
   /**
-   * initialize Datamanager with data from pdf. Don't load images
+   * initialize DataManager with data from pdf. Don't load images
    * 
    * @param pdf
    *          the pdf to load
@@ -116,19 +178,20 @@ public class DataManager extends Observable {
     loadFromPdf(lazyLoadImages);
   }
 
-  public void setView(DataManagerView v) {
-    view = v;
-  }
+ // public void setView(DataManagerView v) {
+ //   view = v;
+ // }
 
   public void loadFromVDocument(VDocument doc) {
     // call clojure to populate the VDocument
     vDocument = doc;
     headWS = new WorkingSet(null, "document");
     headWS.setFilename((String) doc.getFilename());
-    view.setCurrentWS(headWS);
+    currentWS = headWS;
+   //  view.setCurrentWS(headWS);
     @SuppressWarnings("rawtypes")
     List vPages = (List) vDocument.getItems();
-    pageIconList = new BufferedImage[vPages.size()];
+    //pageIconList = new BufferedImage[vPages.size()];
     // pageImageList = new BufferedImage[vPages.size()];
 
     for (int i = 0; i < vPages.size(); i++) {
@@ -164,16 +227,17 @@ public class DataManager extends Observable {
       // TODO Auto-generated catch block
       e1.printStackTrace();
     }
-    view.setCurrentWS(headWS);
+   // view.setCurrentWS(headWS);
+    currentWS = headWS;
     @SuppressWarnings("rawtypes")
     List vPages = (List) vDocument.getItems();
     pageImageList = new BufferedImage[vPages.size()];
-    pageIconList = new BufferedImage[vPages.size()];
+    // pageIconList = new BufferedImage[vPages.size()];
     pageImageStatus = new int[vPages.size()];
     for (int i = 0; i < vPages.size(); i++) {
       pageImageStatus[i] = -1;
       pageImageList[i] = defaultImage;
-      pageIconList[i] = defaultImage;
+    //  pageIconList[i] = defaultImage;
     }
 
     for (int i = 0; i < vPages.size(); i++) {
@@ -185,6 +249,7 @@ public class DataManager extends Observable {
   }
 
   private void createPageWS(int pageIndex) {
+    
     @SuppressWarnings("rawtypes")
     List vPages = (List) vDocument.getItems();
     VPage vPage = (VPage) vPages.get(pageIndex);
@@ -212,9 +277,9 @@ public class DataManager extends Observable {
   }
 
   public LayerList getLayerList() {
-    if (view.getCurrentWS() == null)
+    if (currentWS == null)
       return null;
-    return view.getCurrentWS().getLayerList();
+    return currentWS.getLayerList();
   }
 
   public File getPdfFile() {
@@ -236,22 +301,22 @@ public class DataManager extends Observable {
     setPdfFile(pdfFile, false);
   }
 
-  public BufferedImage[] getPageIconList() {
-    return pageIconList;
-  }
+ //public BufferedImage[] getPageIconList() {
+ //  return pageIconList;
+ // }
 
-  public void setPageIconList(BufferedImage[] pageIconList) {
-    this.pageIconList = pageIconList;
-  }
+ // public void setPageIconList(BufferedImage[] pageIconList) {
+ //   this.pageIconList = pageIconList;
+ // }
 
-  @SuppressWarnings("unused")
-  private void runBEE() {
-    /*
-     * String dataSubDir =
-     * FilenameUtils.removeExtension(pdfFile.getAbsolutePath()) + ".xml_data";
-     * System.out.println(dataSubDir);
-     */
-  }
+ // @SuppressWarnings("unused")
+ // private void runBEE() {
+ //   /*
+ //    * String dataSubDir =
+ //    * FilenameUtils.removeExtension(pdfFile.getAbsolutePath()) + ".xml_data";
+ //    * System.out.println(dataSubDir);
+ //    */
+ // }
 
   /**
    * Get a reference to the drae.j.VDocument instance currently being used by
@@ -281,7 +346,7 @@ public class DataManager extends Observable {
    */
   public El getElAt(int x, int y) {
     
-    for (El el : view.getCurrentWS().getItems()) {
+    for (El el : currentWS.getItems()) {
       BoundingBox bb = (BoundingBox) el.getBbox();
       if (x >= bb.getMinX() && 
           x <= bb.getMaxX() && 
@@ -307,7 +372,7 @@ public class DataManager extends Observable {
    */
   public List<WorkingSet> getWSAt(int x, int y) {
     List<WorkingSet> ret = new ArrayList<WorkingSet>();
-    for (WorkingSet child : view.getCurrentWS().getChildren()) {
+    for (WorkingSet child : currentWS.getChildren()) {
       Rectangle bb = (Rectangle) child.getBboxWide();
       if (x >= bb.getMinX() && x <= bb.getMaxX() && y >= bb.getMinY() && y <= bb.getMaxY()) {
         ret.add(child);
@@ -336,7 +401,7 @@ public class DataManager extends Observable {
   public List<WorkingSet> getWSEdgeAt (Point pt) {
    // Point pt = new Point(x, y);
     List<WorkingSet> ret = new ArrayList<WorkingSet>();
-    for (WorkingSet child : view.getCurrentWS().getChildren()) {
+    for (WorkingSet child : currentWS.getChildren()) {
       Rectangle bbw = (Rectangle) child.getBboxWide();
       Rectangle bbs = (Rectangle) child.getBboxSmall();
       if (bbw.contains(pt) && !bbs.contains(pt)) {
@@ -390,30 +455,45 @@ public class DataManager extends Observable {
   /*
    * public List<El> getSelected(){ return selectedEls; }
    */
+  
   /**
-   * creates a new working set from the selected Visual Elements the new working
-   * set is a child of the current working set
+   * Create a new working set from the currently-selected Visual Elements.
+   * The new working set is a child of the current working set
    * 
-   * @return the newly created working set
+   * @return The newly created working set
    */
   public WorkingSet createWSFromSel() {
-    WorkingSet newWS = view.getCurrentWS().createChild();
-    for (Object el : view.getSelected()) {
+    WorkingSet newWS = currentWS.createChild();
+    for (Object el : selectedEls) {
       if (el instanceof El)
         newWS.addItem((El) el);
     }
     return newWS;
-
   }
 
   /**
-   * Delete the current working set. also sets the current working set to be the
-   * parent of the old working set
+   * Create a new working set from the given Visual Element array.
+   * The new working set is a child of the current working set
+   * 
+   * @return The newly created working set
+   */
+  public WorkingSet createWSFromSel (Object[] selectedEls) {
+    WorkingSet newWS = currentWS.createChild();
+    for (Object el : selectedEls) {
+      if (el instanceof El)
+        newWS.addItem((El) el);
+    }
+    return newWS;
+  }
+
+  /**
+   * Delete the current working set. Also sets the current working set to be the
+   * parent of the old working set.
    */
   public void deleteCurrentWS() {
-    WorkingSet oldWS = view.getCurrentWS();
-    view.setCurrentWS(oldWS.getParent());
-    view.getCurrentWS().getChildren().remove(oldWS);
+    WorkingSet oldWS = currentWS;
+    currentWS = oldWS.getParent();
+    currentWS.getChildren().remove(oldWS);
   }
 
   /**
@@ -421,22 +501,22 @@ public class DataManager extends Observable {
    * tree. If the current working set would be deleted, then the current working
    * set switches to the parent of the deleted node.
    * 
-   * @param victim
-   *          -- the working set to be deleted
+   * @param ws
+   *          the working set to be deleted
    */
-  public void deleteWS(WorkingSet victim) {
+  public void deleteWS(WorkingSet ws) {
     // check if null
-    if (victim == null)
+    if (ws == null)
       return;
     // check if we're trying to delete a page
-    if (victim.getParent() == headWS)
+    if (ws.getParent() == headWS)
       return;
     // check if we're deleting something above the current workingset
-    if (view.getCurrentWS() == victim || view.getCurrentWS().hasAncestor(victim)) {
-      view.setCurrentWS(victim.getParent());
-      view.getCurrentWS().getChildren().remove(victim);
+    if (currentWS == ws || currentWS.hasAncestor(ws)) {
+      currentWS = ws.getParent();
+      currentWS.getChildren().remove(ws);
     } else { // just delete it
-      victim.getParent().getChildren().remove(victim);
+      ws.getParent().getChildren().remove(ws);
     }
   }
 
@@ -450,9 +530,9 @@ public class DataManager extends Observable {
    * 
    * @return DataManagerView
    */
-  public DataManagerView getView() {
-    return view;
-  }
+  //public DataManagerView getView() {
+  //  return view;
+ // }
 
   public WorkingSet getPageWS(int page) {
     if (page < 1 || page > getHeadWorkingSet().getChildren().size()) {
@@ -481,8 +561,9 @@ public class DataManager extends Observable {
   }
 
   public BufferedImage getPageIcon(int pageNumber) {
-    if (pageNumber > pageIconList.length || pageNumber < 1) {
-      System.out.println("Can't get icon " + pageNumber + ". Must be between 1 and " + pageIconList.length + ".");
+    int numPages = this.getSize();
+    if (pageNumber > numPages || pageNumber < 1) {
+      System.out.println("Can't get icon " + pageNumber + ". Must be between 1 and " + numPages + ".");
       return null;
     }
     if (pageImageStatus[pageNumber - 1] == -1) {
@@ -496,7 +577,9 @@ public class DataManager extends Observable {
     } else if (pageImageStatus[pageNumber - 1] == 0) {
       return defaultImage;
     } else
-      return pageIconList[pageNumber - 1];
+      // Return default for now -- need to fix later.
+      return defaultImage;
+      //  return pageIconList[pageNumber - 1];
   }
 
   private void loadImage(final int pageNumber) throws IOException {
@@ -514,29 +597,6 @@ public class DataManager extends Observable {
           // PDPageTree pgtre.getPage(pageIndex)
           PDFRenderer renderer = new PDFRenderer(document);
           return renderer.renderImageWithDPI(pageNumber, 600);
-          /*
-           * ImageFilter filter = new RGBImageFilter() { int transparentColor =
-           * Color.white.getRGB() | 0xFF000000;
-           * 
-           * public final int filterRGB(int x, int y, int rgb) { if ((rgb |
-           * 0xFF000000) == transparentColor) { return 0x00FFFFFF & rgb; } else
-           * { return rgb; } } };
-           * 
-           * ImageProducer filteredImgProd = new
-           * FilteredImageSource(image.getSource(), filter); Image
-           * transparentImg =
-           * Toolkit.getDefaultToolkit().createImage(filteredImgProd);
-           * BufferedImage ret = new
-           * BufferedImage(transparentImg.getWidth(null),
-           * transparentImg.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-           * Graphics2D bGr = ret.createGraphics();
-           * bGr.drawImage(transparentImg, 0, 0, null); bGr.dispose();
-           * 
-           * return ret;
-           */
-
-          // return renderer.renderImage(pageNumber);
-          // return document.getPage(pageNumber).convertToImage();
         }
       }
 
@@ -550,7 +610,7 @@ public class DataManager extends Observable {
           Graphics2D g = iconImage.createGraphics();
           g.drawImage(image, 0, 0, 128, (int) (128 / aspect), null);
           setImage(image, pageNumber);
-          setIcon(iconImage, pageNumber);
+   //       setIcon(iconImage, pageNumber);
           pageImageStatus[pageNumber] = 1; // loading
           setChanged();// Observable Pattern: inform gui that images have
                        // changed
@@ -579,21 +639,22 @@ public class DataManager extends Observable {
 
   }
 
-  public void setIcon(BufferedImage image, int pageNum) {
-    if (pageNum >= pageIconList.length || pageNum < 0) {
-      System.out.println("Can't set icon " + pageNum + ". Must be between 1 and " + pageIconList.length + ".");
-      return;
-    }
-    pageIconList[pageNum] = image;
-
-  }
+ // public void setIcon(BufferedImage image, int pageNum) {
+ //   int numPages = this.getSize();
+ //   if (pageNum >= numPages || pageNum < 0) {
+ //     System.out.println("Can't set icon " + pageNum + ". Must be between 1 and " + numPages + ".");
+ //     return;
+ //   }
+ //   pageIconList[pageNum] = image;
+//
+//  }
 
   public void AnalyzeEvidence() {
     // TODO Auto-generated method stub
 
     // eg.loadGeneGazetteer(this.getPageWS(view.getCurrentPage()));
 
-    LayerList ll = view.getCurrentWS().getLayerList();
+    LayerList ll = currentWS.getLayerList();
     for (String layerName : ll.keySet()) {
       if (layerName.contains("Labeled table")) {
         VTable table = (VTable) ll.getLayerByName(layerName).getRep().get(0);
@@ -636,25 +697,36 @@ public class DataManager extends Observable {
     this.preprocessState = preprocessState;
   }
 
+  // TODO - Make this a static method operating in a functional way.
+  //        Might also make it a WorkingSet method, rather than a DataManager
+  //         one.
+  
   public WorkingSet mergeSelection() {
+    
     WorkingSet merged = null;
+    
     List<WorkingSet> toMerge = new ArrayList<WorkingSet>();
-    for (Object obj : view.getSelected()) {
+    
+    for (Object obj : getSelectedEls()) {
+      
       if (obj instanceof WorkingSet) {
         toMerge.add((WorkingSet) obj);
       }
+    
     }
+    
     if (toMerge.size() > 1) {
       Rectangle combined = toMerge.get(0).getBbox();
       String name = toMerge.get(0).getName() + "_MERGE";
       Set<String> tags = new HashSet<String>();
       WorkingSet parent = toMerge.get(0).getParent();
+    
       for (WorkingSet ws : toMerge) {
         combined.add(ws.getBbox());
         tags.addAll(ws.getTags());
         parent.getChildren().remove(ws);
       }
-
+      
       merged = parent.createChild(name, combined);
       for (String tag : tags) {
         merged.addTag(tag);
@@ -667,9 +739,9 @@ public class DataManager extends Observable {
     WorkingSet top = new WorkingSet(null, "document");
     top.setFilename(this.getHeadWorkingSet().getFilename());
     reloadWorkingSets(this.getHeadWorkingSet(), top);
-    int page = view.getCurrentPage();
+    int page = 1; // KLUDGE - view.getCurrentPage();
     this.setHeadWorkingSet(top);
-    this.view.setCurrentWS(top.getChildren().get(page - 1));
+    currentWS = top.getChildren().get(page - 1);
 
   }
 

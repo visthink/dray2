@@ -6,9 +6,12 @@ import java.awt.Image;
 //import java.awt.image.ImageProducer;
 
 public class DocumentElement {
-	private Image sourceImage;
-	public int x1InSource, y1InSource, x2InSource, y2InSource;
+  
+	private final Image sourceImage;
+	public  final int x1InSource, y1InSource, x2InSource, y2InSource;
+	
 	private String value;
+	
 	public DocumentElement(Image src,int x1,int y1,int x2,int y2){
 		sourceImage = src;
 		x1InSource = x1;
@@ -17,7 +20,7 @@ public class DocumentElement {
 		y2InSource = y2; 
 	}
 	
-	public Image getImage(){
+	public Image sourceImage(){
 		return sourceImage;
 	}
 
@@ -28,7 +31,5 @@ public class DocumentElement {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
-
 
 }

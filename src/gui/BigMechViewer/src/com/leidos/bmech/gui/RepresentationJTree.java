@@ -12,12 +12,14 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import com.leidos.bmech.model.Layer;
 import drae.j.VisualElement.VText;
+import drae.j.VisualElement.El;
 
 public class RepresentationJTree extends JTree {
 	private static final long serialVersionUID = -6900161300006440929L;
 	
 	RepresentationJTree pthis;
 	ViewerApp app;
+	
 	public boolean wsChangedAlready = false;
 	public RepresentationJTree(ViewerApp app){
 		super(new RepTreeNode("No Document Loaded"));
@@ -33,11 +35,11 @@ public class RepresentationJTree extends JTree {
             	pathList.remove(0);//get rid of the root node
             	Object obj = selectedNode.getUserObject();
             	
-            	List<Object> elList = new ArrayList<Object>();
+            	List<El> elList = new ArrayList<El>();
             	if(obj!=null){
-            		pthis.app.getView().getCurrentWS().getLayerList().getElsUnder(elList, obj);
+            		pthis.app.getDataManager().getCurrentWS().getLayerList().getElsUnder(elList, obj);
 	            }
-            	pthis.app.getView().setSelected(elList);
+            	pthis.app.getDataManager().setSelectedEls(elList);
             	pthis.app.canvas.repaint();
             	
             }
@@ -48,8 +50,9 @@ public class RepresentationJTree extends JTree {
 		RepTreeNode top = new RepTreeNode("Layers");
 		DefaultTreeModel model = new DefaultTreeModel(top);		
 
-		for(Layer layer : app.getView().getCurrentWS().getLayerList().values()){
-			RepTreeNode layerNode = new RepTreeNode(layer.getName());
+	//	for(Layer layer : app.getView().getCurrentWS().getLayerList().values()){
+	    for(Layer layer : app.getDataManager().getCurrentWS().getLayerList().values()){
+	        	RepTreeNode layerNode = new RepTreeNode(layer.getName());
 			top.add(layerNode);
 			addObject(layer.getRep(), layerNode);
 		}		

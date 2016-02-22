@@ -100,23 +100,23 @@ import drae.j.VisualElement.VPage;
  */
 public class ViewerApp implements Observer, ActionListener {
 
-	public JFrame frame;
-	DocumentCanvas canvas;
+	public JFrame        frame;
+	DocumentCanvas       canvas;
 	public CheckBoxList  layerCheckList;
 	// private int currentIndex=-1;
-	JTextArea textArea;
+	JTextArea            textArea;
 	@SuppressWarnings("rawtypes")
-	JList pagePickerList;
+	JList                     pagePickerList;
 	private CanvasButtonPanel canvasButtonPanel;
-	private DataManager dataManager;
-	JTree visualTree;
-	WorkingSetJTree workingSetTree;
-	RepresentationJTree repTree;
-	JTabbedPane tabbedPane;
-	JSlider offsetSliderH;
-	JSlider offsetSliderV;
+	private DataManager       dataManager;
+	JTree                     visualTree;
+	WorkingSetJTree           workingSetTree;
+	RepresentationJTree       repTree;
+	JTabbedPane               tabbedPane;
+	JSlider                   offsetSliderH;
+	JSlider                   offsetSliderV;
 //	private boolean wsChangedAlready = false;
-	private List<Task> taskHistory;
+	private List<Task>        taskHistory;
 
 	/**
 	 * Launch the application.
@@ -139,7 +139,7 @@ public class ViewerApp implements Observer, ActionListener {
 						window.frame.setVisible(true);
 							if(cmd.hasInput()){
 								window.getDataManager().setPdfFile(cmd.getFile());
-								window.getDataManager().getView().setCurrentPage(1);
+								window.getDataManager().setCurrentPage(1);
 								window.refreshPageIconList();
 								window.refreshLayerList();
 								window.workingSetTree.reload();
@@ -182,7 +182,7 @@ public class ViewerApp implements Observer, ActionListener {
 				window.frame.setVisible(true);
 				if(cmd.hasInput()){
 					window.getDataManager().setPdfFile(cmd.getFile());
-					window.getDataManager().getView().setCurrentPage(1);
+					window.getDataManager().setCurrentPage(1);
 					window.refreshPageIconList();
 					window.refreshLayerList();
 					window.workingSetTree.reload();
@@ -203,7 +203,7 @@ public class ViewerApp implements Observer, ActionListener {
 	 */
 	public ViewerApp() {
 		dataManager = new DataManager();
-		dataManager.getView().setGui(this);
+	//	dataManager.getView().setGui(this);
 		dataManager.addObserver(this);
 		//dataManager.initializeData();
 		initialize();
@@ -282,35 +282,8 @@ public class ViewerApp implements Observer, ActionListener {
 
 				}
 			}
-			/*public void mouseExited(MouseEvent e) {
-				for (Layer layer : dataManager.getLayerList().values()){
-					//layer.setShouldHighlight(false);
-					canvas.repaint();
-				}
-				currentIndex = -1;
-			}
-			*/
 		});
-/*
-		
-		layerCheckList.addMouseMotionListener(new MouseAdapter() {
-			public void mouseMoved(MouseEvent e) {
-				int index = layerCheckList.locationToIndex(e.getPoint());
-				if (index != currentIndex){
-					//dataManager.getLayerList().getLayerByIndex(index).setShouldHighlight(true);
-					canvas.repaint();
-					currentIndex = index;
-				}
-			}
-		});
-*/
-/*
-		for (Layer layer : dataManager.getLayerList().asList()){
-			JCheckBox tmp = new JCheckBox(layer.getName());
-			tmp.setSelected(true);
-			model.addElement(tmp);
-			System.out.println(layer.getName() + "/" + dataManager.getLayerList().asList().size());
-		}*/
+
 		//JCheckBox test = model.elementAt(0);
 		//tabbedPane.addTab("Elements", list);
 		JSplitPane exploreSplitPane = new JSplitPane();
@@ -327,7 +300,7 @@ public class ViewerApp implements Observer, ActionListener {
 			public void mousePressed(MouseEvent e) {
 				int index = pagePickerList.getSelectedIndex();
 				if (index != -1) {
-					dataManager.getView().setCurrentPage(index+1);
+					dataManager.setCurrentPage(index+1);
 					viewWSUpdated();
 
 				} 
@@ -342,21 +315,24 @@ public class ViewerApp implements Observer, ActionListener {
 
 		/* VISUAL TREE */
 		visualTree = new JTree(new DefaultMutableTreeNode("No Document Loaded"));
+		
 		//refreshLayerList();
 		JScrollPane treeView = new JScrollPane(visualTree);	
+		
 		visualTree.setRootVisible(false);
+
 		visualTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
-            	getView().getSelected().clear();
-            	TreePath[] selectedNodes = visualTree.getSelectionPaths();
-            	if(selectedNodes == null) return;
-            	for(TreePath path : selectedNodes){
-            		if(((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject() instanceof El)
-            		getView().getSelected().add((El)((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject());
-            	}
-               	canvas.repaint();
-
+              List<El> selectedEls = getDataManager().getSelectedEls();
+              selectedEls.clear();
+              TreePath[] selectedNodes = visualTree.getSelectionPaths();
+              if (selectedNodes == null) return;
+              for (TreePath path : selectedNodes) {
+                 if (((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject() instanceof El)
+            		selectedEls.add((El)((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject());
+              };
+              canvas.repaint();
             }
         });
 		
@@ -439,16 +415,6 @@ public class ViewerApp implements Observer, ActionListener {
 		      }
 		});
 		
-		/*
-		dataManager.setPdfFile(new File("resources/corpora/wnt-pv/008_11_pv.pdf"));
-		workingSetTree.reload();
-		refreshPageIconList();	
-		this.refreshLayerList();
-		this.refreshLayerChecklist();
-		dataManager.getView().setCurrentWS(dataManager.getPageWS(1));
-		repTree.reload();
-		viewWSUpdated();
-		*/
 		if(dataManager.getVDocument()!=null){
 			List pages = (List)dataManager.getVDocument().getItems();
 			VPage page = (VPage)pages.get(0);//dataManager.getCurrentPage());
@@ -527,7 +493,7 @@ public class ViewerApp implements Observer, ActionListener {
                 		System.out.println("Loading pdf and working sets from json file" + fc.getSelectedFile());
                 		Doc.restoreWSfromOverlay(getDataManager(), fc.getSelectedFile());
                 	}
-                	dataManager.getView().setCurrentPage(1);
+                	dataManager.setCurrentPage(1);
                 	refreshPageIconList();
                 	refreshLayerList();
                 	workingSetTree.reload();
@@ -630,7 +596,7 @@ public class ViewerApp implements Observer, ActionListener {
 	private void refreshPageIconList(){
 		List<JPanel> pageArray = new ArrayList<JPanel>();
 		
-		for(int i=0; i<dataManager.getPageIconList().length; i++){
+		for (int i=0; i<dataManager.getSize(); i++) {
 			JPanel pagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	        pagePanel.add(new JLabel(""+(i+1), new ImageIcon(dataManager.getPageIcon(i+1)), JLabel.CENTER));
 	        pageArray.add(pagePanel);
@@ -642,15 +608,12 @@ public class ViewerApp implements Observer, ActionListener {
 	public void viewWSUpdated(){
 		refreshLayerList();
 		refreshLayerChecklist();
-		this.canvasButtonPanel.setQuickTags(WorkingSet.getSuggestedTags(this.getView().getCurrentWS().getTags()));
+		DataManager dm = getDataManager();
+		WorkingSet currentWS = dm.getCurrentWS();
+		this.canvasButtonPanel.setQuickTags(WorkingSet.getSuggestedTags(currentWS.getTags()));
 		this.repTree.reload();
-//		wsChangedAlready = true;
 		workingSetTree.refresh();
-//		wsChangedAlready = false;		
-		frame.setTitle(dataManager.getPdfFile().getName() + " - " + getView().getCurrentWS().getName());
-		//refreshLayerList();
-		//refreshLayerChecklist();
-		//frame.pack();
+		frame.setTitle(dm.getPdfFile().getName() + " - " + currentWS.getName());
 		canvas.repaint();
 	}
 	
@@ -695,7 +658,7 @@ public class ViewerApp implements Observer, ActionListener {
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode("WorkingSet");
 		DefaultTreeModel model = new DefaultTreeModel(top);
 		
-		for(Layer layer : getView().getCurrentWS().getLayerList().values()){
+		for(Layer layer : getDataManager().getCurrentWS().getLayerList().values()){
 			
 			DefaultMutableTreeNode subNode = new DefaultMutableTreeNode(layer.getName());
 			top.add(subNode);
@@ -717,11 +680,14 @@ public class ViewerApp implements Observer, ActionListener {
 	 * @param dragRectDescaled the rectangle that was drawn on the canvas
 	 */
 	public void rectangleDrawn(Rectangle2D dragRectDescaled) {
-		List<El> els = dataManager.getElsIn(this.getView().getCurrentPage(), dragRectDescaled);//getView().getCurrentWS().getElsIn(dragRectDescaled);
-		if(!els.isEmpty()){
+	  
+	  DataManager dm = getDataManager();
+	  List<El> els = dm.getElsIn(dm.getCurrentPage(), dragRectDescaled);
 
-			getView().getSelected().clear();
-			getView().getSelected().addAll(els);
+		if(!els.isEmpty()){
+            List<El> selectedEls = dm.getSelectedEls();
+			selectedEls.clear();
+			selectedEls.addAll(els);
 			selectedChanged();
 			if(isQuickTagEnabled()){
 				insertSelectedAsWS(getQuickTag());
@@ -776,7 +742,7 @@ public class ViewerApp implements Observer, ActionListener {
 		for (@SuppressWarnings("rawtypes")
 		Enumeration e = ((DefaultMutableTreeNode)visualTree.getModel().getRoot()).depthFirstEnumeration(); e.hasMoreElements();) {
 		    DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
-		    if (getView().getSelected().contains(node.getUserObject())) {
+		    if (getDataManager().getSelectedEls().contains(node.getUserObject())) {
 		        paths.add(new TreePath(node.getPath()));
 		    }
 		}
@@ -790,35 +756,38 @@ public class ViewerApp implements Observer, ActionListener {
 	public void insertSelectedAsWS(TypeTag tag){
 		insertSelectedAsWS(tag.name());
 	}
+	
 	public void insertSelectedAsWS(String tag){
-    	WorkingSet added = getDataManager().createWSFromSel();
-    	appendToLog("Creating new working set with tag: " + tag);
+	  DataManager dm = getDataManager();
+      WorkingSet added = dm.createWSFromSel();
+      appendToLog("Creating new working set with tag: " + tag);
 
-    	//added.setName(tag + (dataManager.getView().getCurrentWS().getChildrenWithTag(tag).size()+1));
-    	added.setName(tag +" "+ added.getItems().get(0).getText().toString().concat("      ").substring(0, 6).trim());
-    	added.addTag(tag.toLowerCase());
-    	insertWS( added);
-    	getView().getCurrentWS().normalize();
-    	taskHistory.add(new Task (TaskType.ADD_WS, added));
-    	//getView().setCurrentWS(added);
+      //added.setName(tag + (dataManager.getView().getCurrentWS().getChildrenWithTag(tag).size()+1));
+      added.setName(tag +" "+ added.getItems().get(0).getText().toString().concat("      ").substring(0, 6).trim());
+      added.addTag(tag.toLowerCase());
+      insertWS(added);
+      dm.getCurrentWS().normalize();
+      taskHistory.add(new Task (TaskType.ADD_WS, added));
+      //getView().setCurrentWS(added);
+      dm.setCurrentWS(added);
     	
-    	//viewWSUpdated();
-    	workingSetTree.reload();
-    	this.viewWSUpdated();
-    	reloadRepTree();   	
+      //viewWSUpdated();
+      workingSetTree.reload();
+      this.viewWSUpdated();
+      reloadRepTree();   	
 	}
 	
 
 	
 	
 	public void insertWS(WorkingSet added){
-		workingSetTree.insertWorkingSetNode(getView().getCurrentWS(), added);
+		workingSetTree.insertWorkingSetNode(getDataManager().getCurrentWS(), added);
 	}
 	
 	
-	public DataManagerView getView(){
-		return dataManager.getView();
-	}
+//	public DataManagerView getView(){
+//		return dataManager.getView();
+//	}
 
 	public WorkingSetJTree getWSTree(){
 		return workingSetTree;
@@ -907,14 +876,18 @@ public class ViewerApp implements Observer, ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-		if("go_up".equals(arg0.getActionCommand())){
-        	getView().setCurrentWS(getView().getCurrentWS().getParent());
-        	viewWSUpdated();
-		} else if ("merge".equals(arg0.getActionCommand())){
-        	WorkingSet merged = getDataManager().mergeSelection();
+	  DataManager dm = getDataManager();
+	  
+      if ("go_up".equals(arg0.getActionCommand())) { 
+         dm.setCurrentWS(dm.getCurrentWS().getParent());
+         viewWSUpdated();
+	  } else if ("merge".equals(arg0.getActionCommand())){
+         WorkingSet merged = dm.mergeSelection();
         	workingSetTree.reload();
-        	getView().getSelected().clear();
-        	getView().getSelected().add(merged);
+        	List<El> selected = dm.getSelectedEls();
+        	selected.clear();
+        	//TODO @@@ Broken
+     //   	selected.add(merged); 
         	viewWSUpdated();
 		} 
 	}
@@ -922,7 +895,7 @@ public class ViewerApp implements Observer, ActionListener {
 	public void doAutoTable() {
 		
 		
-		List<WorkingSet> autoCols = dataManager.getView().getCurrentWS().AutoCols();
+		List<WorkingSet> autoCols = dataManager.getCurrentWS().AutoCols();
 		for(WorkingSet ws : autoCols){
 			appendToLog("Creating new working set with tag: " + "column");
 
@@ -930,10 +903,10 @@ public class ViewerApp implements Observer, ActionListener {
 	    	taskHistory.add(new Task (TaskType.ADD_WS, ws));
 		}
 		
-		List<WorkingSet> autoRows = dataManager.getView().getCurrentWS().AutoRows();
+		List<WorkingSet> autoRows = dataManager.getCurrentWS().AutoRows();
 		for(WorkingSet ws : autoRows){
 			appendToLog("Creating new working set with tag: " + "row");
-	    	ws.setName("ROW" + (dataManager.getView().getCurrentWS().getChildrenWithTag("row").size()+1));
+	    	ws.setName("ROW" + (dataManager.getCurrentWS().getChildrenWithTag("row").size()+1));
 			ws.addTag("row".toLowerCase());
 	    	insertWS( ws);
 	    	taskHistory.add(new Task (TaskType.ADD_WS, ws));
@@ -954,9 +927,10 @@ public class ViewerApp implements Observer, ActionListener {
 
 	public void createSeparator(Line2D line) {
 		// TODO Auto-generated method stub
-		getDataManager().addSeparator(getView().getCurrentPage(), line);
-		workingSetTree.reload();
-		viewWSUpdated();
+	  DataManager dm = getDataManager();
+	  dm.addSeparator(dm.getCurrentPage(), line);
+      workingSetTree.reload();
+      viewWSUpdated();
 		//visualTree
 	}
 

@@ -30,6 +30,7 @@ import javax.swing.SwingUtilities;
 
 import com.leidos.bmech.model.Layer;
 import com.leidos.bmech.model.WorkingSet;
+import com.leidos.bmech.model.DataManager;
 import com.leidos.bmech.view.DataManagerView;
 
 import drae.j.BoundingBox;
@@ -47,25 +48,29 @@ import drae.j.VisualElement.*;
 public class DocumentCanvas extends JPanel {
   private static final long serialVersionUID = 1L;
 
+  // These are set during construction, and then unchanged.
+  final private ViewerApp           mainApp;
+  final private DocumentCanvas      pThis;
+  final private DataManager         dataManager;
+  //final private DataManagerView     view;
+  
   List<DocumentElement>     currentlySelected;
   DocumentElement           lastSelected;
   El                        lastSelectedEl;
-  ViewerApp                 mainApp;
   private float             scale;
   boolean                   mouseDown;
   Rectangle                 dragRect;
-  DocumentCanvas            pThis;
   Point                     rightDragLast;
   boolean                   dragged;
   WorkingSet                lastWS;
   WorkingSet                resizing;
   int                       hResize;
   int                       vResize;
+  
   final static float        minScale         = 0.2f;
   final static float        maxScale         = 4.0f;
   final static int          buffer           = 20;
 
-  private DataManagerView   view;
   private boolean           retainViewZoom;
 
   /**
@@ -73,32 +78,34 @@ public class DocumentCanvas extends JPanel {
    * 
    * @param parent
    */
-  public DocumentCanvas(ViewerApp parent) {
+  public DocumentCanvas (ViewerApp parent) {
 
     setBackground(Color.WHITE);
     pThis = this;
-    retainViewZoom = false;
-    mouseDown = false;
-    mainApp = parent;
-    view = mainApp.getDataManager().getView();
-    scale = 1.0f;
+    retainViewZoom    = false;
+    mouseDown         = false;
+    mainApp           = parent;
+    scale             = 1.0f;
+    dragged           = false;
+    
+    dataManager = mainApp.getDataManager();
+ //   view        = dmv;
+    
     currentlySelected = new ArrayList<DocumentElement>();
-    dragged = false;
-    final List<Object> selectedEls = view.getSelected();
-        
+    
         
     addMouseListener(new MouseAdapter() {
 
       public void mouseClicked(MouseEvent e) {
       
-        if (noDocumentLoaded()) { return; }; // Exit if no doc loaded.
+        if (pThis.noDocumentLoaded()) { return; }; // Exit if no doc loaded.
         
-        Point clickLoc = e.getPoint(); 
+        Point clickLoc   = e.getPoint(); 
         int   clickCount = e.getClickCount();
         
-        El targetEl = mainApp.getDataManager().getElAt(scaleToCanvas(clickLoc));
+        El targetEl = dataManager.getElAt(scaleToCanvas(clickLoc));
         
-        List<WorkingSet> childrenClicked = mainApp.getDataManager().getWSAt(scaleToCanvas(clickLoc));
+        List<WorkingSet> childrenClicked = dataManager.getWSAt(scaleToCanvas(clickLoc));
 
         if (SwingUtilities.isLeftMouseButton(e)) {
 
@@ -107,8 +114,9 @@ public class DocumentCanvas extends JPanel {
           
             // only drill down if unambiguous
             for (WorkingSet clicked : childrenClicked) {
-              if (selectedEls.contains(clicked)) {
-                view.setCurrentWS(childrenClicked.get(0));
+              
+              if (dataManager.getSelectedEls().contains(clicked)) {
+                dataManager.setCurrentWS(childrenClicked.get(0));
                 mainApp.viewWSUpdated();
                 break;
               }
@@ -118,28 +126,32 @@ public class DocumentCanvas extends JPanel {
           
             Object clickedObj = null;
             if (childrenClicked.size() > 0) {
-              clickedObj = childrenClicked.get(0);
+              clickedObj = (El) childrenClicked.get(0);
             } else {
-              selectedEls.add(targetEl);
-              clickedObj = targetEl;
+              dataManager.getSelectedEls().add(targetEl);
+              clickedObj = (El) targetEl;
             }
+            // KLUDGE
+            clickedObj = (El) clickedObj;
             
             // if ctrl is pressed, don't clear the selection, just toggle the
             // clicked el
+            
+            List<El> selected = dataManager.getSelectedEls();
             if ((e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
-              if (selectedEls.contains(clickedObj)) {
-                selectedEls.remove(clickedObj);
+              if (selected.contains(clickedObj)) {
+                selected.remove(clickedObj);
               } else {
-                selectedEls.add(clickedObj);
+                selected.add((El)clickedObj);
               }
             } else {
               // clear selected and add the clicked el
-              selectedEls.clear();
-              selectedEls.add(clickedObj);
+              selected.clear();
+              selected.add((El)clickedObj);
             }
 
             mainApp.selectedChanged();
-            // }
+           
             if (lastSelectedEl != null) {
               mainApp.appendToLog(lastSelectedEl.toString());
             };
@@ -149,13 +161,15 @@ public class DocumentCanvas extends JPanel {
           boolean selectionClicked = false;
           // Object clickedObj = null;
           if (dragRect != null) {
-            Rectangle2D dragRectDescaled = new Rectangle((int) (dragRect.getX() + offX()),
-                (int) (dragRect.getY() + offY()), (int) (dragRect.getWidth()), (int) (dragRect.getHeight()));
-            if (dragRectDescaled
-                .contains( new Point((int) ((e.getX() / scale + offX())), (int) ((e.getY() / scale + offY()))))) {
+            Rectangle dragRectDescaled = new Rectangle(dragRect);
+            dragRectDescaled.translate(offset().x,offset().y);
+//            Rectangle dragRectDescaled = new Rectangle((int) (dragRect.getX() + offX()),
+//                (int) (dragRect.getY() + offY()), (int) (dragRect.getWidth()), (int) (dragRect.getHeight()));
+            if (dragRectDescaled.contains(scaleToCanvas(e.getPoint()))) {
               selectionClicked = true;
             }
           }
+          
           DocumentMenu menu;
 
           if (selectionClicked)
@@ -163,7 +177,7 @@ public class DocumentCanvas extends JPanel {
           else if (childrenClicked.size() > 0 && childrenClicked.get(0) instanceof WorkingSet) {
             menu = new DocumentMenu(mainApp, (WorkingSet) childrenClicked.get(0), targetEl);
           } else {
-            menu = new DocumentMenu(mainApp, view.getCurrentWS(), targetEl);
+            menu = new DocumentMenu(mainApp, dataManager.getCurrentWS(), targetEl);
           }
           menu.show(e.getComponent(), e.getX(), e.getY());
         }
@@ -173,6 +187,7 @@ public class DocumentCanvas extends JPanel {
       public void mousePressed(MouseEvent e) {
 
         // check if anything has been loaded
+        System.out.format("Mouse pressed.\n");
 
         if (noDocumentLoaded()) { return; }
 
@@ -180,28 +195,35 @@ public class DocumentCanvas extends JPanel {
           mouseDown = true;
           // check to see if we should be resizing a working set boundary
           // these ints are the mouse point in ws space
-          int wsX = (int) ((e.getX() / scale + offX()));
-          int wsY = (int) ((e.getY() / scale + offY()));
+          
+       //   int wsX = (int) ((e.getX() / scale + offX()));
+       //   int wsY = (int) ((e.getY() / scale + offY()));
+          Point clickLoc = scaleToCanvas(e.getPoint());
 
-          List<WorkingSet> clickedWS = mainApp.getDataManager().getWSEdgeAt(wsX, wsY);
+          List<WorkingSet> clickedWS = dataManager.getWSEdgeAt(clickLoc);
 
           if (clickedWS.size() > 0) {
-            System.out.println(view.getSelected().contains(clickedWS.get(0)));
+            
+            System.out.println(dataManager.getSelectedEls().contains(clickedWS.get(0)));
 
-            if (view.getSelected().contains(clickedWS.get(0))) {
+            if (dataManager.getSelectedEls().contains(clickedWS.get(0))) {
               resizing = clickedWS.get(0);
-              Rectangle tmp = new Rectangle(clickedWS.get(0).getBbox());
+              Rectangle tmp = new Rectangle(resizing.getBbox());
               // checkToSee vertical vs Horizontal resize
-              hResize = clickedWS.get(0).isHorizontalEdge(wsX);
-              vResize = clickedWS.get(0).isVerticalEdge(wsY);
+              hResize = resizing.isHorizontalEdge(clickLoc.x);
+              vResize = resizing.isVerticalEdge(clickLoc.y);
 
-              dragRect = new Rectangle((int) (tmp.getX() - offX()), (int) (tmp.getY() - offY()), (int) (tmp.getWidth()),
-                  (int) (tmp.getHeight()));
+              dragRect = tmp; // Offset bbox to get proper dragRect.
+              dragRect.translate(-offset().x, -offset().y);
+              
+  //            dragRect = new Rectangle((int) (tmp.getX() - offX()), (int) (tmp.getY() - offY()), (int) (tmp.getWidth()),
+  //               (int) (tmp.getHeight()));
             }
 
           } else {
-
-            dragRect = new Rectangle(new Point((int) (e.getX() / scale), (int) (e.getY() / scale)));
+            Point mouseLoc = e.getPoint();
+            dragRect = new Rectangle(scaleDown(mouseLoc));
+            
           }
         } else if (SwingUtilities.isRightMouseButton(e)) {
           rightDragLast = e.getLocationOnScreen();
@@ -214,23 +236,27 @@ public class DocumentCanvas extends JPanel {
         if (noDocumentLoaded()) { return; };
         
         if (e.getButton() == MouseEvent.BUTTON1) {
+          
           if (dragged) {
+            
             // if ctrl not pressed, clear list
 
             // translate the rectangle from screen space to VDocument space
-            Rectangle dragRectDescaled = new Rectangle((int) (dragRect.getX() + offX()),
-                (int) (dragRect.getY() + offY()), (int) (dragRect.getWidth()), (int) (dragRect.getHeight()));
+            Rectangle dragRectDescaled = new Rectangle(dragRect);
+            dragRectDescaled.translate(offset().x, offset().y);
+//            Rectangle dragRectDescaled = new Rectangle((int) (dragRect.getX() + offX()),
+//                (int) (dragRect.getY() + offY()), (int) (dragRect.getWidth()), (int) (dragRect.getHeight()));
             if (resizing == null) {
               // create new WS
               if ((e.getModifiers() & ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK) {
-                view.getSelected().clear();
+                dataManager.getSelectedEls().clear();
 
               }
-              // normalize
-              dragRectDescaled.setRect((Math.min(dragRectDescaled.getMinX(), dragRectDescaled.getMaxX())),
-                  (Math.min(dragRectDescaled.getMinY(), dragRectDescaled.getMaxY())),
-                  Math.abs(dragRectDescaled.getWidth()), Math.abs(dragRectDescaled.getHeight()));
+              // normalize to eliminate possible negative height and width.
+              dragRectDescaled = normalizeRect(dragRectDescaled);   
+              
               if (mainApp.isSplitModeEnabled()) {
+              
                 mainApp.createSeparator(new Line2D.Double(dragRectDescaled.getMinX(), dragRectDescaled.getMinY(),
                     dragRectDescaled.getX(), dragRectDescaled.getMaxY()));
                 // remember old viewport information, this will get lost when we
@@ -239,9 +265,12 @@ public class DocumentCanvas extends JPanel {
                 repaint();
 
               } else {
+                
                 mainApp.rectangleDrawn(dragRectDescaled);
+             
               }
             } else {
+              
               // resize WS using rectangle
               mainApp.rectangleDrawn(resizing, dragRectDescaled);
             }
@@ -249,38 +278,28 @@ public class DocumentCanvas extends JPanel {
           dragged = false;
           mouseDown = false;
           resizing = null;
+          
         } else if (SwingUtilities.isRightMouseButton(e)) {
-          pThis.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+          
+          pThis.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); 
         }
-
       }
-
     });
 
     addMouseWheelListener(new MouseWheelListener() {
 
       public void mouseWheelMoved(MouseWheelEvent e) {
 
-        if (mainApp.getDataManager().getVDocument() != null) {
+        if (dataManager.getVDocument() != null) {
           if (e.getWheelRotation() < 0) {
             zoomIn();
           } else {
             zoomOut();
           }
-          ;
         }
       }
+      
     });
-
-    // float newScale;
-    // newScale = Math.min(scale + 0.1f, maxScale);
-    // } else {
-    // newScale = Math.max(scale - 0.1f, minScale);
-    // }
-    // pThis.setZoom(newScale);
-    //
-    // }
-    // });
 
     addMouseMotionListener(new MouseMotionListener() {
 
@@ -291,25 +310,32 @@ public class DocumentCanvas extends JPanel {
         
         // adjust the width of the rectangle and scale
         if (SwingUtilities.isLeftMouseButton(e)) {
+          
           dragged = true;
           // check if we are resizing a WS
+          
           if (resizing != null) {
+            
             double x = dragRect.getMinX();
             double y = dragRect.getMinY();
             double h = dragRect.getHeight();
             double w = dragRect.getWidth();
-            if (pThis.hResize == 1)
+            
+            if (pThis.hResize == 1) {
               w = (e.getX() / scale - x);
+            } 
             if (pThis.hResize == -1) {
               w = dragRect.getMaxX() - (e.getX() / scale);
               x = (e.getX() / scale);
             }
-            if (pThis.vResize == 1)
+            if (pThis.vResize == 1) {
               h = (e.getY() / scale - y);
+            }
             if (pThis.vResize == -1) {
               h = dragRect.getMaxY() - (e.getY() / scale);
               y = (e.getY() / scale);
             }
+            
             // dont allow dragging inverse rectangle
             if (w > 0 && h > 0) {
               dragRect.setFrame(x, y, w, h);
@@ -336,36 +362,39 @@ public class DocumentCanvas extends JPanel {
 
       @Override
       public void mouseMoved(MouseEvent e) {
-        if (pThis.lastWS == null)
+
+        if (pThis.lastWS == null) {
           return;
-        int wsX = (int) ((e.getX() / scale + offX()));
-        int wsY = (int) ((e.getY() / scale + offY()));
-        List<WorkingSet> clickedWS = mainApp.getDataManager().getWSEdgeAt(wsX, wsY);
+        }
+        
+        Point mouseLoc = scaleToCanvas(e.getPoint());
+        
+        List<WorkingSet> clickedWS = dataManager.getWSEdgeAt(mouseLoc);
 
         if (clickedWS.size() > 0) {
-          if (view.getSelected().contains(clickedWS.get(0))) {
-            int h = clickedWS.get(0).isHorizontalEdge(wsX);
-            int v = clickedWS.get(0).isVerticalEdge(wsY);
+          
+          if (dataManager.getSelectedEls().contains(clickedWS.get(0))) {
+            WorkingSet ws = clickedWS.get(0);
+            int h = ws.isHorizontalEdge(mouseLoc.x);
+            int v = ws.isVerticalEdge(mouseLoc.y);
+            int cursorType = Cursor.DEFAULT_CURSOR;
             if (h != 0 && v == 0) {
-              pThis.setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+              cursorType = Cursor.E_RESIZE_CURSOR;
             } else if (h == 0 && v != 0) {
-              pThis.setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
+              cursorType = Cursor.N_RESIZE_CURSOR;
             } else if ((h == 1 && v == 1) || (h == -1 && v == -1)) {
-              pThis.setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
+              cursorType = Cursor.SE_RESIZE_CURSOR;
             } else if ((h == 1 && v == -1) || (h == -1 && v == 1)) {
-              pThis.setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
-            }
-
+              cursorType = Cursor.NE_RESIZE_CURSOR;
+            };
+            pThis.setCursor(new Cursor(cursorType));
+            
           }
-        } else {
-          pThis.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
-
-      }
-
-    });
-
-  }
+      } // end mouseMoved
+      
+    });} // end mouseMotionListener 
+      
 
   @Override
   public void paintComponent(Graphics g) {
@@ -374,7 +403,7 @@ public class DocumentCanvas extends JPanel {
     super.paintComponent(g);
     paintUsingVDocument(g);
     if (dragRect != null) {
-      g2.setColor(new Color(0f, 1f, 0f));
+      g2.setColor(Color.GREEN);
       g2.drawRect((int) (Math.min(dragRect.getMinX(), dragRect.getMaxX()) * scale),
           (int) (Math.min(dragRect.getMinY(), dragRect.getMaxY()) * scale), (int) (Math.abs(dragRect.width) * scale),
           (int) (Math.abs(dragRect.height) * scale));
@@ -393,17 +422,19 @@ public class DocumentCanvas extends JPanel {
    * @param g
    */
   public void paintUsingVDocument(Graphics g) {
-    Graphics2D g2;
-    g2 = (Graphics2D) g;
+   
+    Graphics2D g2 = (Graphics2D) g;
     if (noDocumentLoaded()) {
       g2.drawString("No Document Loaded", 200, 200);
       return;
     }
-    int x = mainApp.getDataManager().getOffsetX();
-    int y = mainApp.getDataManager().getOffsetY();
+    
+    int x = dataManager.getOffsetX();
+    int y = dataManager.getOffsetY();
+    
     // check if working set has changed so we can refocus if needed
-    if (view.getCurrentWS() != lastWS) {
-      lastWS = view.getCurrentWS();
+    if (dataManager.getCurrentWS() != lastWS) {
+      lastWS = dataManager.getCurrentWS();
       if (!retainViewZoom) {
         scale = (float) Math.min(getVisibleRect().getWidth() / (lastWS.getBbox().getWidth() + scale * buffer * 2),
             getVisibleRect().getHeight() / (lastWS.getBbox().getHeight() + scale * buffer * 2));
@@ -412,48 +443,57 @@ public class DocumentCanvas extends JPanel {
       dragRect = null;
       retainViewZoom = false;
     }
+    
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    @SuppressWarnings("rawtypes")
-    List pages = (List) mainApp.getDataManager().getVDocument().getItems();
-    VPage page = (VPage) pages.get(view.getCurrentPage() - 1);
+   
+    @SuppressWarnings("unchecked")
+    List<VPage> pages = (List<VPage>) dataManager.getVDocument().getItems();
+    VPage page = (VPage) pages.get(dataManager.getCurrentPage() - 1);
     BoundingBox pagebb = (BoundingBox) page.getBbox();
-    BufferedImage pageImage = mainApp.getDataManager().getPageImage(view.getCurrentPage());
+    BufferedImage pageImage = dataManager.getPageImage(dataManager.getCurrentPage());
     double factor = (double) pageImage.getWidth() / pagebb.getWidth();
+    
     // draw rectangles around child WSs
-    drawChildWSRecursive(g2, view.getCurrentWS(), 1);
+    drawChildWSRecursive(g2, dataManager.getCurrentWS(), 1);
 
     // draw image
-    for (El el : view.getCurrentWS().getItems()) {
+    for (El el : dataManager.getCurrentWS().getItems()) {
+      
       BoundingBox bb = (BoundingBox) el.getBbox();
 
-      g2.drawImage(pageImage, (int) ((bb.getMinX() - offX()) * scale), (int) ((bb.getMinY() - offY()) * scale),
-          (int) ((bb.getMaxX() - offX()) * scale), (int) ((bb.getMaxY() - offY()) * scale), (int) (bb.x * factor) + x,
-          (int) (bb.y * factor) + y, (int) ((bb.x + bb.width) * factor) + x, (int) ((bb.y + bb.height) * factor) + y,
+      g2.drawImage(pageImage, 
+          (int) ((bb.getMinX() - offX()) * scale), 
+          (int) ((bb.getMinY() - offY()) * scale),
+          (int) ((bb.getMaxX() - offX()) * scale), 
+          (int) ((bb.getMaxY() - offY()) * scale), 
+          (int) (bb.x * factor) + x,
+          (int) (bb.y * factor) + y, 
+          (int) ((bb.x + bb.width) * factor) + x, 
+          (int) ((bb.y + bb.height) * factor) + y,
           null);
     }
+    
     // draw working set and El boxes
-    if (view.getSelected() != null) {
+    if (dataManager.getSelectedEls() != null) {
       g2.setColor(new Color(0f, 1f, 0f, .3f));
-      for (Object obj : view.getSelected()) {
+      for (Object obj : dataManager.getSelectedEls()) {
+        
         if (obj != null) {
           Rectangle bb = null;
           if (obj instanceof El) {
             bb = ((BoundingBox) ((El) obj).getBbox()).getBounds();
           } else if (obj instanceof WorkingSet) {
             bb = ((WorkingSet) obj).getBboxWide();
-            // g2.setColor(((WorkingSet) obj).getColor());
           }
           if (bb != null) {
             g2.fill(new Rectangle((int) ((bb.getMinX() - offX()) * scale), (int) ((bb.getMinY() - offY()) * scale),
                 (int) (bb.getWidth() * scale), (int) (bb.getHeight() * scale)));
           }
         }
-
       }
-
     }
 
-    for (Line2D sep : mainApp.getDataManager().getPageWS(view.getCurrentPage()).getSeparators()) {
+    for (Line2D sep : mainApp.getDataManager().getPageWS(dataManager.getCurrentPage()).getSeparators()) {
 
       Graphics2D g2d = (Graphics2D) g.create();
       g2d.setColor(Color.RED);
@@ -468,7 +508,7 @@ public class DocumentCanvas extends JPanel {
 
     // List<Layer> layers = mainApp.getDataManager().getLayerList().
     Rectangle2D imageBB = new Rectangle();
-    for (Layer layer : mainApp.getDataManager().getLayerList().values()) {
+    for (Layer layer : dataManager.getLayerList().values()) {
       if (layer.isHighlight()) {
         g2.setColor(UtiliBuddy.makeTransparent(layer.getColor(), 0.1f));
 
@@ -484,7 +524,7 @@ public class DocumentCanvas extends JPanel {
         for (Map<String, Object> hm : layer.getRep()) {
           // System.out.println("Rep " + hm.keySet());
           if (hm.containsKey("File")) {
-            imageBB = mainApp.getDataManager().getBBFromImg(new File((String) hm.get("File")).getName());
+            imageBB = dataManager.getBBFromImg(new File((String) hm.get("File")).getName());
             double bee2pdfX = imageBB.getWidth() / ((Long) hm.get("imageWidth")).doubleValue();
             double bee2pdfY = imageBB.getHeight() / ((Long) hm.get("imageHeight")).doubleValue();
             if (hm.containsKey("Blobs")) {
@@ -505,7 +545,6 @@ public class DocumentCanvas extends JPanel {
         }
       }
     }
-
   }
 
   private void drawChildWSRecursive(Graphics2D g2, WorkingSet parent, int depth) {
@@ -527,21 +566,27 @@ public class DocumentCanvas extends JPanel {
     }
   }
 
+  private Point offset() {
+    Point p = lastWS.getBbox().getLocation();
+    p.translate(-buffer, -buffer);
+    return p;
+  }
+  
   private int offX() {
-    return (int) lastWS.getBbox().getX() - buffer;
+    return offset().x;
   }
 
   private int offY() {
-    return (int) lastWS.getBbox().getY() - buffer;
+    return offset().y;
   }
 
   private void setZoom(float zoom) {
     this.scale = zoom;
     @SuppressWarnings("rawtypes")
     List pages = (List) mainApp.getDataManager().getVDocument().getItems();
-    VPage page = (VPage) pages.get(view.getCurrentPage() - 1);
-    BoundingBox pagebb = (BoundingBox) page.getBbox();
-    pThis.setPreferredSize(new Dimension((int) (pagebb.getWidth() * scale), (int) (pagebb.getHeight() * scale)));
+    VPage page = (VPage) pages.get(dataManager.getCurrentPage() - 1);
+    Rectangle2D pagebb = (drae.j.BoundingBox) page.getBbox();
+    pThis.setPreferredSize(scaleUp(new Dimension((int)pagebb.getWidth(), (int)pagebb.getHeight())));
     pThis.revalidate();
     repaint();
   }
@@ -554,12 +599,7 @@ public class DocumentCanvas extends JPanel {
     setZoom(Math.max(scale - 0.1f, minScale));
   }
 
-  // if (e.getWheelRotation() < 0) {
-  // newScale = Math.min(scale + 0.1f, maxScale);
-  // } else {
-  // newScale = Math.max(scale - 0.1f, minScale);
-  // }
-
+ 
   /*
    * HELPER FUNCTIONS
    */
@@ -569,14 +609,45 @@ public class DocumentCanvas extends JPanel {
    * 
    * @param p
    */
-  private Point scaleToCanvas(Point p) {
-    return new Point((int)(p.x / scale + offX()),
-                     (int)(p.y / scale + offY()));
+  private Point scaleToCanvas (Point p) {
+    return addOffset(scaleDown(p));
+  }
+  
+  private Point scaleDown (Point p) {
+    return new Point((int)(p.x / scale), (int)(p.y / scale));
+  }
+  
+  @SuppressWarnings("unused")
+  private Point scaleUp (Point p) {
+    return new Point((int)(p.x * scale), (int)(p.y * scale));
+  }
+  
+  private Dimension scaleUp (Dimension d) {
+    return new Dimension((int)(d.width * scale), (int)(d.height * scale));
+  }
+  
+  private Point addOffset (Point p) {
+    return new Point(p.x + offset().x, p.y + offset().y);
+  }
+  
+  @SuppressWarnings("unused")
+  private Rectangle addOffset (Rectangle r) {
+    Rectangle rnew = new Rectangle(r);
+    rnew.translate(offset().x, offset().y);
+    return rnew;
+  }
+  
+  private static Rectangle normalizeRect (Rectangle r) {
+    int minX = (int) Math.min(r.getMinX(), r.getMaxX());
+    int minY = (int) Math.min(r.getMinY(), r.getMaxY());
+    int h    = (int) Math.abs(r.getHeight());
+    int w    = (int) Math.abs(r.getWidth());
+    r.setRect(minX,minY,h,w);
+    return r;
   }
   
   private boolean noDocumentLoaded () {
-    return (mainApp.getDataManager().getVDocument() == null);
+    return (mainApp.getDataManager().getVDocument() == null); 
   }
-  
-  
+    
 }

@@ -18,6 +18,7 @@ import javax.swing.JPopupMenu;
 //import com.leidos.bmech.model.Layer;
 import com.leidos.bmech.model.TypeTag;
 import com.leidos.bmech.model.WorkingSet;
+import com.leidos.bmech.model.DataManager;
 import com.leidos.bmech.view.DataManagerView;
 
 @SuppressWarnings("serial")
@@ -45,25 +46,27 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
 	final static int CURRENT_WS = 1;
 	final static int SELECTION = 2;
 	final static int OTHER_WS = 3;
-	final static String strCreateNewWS = "Create New Working Set";
-	final static String strDeleteWS = "Delete this Working Set";
-	final static String strEditTags = "Edit tags for current WS";
-	final static String strCreateTableWS = "Create table WS from selection";
+	final static String strCreateNewWS    = "Create New Working Set";
+	final static String strDeleteWS       = "Delete this Working Set";
+	final static String strEditTags       = "Edit tags for current WS";
+	final static String strCreateTableWS  = "Create table WS from selection";
 	final static String strCreateColumnWS = "Create column from selection";
 	
 	private int mode;
-	DataManagerView view;
+    DataManagerView view;
 	
 	
     @SuppressWarnings({ "static-access", "unchecked" })
+    
 	public DocumentMenu(ViewerApp p, WorkingSet ws, El el){
     	mainApp = p;
-    	view = p.getDataManager().getView();
+    	DataManager dm = p.getDataManager();
+  //  	view = p.getDataManager().getView();
     	targetWS = ws;
     	if(ws == null){
     		mode = SELECTION;
-    		targetWS = view.getCurrentWS();
-    	} else if (targetWS == view.getCurrentWS()){
+    		targetWS = dm.getCurrentWS();
+    	} else if (targetWS == dm.getCurrentWS()){
     		mode = CURRENT_WS;
     	} else mode = OTHER_WS;
     	//this.mode = mode;
@@ -73,14 +76,14 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
 	        add(upOneLevel);
 	        //only enable not parent
 	        upOneLevel.setEnabled(!targetWS.isPageLevel());
-	        		
-	        		
+	        				
 	        createWS = new JMenuItem(strCreateNewWS);
 	        createWS.addActionListener(this);
 	        add(createWS);
 	        //only enable if elements are selected
-	        createWS.setEnabled(!mainApp.getView().getSelected().isEmpty());
-        	
+	        //createWS.setEnabled(!mainApp.getView().getSelected().isEmpty());
+	        createWS.setEnabled(dm.getSelectedEls().isEmpty());
+	        	
 	        //only give option to preprocess if it hasnt been started
 	       
 	        runPreprocess = new JMenuItem("Preprocess Document");
@@ -268,7 +271,7 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
         } else if (source == deleteWS) {
         	mainApp.deleteWS(targetWS, true);      	
         } else if (source == upOneLevel) {
-        	mainApp.getView().setCurrentWS(targetWS.getParent());
+        	mainApp.getDataManager().setCurrentWS(targetWS.getParent());
         	mainApp.viewWSUpdated();
         } else if (source == runPreprocess) {
         	mainApp.getDataManager().PreprocessDocument();      	

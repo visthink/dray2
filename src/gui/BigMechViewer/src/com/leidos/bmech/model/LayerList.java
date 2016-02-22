@@ -106,28 +106,28 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void getElsUnder(List<Object> list, Object root){
+	public void getElsUnder(List<El> elList, Object root){
 		
 		if(root instanceof VText){
-			list.add((El)root);
+			elList.add((El)root);
 		} else if(root instanceof LayerList){
 			LayerList layerList = (LayerList)root;
 			for(Layer layer : layerList.values()){
-				getElsUnder(list, layer);
+				getElsUnder(elList, layer);
 			}
 		} else if(root instanceof Layer){
 			Layer layer = (Layer)root;
 			for( Map map : layer.getRep()){
-				getElsUnder(list, map);
+				getElsUnder(elList, map);
 			}	
 		} else if (root instanceof Map){
 			Map map = (Map) root;
 			for(Object obj : map.values()){
-				getElsUnder(list, obj);
+				getElsUnder(elList, obj);
 			}
 		} else if (root instanceof List<?>){
 			for(Object obj : (List) root){
-				getElsUnder(list, obj);
+				getElsUnder(elList, obj);
 			}
 		}
 	}
