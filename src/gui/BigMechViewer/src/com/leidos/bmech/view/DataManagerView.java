@@ -10,7 +10,7 @@ import java.util.List;
 import com.leidos.bmech.gui.ViewerApp;
 import com.leidos.bmech.model.DataManager;
 import com.leidos.bmech.model.WorkingSet;
-import drae.j.VisualElement.VDocument;
+//import drae.j.VisualElement.VDocument;
 import drae.j.VisualElement.VPage;
 
 // import drae.j.VisualElement.El;  // Not used?

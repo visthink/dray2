@@ -91,7 +91,7 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
 	        runPreprocess.setEnabled(false);
 	        runPreprocess.setToolTipText("Disabled for now");
 	        add(runPreprocess);
-	        runPreprocess.setEnabled(mainApp.getDataManager().getPreprocessState()<0);
+	     //   runPreprocess.setEnabled(mainApp.getDataManager().getPreprocessState()<0);
 
 	        
 	        JMenu tableMenu = new JMenu ("Table Operations");
@@ -130,7 +130,7 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
             	performEvAnalysis = new JMenuItem("Perform Evidence Analysis");
             	performEvAnalysis.addActionListener(this);
             	tableMenu.add(performEvAnalysis);
-            	performEvAnalysis.setEnabled(mainApp.getDataManager().getPreprocessState()>0);
+          //  	performEvAnalysis.setEnabled(mainApp.getDataManager().getPreprocessState()>0);
             	
         	} else if (targetWS.hasTag(TypeTag.COLUMN.name()) ||
         			targetWS.hasTag(TypeTag.ROW.name())){
@@ -274,7 +274,7 @@ public class DocumentMenu extends JPopupMenu implements ActionListener{
         	mainApp.getDataManager().setCurrentWS(targetWS.getParent());
         	mainApp.viewWSUpdated();
         } else if (source == runPreprocess) {
-        	mainApp.getDataManager().PreprocessDocument();      	
+  //      	mainApp.getDataManager().PreprocessDocument();      	
         } else if (source == editTags) {
         	TagEditDialog tagDialog = new TagEditDialog(targetWS.getTags(), targetWS.getName());
         	//showDialog returns the modified list of tags, so set tags to that

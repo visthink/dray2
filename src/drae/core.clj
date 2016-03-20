@@ -15,7 +15,7 @@
             [drae.gui :refer [run-gui populate-toys-table append-to-log]]
             [drae.producers :refer [populate-producer-table populate-layer-table]] ;; Just to ensure class creation.
             [drae.corpus :refer [corpus]]
-            )
+     )
   (:gen-class) ; rwf 2/9/16 - do we really need this?
   )
     

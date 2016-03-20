@@ -1,4 +1,5 @@
 package com.leidos.bmech.gui;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -11,15 +12,15 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.Rectangle;
+//import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Line2D;
+//import java.awt.geom.Line2D;
 //import java.awt.geom.Line2D.Double;
-import java.awt.geom.Rectangle2D;
+//import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ import com.leidos.bmech.model.DataManager;
 import com.leidos.bmech.model.Layer;
 import com.leidos.bmech.model.TypeTag;
 import com.leidos.bmech.model.WorkingSet;
-import com.leidos.bmech.view.DataManagerView;
+//import com.leidos.bmech.view.DataManagerView;
 
 import clojure.java.api.Clojure;
 import clojure.lang.IFn;
@@ -129,7 +130,7 @@ public class ViewerApp implements Observer, ActionListener {
 		if(!cmd.isGui()){
 			//Command Line Mode
 			DataManager dataManager = new DataManager();
-			dataManager.commandLine(cmd);
+		//	dataManager.commandLine(cmd);
 
 		} else {
 			EventQueue.invokeLater(new Runnable() {
@@ -159,9 +160,9 @@ public class ViewerApp implements Observer, ActionListener {
 	public void update(Observable o, Object data){
 		viewWSUpdated();
 		refreshPageIconList();
-		if(getDataManager().getPreprocessState() == 1){
-			appendToLog("Preprocessing document is complete.");
-		}
+//		if(getDataManager().getPreprocessState() == 1){
+//			appendToLog("Preprocessing document is complete.");
+//		}
 	}
 	
 	/**
@@ -174,7 +175,7 @@ public class ViewerApp implements Observer, ActionListener {
 		if(!cmd.isGui()){
 			//Command Line Mode
 			DataManager dataManager = new DataManager();
-			dataManager.commandLine(cmd);
+	//		dataManager.commandLine(cmd);
 
 		} else {
 			try {
@@ -237,13 +238,13 @@ public class ViewerApp implements Observer, ActionListener {
 		frame = new JFrame();
 		frame.setTitle("Document Viewer");//dataManager.getPdfFile().getName() + " - " + getView().getCurrentWS());
 		//frame.setBounds(100, 100, 587, 492);
-		//frame.s
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		
 		/*MENU BAR*/
 		initMenuBar();
 		
-		canvas = new DocumentCanvas(this);	
+		canvas = new DocumentCanvas(dataManager);	
+		
 		JPanel canvasPanel = new JPanel(new BorderLayout());
 		
 		JScrollPane canvasScrollPane = new JScrollPane(canvas);
@@ -364,7 +365,7 @@ public class ViewerApp implements Observer, ActionListener {
 		offsetSliderH.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
 				int value = offsetSliderH.getValue();
-				dataManager.setOffsetX(value);
+//				dataManager.setOffsetX(value);
 				canvas.repaint();
 			}
 		});
@@ -376,7 +377,7 @@ public class ViewerApp implements Observer, ActionListener {
 		offsetSliderV.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
 				int value = offsetSliderV.getValue();
-				dataManager.setOffsetY(value);
+	//			dataManager.setOffsetY(value);
 				canvas.repaint();
 			}
 		});
@@ -484,8 +485,8 @@ public class ViewerApp implements Observer, ActionListener {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
 					offsetSliderH.setValue(0);
 					offsetSliderV.setValue(0);
-					dataManager.setOffsetX(0);
-					dataManager.setOffsetY(0);
+	//				dataManager.setOffsetX(0);
+	//				dataManager.setOffsetY(0);
 					frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 	if(FilenameUtils.getExtension(fc.getSelectedFile().getName()).equalsIgnoreCase("pdf")){
                 		getDataManager().setPdfFile(fc.getSelectedFile());
@@ -598,7 +599,7 @@ public class ViewerApp implements Observer, ActionListener {
 		
 		for (int i=0; i<dataManager.getSize(); i++) {
 			JPanel pagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	        pagePanel.add(new JLabel(""+(i+1), new ImageIcon(dataManager.getPageIcon(i+1)), JLabel.CENTER));
+	//        pagePanel.add(new JLabel(""+(i+1), new ImageIcon(dataManager.getPageIcon(i+1)), JLabel.CENTER));
 	        pageArray.add(pagePanel);
 		}
         
@@ -674,38 +675,7 @@ public class ViewerApp implements Observer, ActionListener {
 	
 	
 	
-	/**
-	 * Notify the datamanager that a rectangle has been drawn on
-	 * the canvas. Called by the DocumentCanvas object
-	 * @param dragRectDescaled the rectangle that was drawn on the canvas
-	 */
-	public void rectangleDrawn(Rectangle2D dragRectDescaled) {
-	  
-	  DataManager dm = getDataManager();
-	  List<El> els = dm.getElsIn(dm.getCurrentPage(), dragRectDescaled);
-
-		if(!els.isEmpty()){
-            List<El> selectedEls = dm.getSelectedEls();
-			selectedEls.clear();
-			selectedEls.addAll(els);
-			selectedChanged();
-			if(isQuickTagEnabled()){
-				insertSelectedAsWS(getQuickTag());
-			}
-			canvas.repaint();
-		}
-	}
-	
-
-	public void rectangleDrawn(WorkingSet ws, Rectangle rect) {
-		// TODO Auto-generated method stub
-		ws.resize(rect);
-		selectedChanged();
-		this.workingSetTree.reload();
-		viewWSUpdated();
-		canvas.repaint();
-	}
-	
+		
 	public void deleteCurrentWS() {
 		
 		DefaultTreeModel model = (DefaultTreeModel) workingSetTree.getModel();
@@ -840,16 +810,16 @@ public class ViewerApp implements Observer, ActionListener {
 
 	public void AnalyzeEvidence() {
 		appendToLog("Analyzing evidence.");
-		dataManager.AnalyzeEvidence();
+//		dataManager.AnalyzeEvidence();
 		reloadRepTree();
 		
 	}
 	
-	public boolean isQuickTagEnabled(){
+	public boolean isQuickTagEnabled() {
 		return canvasButtonPanel.isQuickTagEnabled();
 	}
 	
-	public String getQuickTag(){
+	public String getQuickTag() {
 		return canvasButtonPanel.getTag();
 	}
 
@@ -925,14 +895,6 @@ public class ViewerApp implements Observer, ActionListener {
 		
 	}
 
-	public void createSeparator(Line2D line) {
-		// TODO Auto-generated method stub
-	  DataManager dm = getDataManager();
-	  dm.addSeparator(dm.getCurrentPage(), line);
-      workingSetTree.reload();
-      viewWSUpdated();
-		//visualTree
-	}
 
 	
 }

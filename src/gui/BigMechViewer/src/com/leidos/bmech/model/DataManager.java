@@ -7,7 +7,6 @@
  */
 package com.leidos.bmech.model;
 
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,15 +26,10 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
-import javax.imageio.ImageIO;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListDataListener;
 import javax.swing.ListModel;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 
 import clojure.java.api.Clojure;
 import clojure.lang.IFn;
@@ -60,20 +54,15 @@ public class DataManager extends Observable
 
   private File                     pdfFile;         // Current PDF file.
   public  VDocument                vDocument;       // Its VDocument object.
-  private BufferedImage[]          pageImageList;   // ! Move to view ! 
-  private int[]                    pageImageStatus; // ! Move to view !
-  private int                      offsetX;         // ! Move to view !
-  private int                      offsetY;         // ! Move to view !
   private WorkingSet               headWS;          // Top working set (of all working sets).
   public  WorkingSet               currentWS;       // Current working set.
   public  int                      currentPage;     // Current page.
   public  List<El>                 selectedEls;     // Currently selected elements.
 
-  private Map<String, Rectangle2D> imageBBMap;
-  // private DataManagerView          view;
+ // private Map<String, Rectangle2D> imageBBMap;
   BufferedImage                    defaultImage;
   EvidenceGatherer                 eg;
-  int                              preprocessState; // -1: not started; 0:
+ // int                              preprocessState; // -1: not started; 0:
                                                     // underway; 1: done
   List<ListDataListener> listeners;
   
@@ -81,14 +70,12 @@ public class DataManager extends Observable
     
     super();
     
-   // view = new DataManagerView(this);
-    
-    imageBBMap = new HashMap<String, Rectangle2D>();
+  //  imageBBMap = new HashMap<String, Rectangle2D>();
     defaultImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
     eg = new EvidenceGatherer();
-    preprocessState = -1;// not started
-    pageImageList   = new BufferedImage[0];
-    pageImageStatus = new int[0];
+ //   preprocessState = -1;// not started
+    listeners = new ArrayList<ListDataListener>();
+    currentPage = 0;
     
   }
 
@@ -104,6 +91,8 @@ public class DataManager extends Observable
   
   public void setSelectedEls (List<El> els) {
     selectedEls = els;
+    setChanged();
+    notifyObservers();
   }
   
   public int getCurrentPage () {
@@ -111,7 +100,18 @@ public class DataManager extends Observable
   }
   
   public void setCurrentPage (int p) {
-    currentPage = p;
+   
+   // System.out.print("Setting the page to "+p);
+    int numPages = getSize();
+    
+    if ((p >= 0) && (p <= numPages)) { // Check bounds
+       currentPage = p;
+       setChanged();
+       notifyObservers();
+    } else {
+      System.out.println("Could not set the current page.");
+    }
+    
   }
   
   // Interface ModelList methods
@@ -121,9 +121,7 @@ public class DataManager extends Observable
   }
   
   public int getSize() {
-    @SuppressWarnings("unchecked")
-    List<VPage> pages = (List<VPage>) vDocument.getItems();
-    return pages.size();
+    return this.getPages().size();
   }
   
   public WorkingSet getCurrentWS () {
@@ -132,6 +130,8 @@ public class DataManager extends Observable
   
   public void setCurrentWS (WorkingSet ws) {
     currentWS = ws;
+    setChanged();
+    notifyObservers();
   }
   
   public void addListDataListener(ListDataListener l) {
@@ -183,63 +183,65 @@ public class DataManager extends Observable
  // }
 
   public void loadFromVDocument(VDocument doc) {
-    // call clojure to populate the VDocument
     vDocument = doc;
     headWS = new WorkingSet(null, "document");
-    headWS.setFilename((String) doc.getFilename());
+  //  headWS.setFilename((String) doc.getFilename());
     currentWS = headWS;
-   //  view.setCurrentWS(headWS);
     @SuppressWarnings("rawtypes")
     List vPages = (List) vDocument.getItems();
-    //pageIconList = new BufferedImage[vPages.size()];
-    // pageImageList = new BufferedImage[vPages.size()];
-
+   
     for (int i = 0; i < vPages.size(); i++) {
       createPageWS(i);
     }
-    setPreprocessState(-1);
 
   }
 
+  /**
+   * pdfFilenameCheck
+   * @param file
+   * @return true if file passes check.
+   */
+  private boolean pdfFileCheck (File file) {
+    if (file == null) {
+      System.err.println("ERROR: PDF filename is null.");
+      return false;
+    } else if (!file.exists()) {
+      System.err.println("ERROR: PDF filename " + file + "doesn't exist.");
+      return false;
+    } else {
+      return true;
+    }
+  }
+  
   /**
    * load the page images from pdf and load the vdocument data from a closure
    * call. param lazyLoadImages -- set to true if images should only be loaded
    * when they are used
    */
   public void loadFromPdf(boolean lazyLoadImages) {
-    setPreprocessState(-1);
+    
+ //   setPreprocessState(-1);
 
-    if (pdfFile == null) {
-      System.err.println("ERROR: pdfFile is null");
-      return;
-    }
-    if (!pdfFile.exists()) {
-      System.err.println("ERROR: pdfFile doesnt exist");
-      return;
-    }
+    if (!pdfFileCheck(pdfFile)) { return; }
+    
     System.out.println(pdfFile);
-    // call clojure to populate the VDocument
+    
     vDocument = (VDocument) Doc.getVDocument(pdfFile);
+    
     headWS = new WorkingSet(null, "document");
-    try {
-      headWS.setFilename(pdfFile.getCanonicalPath().replace('\\', '/'));
-    } catch (IOException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
-   // view.setCurrentWS(headWS);
+  //  try {
+  //    headWS.setFilename(pdfFile.getCanonicalPath().replace('\\', '/'));
+  //  } 
+  //  catch (IOException e1) {
+  //    e1.printStackTrace();
+  //  } 
+    
     currentWS = headWS;
+    
     @SuppressWarnings("rawtypes")
+    
     List vPages = (List) vDocument.getItems();
-    pageImageList = new BufferedImage[vPages.size()];
-    // pageIconList = new BufferedImage[vPages.size()];
-    pageImageStatus = new int[vPages.size()];
-    for (int i = 0; i < vPages.size(); i++) {
-      pageImageStatus[i] = -1;
-      pageImageList[i] = defaultImage;
-    //  pageIconList[i] = defaultImage;
-    }
-
+   
     for (int i = 0; i < vPages.size(); i++) {
       System.out.println("Creating page ws " + i);
       createPageWS(i);
@@ -248,11 +250,14 @@ public class DataManager extends Observable
 
   }
 
+  
   private void createPageWS(int pageIndex) {
     
     @SuppressWarnings("rawtypes")
+    
     List vPages = (List) vDocument.getItems();
     VPage vPage = (VPage) vPages.get(pageIndex);
+    
     // Go through and add elements to the Working Set
     WorkingSet pageWS = headWS.createChild("page" + (pageIndex + 1));
     @SuppressWarnings("rawtypes")
@@ -267,19 +272,21 @@ public class DataManager extends Observable
           pageWS.getLayerList().addElementToLayer("images", el);
           VImage image = (VImage) el;
           File path = new File((String) image.bitmap_path);
-          imageBBMap.put(path.getName(), (BoundingBox) image.getBbox());
+     //     imageBBMap.put(path.getName(), (BoundingBox) image.getBbox());
         }
 
       }
     }
-    // pageWS.setImage(pageImage);
+
     pageWS.setPage(pageIndex + 1);
   }
 
   public LayerList getLayerList() {
-    if (currentWS == null)
+    if (currentWS == null) {
       return null;
-    return currentWS.getLayerList();
+    } else {
+      return currentWS.getLayerList();
+    }
   }
 
   public File getPdfFile() {
@@ -301,22 +308,7 @@ public class DataManager extends Observable
     setPdfFile(pdfFile, false);
   }
 
- //public BufferedImage[] getPageIconList() {
- //  return pageIconList;
- // }
 
- // public void setPageIconList(BufferedImage[] pageIconList) {
- //   this.pageIconList = pageIconList;
- // }
-
- // @SuppressWarnings("unused")
- // private void runBEE() {
- //   /*
- //    * String dataSubDir =
- //    * FilenameUtils.removeExtension(pdfFile.getAbsolutePath()) + ".xml_data";
- //    * System.out.println(dataSubDir);
- //    */
- // }
 
   /**
    * Get a reference to the drae.j.VDocument instance currently being used by
@@ -436,21 +428,6 @@ public class DataManager extends Observable
     return ret;
   }
 
-  public int getOffsetX() {
-    return offsetX;
-  }
-
-  public void setOffsetX(int offsetX) {
-    this.offsetX = offsetX;
-  }
-
-  public int getOffsetY() {
-    return offsetY;
-  }
-
-  public void setOffsetY(int offsetY) {
-    this.offsetY = offsetY;
-  }
 
   /*
    * public List<El> getSelected(){ return selectedEls; }
@@ -505,196 +482,34 @@ public class DataManager extends Observable
    *          the working set to be deleted
    */
   public void deleteWS(WorkingSet ws) {
-    // check if null
-    if (ws == null)
-      return;
-    // check if we're trying to delete a page
-    if (ws.getParent() == headWS)
-      return;
-    // check if we're deleting something above the current workingset
-    if (currentWS == ws || currentWS.hasAncestor(ws)) {
-      currentWS = ws.getParent();
-      currentWS.getChildren().remove(ws);
-    } else { // just delete it
-      ws.getParent().getChildren().remove(ws);
+
+    if ((ws != null) && (ws.getParent() != headWS)) {
+
+      // check if we're deleting something above the current workingset
+      if (currentWS == ws || currentWS.hasAncestor(ws)) {
+        currentWS = ws.getParent();
+        currentWS.getChildren().remove(ws);
+      } else { // just delete it
+        ws.getParent().getChildren().remove(ws);
+      }
     }
   }
 
-  public Rectangle2D getBBFromImg(String filename) {
-    return this.imageBBMap.get(filename);
-  }
-
-  /**
-   * Get access to the DataManagerView class associated with this instance of
-   * DataManager
-   * 
-   * @return DataManagerView
-   */
-  //public DataManagerView getView() {
-  //  return view;
- // }
 
   public WorkingSet getPageWS(int page) {
-    if (page < 1 || page > getHeadWorkingSet().getChildren().size()) {
+    List<WorkingSet> pageWSets = getHeadWorkingSet().getChildren();
+    if (page < 1 || page > pageWSets.size()) {
       return null;
     }
-    return getHeadWorkingSet().getChildren().get(page - 1);
+    return pageWSets.get(page);
   }
 
-  public BufferedImage getPageImage(int pageNumber) {
-    if (pageNumber > pageImageList.length || pageNumber < 1) {
-      System.out.println("Can't get page " + pageNumber + ". Must be between 1 and " + pageImageList.length + ".");
-      return null;
-    }
-    if (pageImageStatus[pageNumber - 1] == -1) {
-      try {
-        loadImage(pageNumber - 1);
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      return defaultImage;
-    } else if (pageImageStatus[pageNumber - 1] == 0) {
-      return defaultImage;
-    } else
-      return pageImageList[pageNumber - 1];
-  }
 
-  public BufferedImage getPageIcon(int pageNumber) {
-    int numPages = this.getSize();
-    if (pageNumber > numPages || pageNumber < 1) {
-      System.out.println("Can't get icon " + pageNumber + ". Must be between 1 and " + numPages + ".");
-      return null;
-    }
-    if (pageImageStatus[pageNumber - 1] == -1) {
-      try {
-        loadImage(pageNumber - 1);
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      return defaultImage;
-    } else if (pageImageStatus[pageNumber - 1] == 0) {
-      return defaultImage;
-    } else
-      // Return default for now -- need to fix later.
-      return defaultImage;
-      //  return pageIconList[pageNumber - 1];
-  }
 
-  private void loadImage(final int pageNumber) throws IOException {
-    pageImageStatus[pageNumber] = 0; // loading
 
-    SwingWorker<BufferedImage, Void> worker = new SwingWorker<BufferedImage, Void>() {
-      @Override
-      protected BufferedImage doInBackground() throws Exception {
-        if (Doc.useGhostscript()) {
-          return ImageIO.read(Doc.getPageImageFor(getPdfFile(), pageNumber + 1));
-        } else {
-          PDDocument document = PDDocument.load(getPdfFile());
-          // List<PDPage> pageList =
-          // document.getDocumentCatalog().getAllPages();
-          // PDPageTree pgtre.getPage(pageIndex)
-          PDFRenderer renderer = new PDFRenderer(document);
-          return renderer.renderImageWithDPI(pageNumber, 600);
-        }
-      }
-
-      // Can safely update the GUI from this method.
-      protected void done() {
-        BufferedImage image;
-        try {
-          image = get();
-          double aspect = (double) image.getWidth() / (double) image.getHeight();
-          BufferedImage iconImage = new BufferedImage(128, (int) (128 / aspect), BufferedImage.TYPE_INT_RGB);
-          Graphics2D g = iconImage.createGraphics();
-          g.drawImage(image, 0, 0, 128, (int) (128 / aspect), null);
-          setImage(image, pageNumber);
-   //       setIcon(iconImage, pageNumber);
-          pageImageStatus[pageNumber] = 1; // loading
-          setChanged();// Observable Pattern: inform gui that images have
-                       // changed
-          notifyObservers();
-        } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        } catch (ExecutionException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-
-      }
-
-    };
-
-    worker.execute();
-  }
-
-  public void setImage(BufferedImage image, int pageNum) {
-    if (pageNum >= pageImageList.length || pageNum < 0) {
-      System.out.println("Can't set page " + pageNum + ". Must be between 1 and " + pageImageList.length + ".");
-      return;
-    }
-    pageImageList[pageNum] = image;
-
-  }
-
- // public void setIcon(BufferedImage image, int pageNum) {
- //   int numPages = this.getSize();
- //   if (pageNum >= numPages || pageNum < 0) {
- //     System.out.println("Can't set icon " + pageNum + ". Must be between 1 and " + numPages + ".");
- //     return;
- //   }
- //   pageIconList[pageNum] = image;
-//
-//  }
-
-  public void AnalyzeEvidence() {
-    // TODO Auto-generated method stub
-
-    // eg.loadGeneGazetteer(this.getPageWS(view.getCurrentPage()));
-
-    LayerList ll = currentWS.getLayerList();
-    for (String layerName : ll.keySet()) {
-      if (layerName.contains("Labeled table")) {
-        VTable table = (VTable) ll.getLayerByName(layerName).getRep().get(0);
-        eg.gatherEvidence(table);
-
-      }
-    }
-
-  }
-
-  public void PreprocessDocument() {
-    setPreprocessState(0);// underway
-    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-      protected Void doInBackground() throws Exception {
-        eg.loadGeneGazetteer(getHeadWorkingSet());
-        return null;
-
-      }
-
-      protected void done() {
-
-        setPreprocessState(1);
-        setChanged();
-        notifyObservers();
-      }
-    };
-    worker.execute();
-
-  }
 
   public static void main(String[] args) {
 
-  }
-
-  public int getPreprocessState() {
-    return preprocessState;
-  }
-
-  public void setPreprocessState(int preprocessState) {
-    this.preprocessState = preprocessState;
   }
 
   // TODO - Make this a static method operating in a functional way.
@@ -737,7 +552,7 @@ public class DataManager extends Observable
 
   public void reloadWorkingSets() {
     WorkingSet top = new WorkingSet(null, "document");
-    top.setFilename(this.getHeadWorkingSet().getFilename());
+   // top.setFilename(this.getHeadWorkingSet().getFilename());
     reloadWorkingSets(this.getHeadWorkingSet(), top);
     int page = 1; // KLUDGE - view.getCurrentPage();
     this.setHeadWorkingSet(top);
@@ -768,47 +583,20 @@ public class DataManager extends Observable
   }
 
   @SuppressWarnings("unchecked")
+  
   public void addSeparator(int page, Line2D line) {
-    // TODO Auto-generated method stub
+    
     this.getPageWS(page).addSeparator(line);
     ((List<VPage>) getVDocument().getItems()).get(page - 1).splitAtSeparator(line);
     this.reloadWorkingSets();
+    
+    setChanged();
+    notifyObservers();
 
   }
 
   public List<Line2D> getSeparators(int page) {
     return this.getPageWS(page).getSeparators();
-  }
-
-  public void commandLine(CommandLineValues cmd) {
-    if (cmd.isHelp())
-      return;
-    if (!cmd.hasInput()) {
-      return;
-    }
-    if (cmd.getFile().isDirectory()) {
-      loadClojure();
-      System.out.println("Converting all files in directory " + cmd.getFile());
-
-      for (String subStr : cmd.getFile().list()) {
-        subStr = cmd.getFile().getAbsolutePath() + "/" + subStr;
-        File sub = new File(subStr);
-        if (sub.exists() && sub.getName().endsWith(".pdf")) {
-          processRepTablesInFile(sub, cmd.getOutFile());
-        }
-      }
-    } else if (cmd.getFile().exists() && cmd.getFile().getName().endsWith(".pdf")) {
-      loadClojure();
-      processRepTablesInFile(cmd.getFile(), cmd.getOutFile());
-    } else {
-      System.out.println("No file found: " + cmd.getFile());
-      Path currentRelativePath = Paths.get("");
-      String s = currentRelativePath.toAbsolutePath().toString();
-      System.out.println("Use absolute path or relative path from:");
-      System.out.println(s);
-      printHelp();
-    }
-
   }
 
   private void processRepTablesInFile(File pdf, File out) {
@@ -850,26 +638,9 @@ public class DataManager extends Observable
 
       }
     }
-    // for(Entry prod : (List<Entry>)Table.allLayerProducers()){
-    // System.out.println(prod.key + " " + prod.doc);
-    // }
+
 
   }
 
-  private void printHelp() {
-    System.out.println("Big Mechanism Table Extraction Interface");
-    System.out.println("Usage: java -jar draegui.jar <options>");
-    System.out.println("java -jar draegui.jar                    launch GUI.");
-    System.out.println("java -jar draegui.jar -h                 print this message");
-    System.out.println("java -jar draegui.jar <filename.pdf>     save rep info");
-    System.out.println("java -jar draegui.jar <directory>        save rep info for all valid pdfs");
-  }
 
-  private void loadClojure() {
-    System.out.println("loading clojure core");
-    IFn require = Clojure.var("clojure.core", "require");
-    require.invoke(Clojure.read("drae.core"));
-    IFn populateFn = Clojure.var("drae.core", "populate-gui-tables");
-    populateFn.invoke();
-  }
 }

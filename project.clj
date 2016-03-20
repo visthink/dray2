@@ -25,10 +25,12 @@
   :min-lein-version "2.0.0"
   ; :pedantic? :warn ;; Warn on library version conflicts
   :dependencies 
-     [[org.clojure/clojure "1.6.0"]
+     [[org.clojure/clojure "1.8.0"]
       [org.clojure/data.xml "0.0.8"]
       [org.clojure/data.json "0.2.6"]
-      [pjstadig/humane-test-output "0.7.0"]
+      [junit/junit "4.12"]
+   ;   [com.oracle/javafx-runtime "2.2.0"]
+      [pjstadig/humane-test-output "0.7.1"]
       [commons-io/commons-io "2.4"]
       [xerces/xercesImpl "2.11.0"] ;; Test
       [org.apache.pdfbox/pdfbox "2.0.0-SNAPSHOT"]
@@ -36,14 +38,14 @@
       [org.clojure/tools.logging "0.3.1"]
       [me.raynes/conch "0.8.0"]
       [seesaw "1.4.5"]
-      [clj-http-lite "0.2.1"]
-      [org.biopax.paxtools/paxtools-core "4.3.1-SNAPSHOT"]
-      [org.biopax.paxtools/pattern "1.1.1-20141208.200840-3" :exclusions [org.biopax.paxtools/paxtools-core]]
-      [incanter "1.5.4"]
+      [clj-http-lite "0.3.0"]
+      [org.biopax.paxtools/paxtools-core "4.3.1"]
+      [org.biopax.paxtools/pattern "4.3.1"]; :exclusions [org.biopax.paxtools/paxtools-core]]
+      [incanter "1.9.0"]
       [org.scala-lang/scala-library "2.11.6"]
       [args4j/args4j "2.0.25"]
       [com.google.protobuf/protobuf-java "2.6.1"]
-      [org.jsoup/jsoup "1.7.3"]
+      [org.jsoup/jsoup "1.8.3"]
       [javax.json/javax.json-api "1.0"]
       [org.glassfish/javax.json "1.0.4"]
       [junit/junit "4.12"]
@@ -90,7 +92,7 @@
  
   ;; Other Java options that should be cross-platform
   
-  :javac-options ["-target" "1.7" "-source" "1.7"]
+  ; :javac-options ["-target" "1.8" "-source" "1.8"]
   :java-source-paths ["src/gui/BigMechViewer/src"]
 
   ;; Compilation: We first precompile many of the drae.j.* classes, then 

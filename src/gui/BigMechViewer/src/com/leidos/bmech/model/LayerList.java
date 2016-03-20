@@ -3,7 +3,6 @@
  */
 package com.leidos.bmech.model;
 
-//import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,13 +12,13 @@ import com.leidos.bmech.gui.UtiliBuddy;
 import drae.j.VisualElement.El;
 import drae.j.VisualElement.VText;
 
-public class LayerList extends LinkedHashMap<String, Layer>{
+public class LayerList extends LinkedHashMap<String, Layer> {
 
 	private static final long serialVersionUID = 3668368849271492741L;
 
 	// CONSTRUCTOR
 
-	public LayerList(WorkingSet p) {
+	public LayerList (WorkingSet p) {
 	  super();
 	  addLayer(new Layer("all"));
 	}
@@ -33,7 +32,7 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 	
 	// SETTERS
 	
-	public void addLayer(Layer layer) {
+	public void addLayer (Layer layer) {
 	  layer.setColor(UtiliBuddy.getAColor(this.size()));
 	  put(layer.getName(), layer);	
 	}
@@ -49,9 +48,17 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 	  }		
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	
-	public Object getObjectOnPath(Object root, List<TreeNode> path) {
+	static boolean nodeNameEquals (Map<String,?> map, String s) {
+	  if (s.equals(map.get("name")) ||
+	      s.equals(map.get(":name"))) {
+	    return true;
+ 	  } else {
+	    return false;
+	  } 
+	}
+
+	@SuppressWarnings("unchecked")
+  public Object getObjectOnPath(Object root, List<TreeNode> path) {
 		
 		Object ret = null;
 		String nodeName = path.get(0).toString();
@@ -62,12 +69,10 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 		} else if(root instanceof Layer){
 			Layer layer =  (Layer)root;
 			//first try to find the right representation
-			for(Map map : layer.getRep()){
-				if(nodeName.equals(map.get("name"))){
-					ret = map;
-				} else if(nodeName.equals(map.get(":name"))){
-					ret = map;
-				}
+			for(Map<String,Object> map : layer.getRep()){
+			  if (nodeNameEquals(map,nodeName)) {
+			    ret = map;
+			  };
 			}
 			if (ret == null) {//if we still haven't found it
 				int repIndex = Integer.parseInt(nodeName.split("#")[1]) -1;
@@ -75,16 +80,16 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 			}		
 		} else if (root instanceof Map) {
 			
-			Map map = (Map) root;
+			Map<String,Object> map = (Map<String,Object>) root;
 			ret = map.get(nodeName);
+			
 		} else if (root instanceof List<?>){
-			for(Object el : (List<Object>) root){
-				if(el instanceof HashMap){
-					if(nodeName.equals(((HashMap)el).get("name"))){
-						ret = el;
-					} else if(nodeName.equals(((HashMap)el).get(":name"))){
-						ret = el;
-					}
+		  
+			for(Object el : (List<Object>) root) {
+				if (el instanceof HashMap) {
+				  if (nodeNameEquals((HashMap<String,?>) el, nodeName)) {
+				    ret = el;
+				  }
 				}
 				if(el instanceof El){
 					if(el.toString().equals(nodeName)){
@@ -108,7 +113,7 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 	@SuppressWarnings("rawtypes")
 	public void getElsUnder(List<El> elList, Object root){
 		
-		if(root instanceof VText){
+		if (root instanceof VText) {
 			elList.add((El)root);
 		} else if(root instanceof LayerList){
 			LayerList layerList = (LayerList)root;
@@ -122,7 +127,7 @@ public class LayerList extends LinkedHashMap<String, Layer>{
 			}	
 		} else if (root instanceof Map){
 			Map map = (Map) root;
-			for(Object obj : map.values()){
+			for (Object obj : map.values()) {
 				getElsUnder(elList, obj);
 			}
 		} else if (root instanceof List<?>){
