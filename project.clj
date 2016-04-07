@@ -41,7 +41,7 @@
       [clj-http-lite "0.3.0"]
       [org.biopax.paxtools/paxtools-core "4.3.1"]
       [org.biopax.paxtools/pattern "4.3.1"]; :exclusions [org.biopax.paxtools/paxtools-core]]
-      [incanter "1.9.0"]
+      [incanter "1.5.7"]
       [org.scala-lang/scala-library "2.11.6"]
       [args4j/args4j "2.0.25"]
       [com.google.protobuf/protobuf-java "2.6.1"]
