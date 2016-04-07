@@ -33,11 +33,11 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
+//import javax.swing.ImageIcon; // Not used.
 //import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
+// import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -129,7 +129,7 @@ public class ViewerApp implements Observer, ActionListener {
 			return;
 		if(!cmd.isGui()){
 			//Command Line Mode
-			DataManager dataManager = new DataManager();
+		//	DataManager dataManager = new DataManager(); // not used.
 		//	dataManager.commandLine(cmd);
 
 		} else {
@@ -174,7 +174,7 @@ public class ViewerApp implements Observer, ActionListener {
 			return null;
 		if(!cmd.isGui()){
 			//Command Line Mode
-			DataManager dataManager = new DataManager();
+	//		DataManager dataManager = new DataManager(); // not used.
 	//		dataManager.commandLine(cmd);
 
 		} else {
@@ -364,7 +364,7 @@ public class ViewerApp implements Observer, ActionListener {
 		offsetSliderH.setMajorTickSpacing(10);
 		offsetSliderH.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
-				int value = offsetSliderH.getValue();
+//				int value = offsetSliderH.getValue();
 //				dataManager.setOffsetX(value);
 				canvas.repaint();
 			}
@@ -376,7 +376,7 @@ public class ViewerApp implements Observer, ActionListener {
 		offsetSliderV.setMajorTickSpacing(10);
 		offsetSliderV.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
-				int value = offsetSliderV.getValue();
+	//			int value = offsetSliderV.getValue();
 	//			dataManager.setOffsetY(value);
 				canvas.repaint();
 			}

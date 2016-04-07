@@ -8,10 +8,10 @@
 package com.leidos.bmech.model;
 
 import java.awt.Point;
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+//import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 import java.awt.Rectangle;
@@ -20,19 +20,19 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+//import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+//import java.nio.file.Path;
+//import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import javax.swing.SwingWorker;
+//import javax.swing.SwingWorker;
 import javax.swing.event.ListDataListener;
 import javax.swing.ListModel;
 
-import clojure.java.api.Clojure;
-import clojure.lang.IFn;
+//import clojure.java.api.Clojure;
+//import clojure.lang.IFn;
 
 import com.leidos.bmech.analysis.EvidenceGatherer;
 //import com.leidos.bmech.view.DataManagerView;
@@ -44,7 +44,7 @@ import drae.j.VisualElement.El;
 import drae.j.VisualElement.VDocument;
 import drae.j.VisualElement.VImage;
 import drae.j.VisualElement.VPage;
-import drae.j.VisualElement.VTable;
+//import drae.j.VisualElement.VTable;
 import drae.j.VisualElement.VText;
 
 //import javax.swing.event.ListDataListener;
@@ -270,8 +270,8 @@ public class DataManager extends Observable
           pageWS.getLayerList().addElementToLayer("text", el);
         } else if (el instanceof VImage) {
           pageWS.getLayerList().addElementToLayer("images", el);
-          VImage image = (VImage) el;
-          File path = new File((String) image.bitmap_path);
+     //     VImage image = (VImage) el;
+     //     File path = new File((String) image.bitmap_path);
      //     imageBBMap.put(path.getName(), (BoundingBox) image.getBbox());
         }
 
@@ -599,6 +599,7 @@ public class DataManager extends Observable
     return this.getPageWS(page).getSeparators();
   }
 
+  @SuppressWarnings("unused")
   private void processRepTablesInFile(File pdf, File out) {
     System.out.println("Processing file " + pdf);
 

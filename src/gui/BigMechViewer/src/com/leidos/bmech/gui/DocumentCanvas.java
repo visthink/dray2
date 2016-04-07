@@ -8,7 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
+//import java.awt.RenderingHints;
 import java.awt.Stroke;
 //import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
+//import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -84,7 +84,7 @@ public class DocumentCanvas extends JPanel
   final static float        maxScale         = 4.0f;
   final static int          buffer           = 20;
 
-  private boolean           retainViewZoom;
+//  private boolean           retainViewZoom;
   
   public boolean            isSplitModeEnabled = false;
   public boolean            isQuickTagEnabled = false;
@@ -112,7 +112,7 @@ public class DocumentCanvas extends JPanel
    
     setBackground(Color.WHITE);
     pThis = this;
-    retainViewZoom    = false;
+//    retainViewZoom    = false; // Not used.
     mouseDown         = false;
     scale             = 1.0f;
     dragged           = false;
@@ -326,8 +326,8 @@ public class DocumentCanvas extends JPanel
       return;
     }
     
-    int x = offset.x;
-    int y = offset.y;
+  //  int x = offset.x; // Not used.
+  //  int y = offset.y;
     
     // check if working set has changed so we can refocus if needed
    // if (dataManager.getCurrentWS() != lastWS) {
@@ -343,10 +343,10 @@ public class DocumentCanvas extends JPanel
     
   //  g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     int pageNum = dataManager.getCurrentPage();
-    @SuppressWarnings("unchecked")
-    List<VPage> pages = (List<VPage>) dataManager.getVDocument().getItems();
-    VPage page = (VPage) pages.get(pageNum);
-    BoundingBox pagebb = (BoundingBox) page.getBbox();
+ //   @SuppressWarnings("unchecked")
+ //   List<VPage> pages = (List<VPage>) dataManager.getVDocument().getItems();
+ //   VPage page = (VPage) pages.get(pageNum); // not used
+//    BoundingBox pagebb = (BoundingBox) page.getBbox(); // Not used.
   //  BufferedImage pageImage = dataManager.getPageImage(dataManager.getCurrentPage());
  //   double factor = (double) pageImage.getWidth() / pagebb.getWidth();
     
@@ -520,7 +520,7 @@ public class DocumentCanvas extends JPanel
     return new Point((int)(p.x / scale), (int)(p.y / scale));
   }
   
-  @SuppressWarnings("unused")
+//  @SuppressWarnings("unused")
   public Point scaleUp (Point p) {
     return new Point((int)(p.x * scale), (int)(p.y * scale));
   }
@@ -739,7 +739,7 @@ public class DocumentCanvas extends JPanel
                 dragRectDescaled.getX(), dragRectDescaled.getMaxY()));
             // remember old viewport information, this will get lost when we
             // reload the workingsets based on the split
-            cv.retainViewZoom = true;
+  //          cv.retainViewZoom = true; // not used.
             cv.repaint();
 
           } else {
