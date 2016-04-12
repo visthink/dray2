@@ -3,6 +3,9 @@
   (:import  (java.util ArrayList Map)
             (java.lang String))
   (:require [clojure.data.json :as json]
+            [seesaw.invoke :refer [invoke-now]]
+            [seesaw.chooser :refer [choose-file]]
+            #_[drae.gui :refer [gui-save-map-as-json]]
             [drae.util :refer [uerr]])
   )
 
@@ -17,6 +20,7 @@
                 ^{:static true} [getWSProducer [java.lang.String] java.util.Map]
                 ^{:static true} [getLayerProducer [java.lang.String] java.util.Map]
                 ^{:static true} [layerRepToJSON [java.lang.Object] java.lang.String]
+                ^{:static true} [stringToKeyword [java.lang.String] clojure.lang.Keyword]
                 ]
                
             )
@@ -127,9 +131,27 @@
 
 (def -applyLayerProducer "Java equivalent to apply-layer-producer." apply-layer-producer)
 
+(defn gui-get-save-filename []
+  (invoke-now 
+    (choose-file #_(.getFrame (current-gui)) :type :save)))
+
+(defn gui-save-map-as-json 
+  "Save the given map (or other json-writable form) as a JSON file."
+ [m]
+ (let [filename (gui-get-save-filename )]
+   (when filename
+     (let [res (with-out-str (json/pprint m))]
+       (spit filename res)))))
+
 (defn -layerRepToJSON "Given a hashmap, return the hashmap as a JSON representation string."
   [layer-rep]
-  (json/write-str layer-rep))
+  (println "Producing a JSON output.")
+  (println "  Class of layer-rep: " (class layer-rep))
+  (println "  Class of car of layer-rep: " (class (first layer-rep)))
+  
+  ;; (with-out-str (json/pprint layer-rep)))
+  (gui-save-map-as-json layer-rep))
 
+(defn -stringToKeyword [s] (keyword s))
 
 

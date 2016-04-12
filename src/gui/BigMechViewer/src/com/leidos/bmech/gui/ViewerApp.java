@@ -759,6 +759,9 @@ public class ViewerApp implements Observer, ActionListener {
 		return dataManager;
 	}
 
+	public JFrame getFrame () {
+	  return frame;
+	}
 
 	
 	public void deleteWS(WorkingSet victim, boolean addToHistory){

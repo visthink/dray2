@@ -410,12 +410,15 @@ public class WorkingSet {
 	
 	@SuppressWarnings("rawtypes")
 	public Rectangle determineHeaderRow(List<Rectangle> columns){
+	  
 		ArrayList<Double> headerLines = new ArrayList<Double>();
+		
 		for(Rectangle colBB : columns){
 			List<El> els =  this.getElsIn(colBB);
 			Map lastStyle = new HashMap();
 			int numFontChange = 0;
 			for (El el : els){
+			  
 				//get number of and location of font change
 				
 				if(el instanceof VText){

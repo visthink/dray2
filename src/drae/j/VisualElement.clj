@@ -6,9 +6,11 @@
            (java.lang Double)
            (java.awt.geom Rectangle2D Line2D)
            (java.util ArrayList)
+           (java.io PrintWriter) ;; for JSON output
            )
   (:require [clojure.string :as s]
             [clojure.java.io :refer [file]]
+            [clojure.data.json :as json]
             [drae.util :refer [pairwise-split-when uerr]]
             )
   )
@@ -397,4 +399,16 @@
   #_(getHeaderCols [x] (.header-cols x))
   )
 
-  
+;;; Various JSON writers 
+;;; ------------------------------------------------------------------------------
+
+(defn write-as-string [x ^PrintWriter out]
+  (.print out (.toString x)))
+
+(defn write-bbox-json [bbox ^PrintWriter out]
+  (json/write {:x (.getX bbox) :y (.getY bbox)
+               :width (.getWidth bbox) :height (.getHeight bbox)}
+              out))
+
+(extend drae.j.BoundingBox    json/JSONWriter {:-write write-bbox-json})
+
