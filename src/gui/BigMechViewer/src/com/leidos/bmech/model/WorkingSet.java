@@ -317,7 +317,7 @@ public class WorkingSet {
 	public List<Rectangle> groupHorizUniqueSections(List<Rectangle> bbs){
 		//List<Rectangle> completed = new ArrayList<Rectangle>();
 		List<Rectangle> ret = new ArrayList<Rectangle> (bbs);
-		int consecutiveRejections =0;
+		int consecutiveRejections = 0;
 		while(consecutiveRejections < ret.size()){
 			Rectangle test = ret.get(0);
 			System.out.println("testing: " + this.getElsIn(test));
