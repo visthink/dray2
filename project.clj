@@ -38,34 +38,20 @@
      [[org.clojure/clojure "1.6.0"]                 ;; [E1]
       [org.clojure/data.xml "0.0.8"]                ;; [E1] 
       [org.clojure/data.json "0.2.6"]               ;; [E1]
-;      [pjstadig/humane-test-output "0.7.0"]         ;; [E1] 
       [commons-io/commons-io "2.4"]                 ;; [A2]
       [xerces/xercesImpl "2.11.0"]                  ;; [A2]
       [org.apache.pdfbox/pdfbox "2.0.0-SNAPSHOT"]   ;; [A2]
-    ;  [log4j "1.2.17"]                              ;; [A2]
-    ;  [org.clojure/tools.logging "0.3.1"]           ;; [E1]
-      [me.raynes/conch "0.8.0"]                     ;; [E1]
       [seesaw "1.4.5"]                              ;; [E1]
       [clj-http-lite "0.2.1"]                       ;; [MIT]
       [org.biopax.paxtools/paxtools-core "4.3.1"]   ;; [L2]
       [org.biopax.paxtools/pattern "1.1.1-20141208.200840-3" ;; [L2]
         :exclusions [org.biopax.paxtools/paxtools-core]]
       [incanter "1.5.4"]                            ;; [E1]
-    ;  [org.scala-lang/scala-library "2.11.6"]       ;; [S]
       [args4j/args4j "2.0.25"]                      ;; [MIT]
-     ; [com.google.protobuf/protobuf-java "2.6.1"]   ;; [G]
-     ; [org.jsoup/jsoup "1.7.3"]                     ;; [MIT]
-      ; [javax.json/javax.json-api "1.0"]             ;; GPL!!!! NEED TO REMOVE!!
-      ; [org.glassfish/javax.json "1.0.4"]            ;; GPL!!!!
       [junit/junit "4.12"]                          ;; [E1]
-     ; [org.hamcrest/hamcrest-all "1.3"]             ;; [BSD3]
       ]
-;  :injections  ; 4/15/2016 - Removed to user-level profiles.clj file.
-;     [(require 'pjstadig.humane-test-output)
-;      (pjstadig.humane-test-output/activate!)]
   :plugins 
      [[codox "0.8.11" :exclusions [leinjacker]];; Autodocumenter.
-     ; [lein-ancient "0.5.5"]
       [lein-localrepo "0.5.3"]
       [lein-environ "1.0.0"]
       [lein-javadoc "0.2.0"]] 
