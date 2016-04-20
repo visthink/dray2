@@ -18,6 +18,7 @@
             [drae.stats :refer [text-summary-table texts-in]]
             [drae.vtable :refer [ws-vtables extract-vtables simplify-table]]
             [drae.tablerep :refer [rep-table]]
+            [drae.textblock :refer [simple-vtext-block-recognizer]]
             )
   (:gen-class)
   )
@@ -29,6 +30,24 @@
   (into '() ;; return as list
         (for [vimage (ws-images ws)]
           (ws-make-child ws "Producer: Diagram Image Selector" (:bbox vimage)))))
+
+(defn pv-paragraph-selection-producer
+  "Given a WorkingSet, produce new working sets of possible
+   paragraphs."
+  [ws]
+  (let [texts (texts-in (.getItems ws)) ;; Start with all the texts.
+        text-blocks (simple-vtext-block-recognizer texts)
+        ]
+    (for [text-block text-blocks]
+      (ws-make-child ws "Text Block" (:bbox text-block)))
+    ))
+    
+(defn pv-do-everything-you-can-producer
+  "Given a WorkingSet, produce all the stuff you can."
+  [ws]
+  (concat (pv-diagram-selection-producer ws)
+          (pv-paragraph-selection-producer ws)
+  ))
 
 (defn bee-layer-producer-ws "Run BEE on the current working set to produce a layer." [ws]
   (let [vimage (first (ws-images ws))
@@ -68,10 +87,18 @@
        (make-layer (str "Representation: " (.getName vt)) (rep-table vt)))))
 
 (defn populate-producer-table []
+  (add-ws-producer :select-paragraphs
+                   "Paragraph selection producer"
+                   "Select paragraphs."
+                   pv-paragraph-selection-producer)
   (add-ws-producer :select-diagrams 
                    "Diagram selection producer" 
                    "Select images with included overlay elements"
                    pv-diagram-selection-producer)
+  (add-ws-producer :everything-bagel
+                   "Do everything"
+                   "Run set of available working set producers."
+                   pv-do-everything-you-can-producer)
 )
 
 (defn populate-layer-table []

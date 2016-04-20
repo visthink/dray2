@@ -14,10 +14,12 @@
     ;{:pre [(function? selector)]}
     (Math/abs (- (selector a) (selector b)))))
 
-(defn =* "Numbers approximate equal (within 0.001)?" [a b] 
-  (or (= a b)
-      (and (number? a) (number? b)
-           (> 0.0001 (abs-diff a b)))))
+(defn =* "True if numbers approximate equal within margin (0.001 by default)." 
+  ([a b margin] 
+   (or (= a b)
+       (and (number? a) (number? b)
+            (> margin (abs-diff a b)))))
+  ([a b] (=* a b 0.001)))
 
 (defn- min-max-helper [numlist min max]
   (let [[n & the-rest] numlist]
