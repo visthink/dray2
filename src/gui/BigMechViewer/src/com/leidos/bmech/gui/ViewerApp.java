@@ -642,7 +642,7 @@ public class ViewerApp implements Observer, ActionListener {
   @SuppressWarnings("serial")
   public class ImageListRenderer extends DefaultListCellRenderer {
 
-    Font font = new Font("helvitica", Font.BOLD, 24);
+    Font font = new Font("helvitica", Font.ITALIC, 14);
 
     @Override
     public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value, int index,

@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -67,6 +68,10 @@ public class DocumentCanvas extends JPanel {
 
   private DataManagerView   view;
   private boolean           retainViewZoom;
+  
+  private Font labelFont;
+  
+  private Font caretFont;
 
   /**
    * initialize variables and add mouse listeners
@@ -84,6 +89,10 @@ public class DocumentCanvas extends JPanel {
     scale = 1.0f;
     currentlySelected = new ArrayList<DocumentElement>();
     dragged = false;
+    
+    labelFont = new Font("Helvetica", Font.ITALIC, 10);
+    caretFont = new Font("Helvetica", Font.BOLD, 24);
+    
     final List<Object> selectedEls = view.getSelected();
         
         
@@ -320,7 +329,10 @@ public class DocumentCanvas extends JPanel {
             dragRect.setSize(0, (int) ((e.getY() / scale - dragRect.y)));
 
           } else {// regular drag
-            dragRect.setSize((int) ((e.getX() / scale - dragRect.x)), (int) ((e.getY() / scale - dragRect.y)));
+            //TODO BUGGY -- something is coming up as null. dragRect??
+            if (dragRect != null) {
+               dragRect.setSize((int) ((e.getX() / scale - dragRect.x)), (int) ((e.getY() / scale - dragRect.y)));
+            }
           }
         } else if (SwingUtilities.isRightMouseButton(e)) {
           JViewport viewPort = (JViewport) pThis.getParent();
@@ -383,7 +395,8 @@ public class DocumentCanvas extends JPanel {
     // draw up button
     g2.setColor(Color.DARK_GRAY);
     // g2.drawRect(2, 2, 50, 15);
-    g2.drawString("[^]", 5, 5);
+    g2.setFont(caretFont);
+    g2.drawString("[^]", 10, 20);
 
   }
 
@@ -396,6 +409,7 @@ public class DocumentCanvas extends JPanel {
     Graphics2D g2;
     g2 = (Graphics2D) g;
     if (noDocumentLoaded()) {
+      g2.setFont(caretFont);
       g2.drawString("No Document Loaded", 200, 200);
       return;
     }
@@ -509,16 +523,27 @@ public class DocumentCanvas extends JPanel {
   }
 
   private void drawChildWSRecursive(Graphics2D g2, WorkingSet parent, int depth) {
-    g2.setStroke(new BasicStroke(2));
+    
+    g2.setStroke(new BasicStroke(1.5f));
+    
+    g2.setFont(labelFont);
+
     for (WorkingSet child : parent.getChildren()) {
 
       // first delve deeper so that top most WS are drawn over children
       drawChildWSRecursive(g2, child, depth + 1);
 
-      g2.setColor(UtiliBuddy.makeTransparent(child.getColor(), (float) 1.0 / (depth + 1)));
+      g2.setColor(UtiliBuddy.makeTransparent(child.getColor(), 0.3f / (depth + 1)));
+      
       Rectangle bb = child.getBboxWide();
-      g2.fill(new Rectangle((int) ((bb.getMinX() - offX()) * scale), (int) ((bb.getMinY() - offY()) * scale),
-          (int) (bb.getWidth() * scale), (int) (bb.getHeight() * scale)));
+      Rectangle highlightRectangle = new Rectangle((int) ((bb.getMinX() - offX()) * scale), 
+                                                   (int) ((bb.getMinY() - offY()) * scale),
+                                                   (int) (bb.getWidth() * scale), 
+                                                   (int) (bb.getHeight() * scale));
+      g2.fill(highlightRectangle);
+      g2.setColor(Color.BLACK);
+      g2.draw(highlightRectangle);
+      
       // only draw WS title for first level
       if (depth == 1) {
         g2.drawString(child.getName(), (int) ((bb.getMinX() - offX()) * scale),

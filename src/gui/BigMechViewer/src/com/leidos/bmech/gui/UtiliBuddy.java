@@ -5,11 +5,13 @@ import java.awt.Color;
 public class UtiliBuddy {
 	final static Color[] colors = {Color.BLUE, Color.RED,
 		Color.GREEN, Color.ORANGE, Color.PINK, Color.CYAN, Color.YELLOW};
+	
     public static Color makeTransparent(Color c1, float trans){
     	return new Color((float)c1.getRed()/255.0f, 
     			(float)c1.getGreen()/255.0f, 
     			(float)c1.getBlue()/255.0f, trans);
     }
+    
     public static Color getAColor(int index){
     	return colors[index%colors.length];
     }
