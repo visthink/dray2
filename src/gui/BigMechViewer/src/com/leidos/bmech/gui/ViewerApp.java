@@ -85,12 +85,7 @@ import drae.j.Producer.Table;
 import drae.j.VisualElement.El;
 // import drae.j.VisualElement.SplittableEl;
 import drae.j.VisualElement.VPage;
-//import drae.j.VisualElement.VTable;
-//import drae.j.VisualElement.VDocument;
 
-//import drae.core;
-//import org.biopax.paxtools.io.pathwayCommons.PathwayCommons2Client;
-//import java.awt.event.KeyListener;
 /**
  * the GUI for interacting with PDF Documents. All interractions with the data
  * are done through the DocumentManager class. Only gui related things are
@@ -104,7 +99,7 @@ public class ViewerApp implements Observer, ActionListener {
   public JFrame             frame;
   DocumentCanvas            canvas;
   public CheckBoxList       layerCheckList;
-  // private int currentIndex=-1;
+
   JTextArea                 textArea;
   @SuppressWarnings("rawtypes")
   JList                     pagePickerList;
@@ -116,7 +111,7 @@ public class ViewerApp implements Observer, ActionListener {
   JTabbedPane               tabbedPane;
   JSlider                   offsetSliderH;
   JSlider                   offsetSliderV;
-  // private boolean wsChangedAlready = false;
+
   private List<Task>        taskHistory;
 
   /**
@@ -125,14 +120,20 @@ public class ViewerApp implements Observer, ActionListener {
   public static void main(String[] args) {
 
     final CommandLineValues cmd = new CommandLineValues(args);
+    
     if (!cmd.isErrorFree())
       return;
-    if (!cmd.isGui()) {
-      // Command Line Mode
+    
+    if (cmd.isHelp()) 
+      return; // Already printed out help info, so exit.
+    
+    if (cmd.isBatch()) {
+    
       DataManager dataManager = new DataManager();
       dataManager.commandLine(cmd);
 
     } else {
+      
       EventQueue.invokeLater(new Runnable() {
         public void run() {
           try {
@@ -172,7 +173,7 @@ public class ViewerApp implements Observer, ActionListener {
     final CommandLineValues cmd = new CommandLineValues(args);
     if (!cmd.isErrorFree())
       return null;
-    if (!cmd.isGui()) {
+    if (cmd.isBatch()) {
       // Command Line Mode
       DataManager dataManager = new DataManager();
       dataManager.commandLine(cmd);
@@ -671,7 +672,7 @@ public class ViewerApp implements Observer, ActionListener {
    * document
    */
   public void refreshLayerList() {
-    
+
     DefaultMutableTreeNode top = new DefaultMutableTreeNode("WorkingSet");
     DefaultTreeModel model = new DefaultTreeModel(top);
 
@@ -687,7 +688,7 @@ public class ViewerApp implements Observer, ActionListener {
     }
 
     visualTree.setModel(model);
-    
+
   }
 
   /**
@@ -698,7 +699,7 @@ public class ViewerApp implements Observer, ActionListener {
    *          the rectangle that was drawn on the canvas
    */
   public void rectangleDrawn(Rectangle2D dragRectDescaled) {
-    
+
     List<El> els = dataManager.getElsIn(this.getView().getCurrentPage(), dragRectDescaled);// getView().getCurrentWS().getElsIn(dragRectDescaled);
     if (!els.isEmpty()) {
 

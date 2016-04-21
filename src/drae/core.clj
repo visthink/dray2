@@ -42,7 +42,7 @@
   (println "MAIN FUNCTION: Args " args)
   (.addShutdownHook (Runtime/getRuntime) 
     (Thread. shutdown-tasks))
-  (let [gui (run-gui (cons "-g" args))]
+  (let [gui (run-gui args)]
     (populate-gui-tables)
     gui))
 

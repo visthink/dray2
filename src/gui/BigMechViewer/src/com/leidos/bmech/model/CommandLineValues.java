@@ -8,36 +8,57 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 /**
- * This class handles the programs arguments.
+ * Handle the programs arguments for DRAE.
  */
 public class CommandLineValues {
-  @Option(name = "-g", aliases = { "--gui" }, required = false, usage = "boolean flag controls whether the gui is run")
-  private boolean gui;
+  
+  // Batch mode.
+  @Option(name = "-b", 
+          aliases = { "--batch", "--nogui" }, 
+          required = false, 
+          usage = "Run in batch mode. Do not start graphical interface.")
+  private boolean batch;
 
-  @Option(name = "-f", aliases = { "--pdf", "--file" }, required = false, usage = "pdf file to load")
+  // PDF source file.
+  @Option(name = "-f", 
+          aliases = { "--pdf", "--file" }, 
+          required = false, 
+          usage = "PDF file to load.")
   private File    source;
 
-  @Option(name = "-o", aliases = {
-      "--out" }, required = false, usage = "(OPTIONAL) output json file relative to the input file")
+  // Output JSON representation.
+  @Option(name = "-o", 
+          aliases = {"--out" }, 
+          required = false, usage = "Specify JSON output file (optional).")
   private String  out       = "DEFAULT";
 
-  @Option(name = "-h", aliases = { "--help" }, required = false, usage = "print usage message")
+  // Help.
+  @Option(name = "-h", 
+          aliases = { "--help" }, 
+          required = false, 
+          usage = "Print this usage message.")
   private boolean help;
 
   private boolean errorFree = false;
+  
   private boolean hasInput  = false;
+  
   private File    outFile;
 
   @SuppressWarnings("static-access")
+  
   public CommandLineValues(String... args) {
+    
     CmdLineParser parser = new CmdLineParser(this);
     parser.setUsageWidth(80);
+    
     try {
       parser.parseArgument(args);
       if (help) {
         parser.printUsage(System.out);
+        System.exit(0);
       } else {
-
+        
         if (getFile() != null) {
           hasInput = true;
           source = new File(source.getCanonicalPath().replace("\\", "/"));
@@ -56,9 +77,11 @@ public class CommandLineValues {
 
       }
       errorFree = true;
+      
     } catch (CmdLineException e) {
       System.err.println(e.getMessage());
       parser.printUsage(System.err);
+      
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -87,8 +110,17 @@ public class CommandLineValues {
     return outFile;
   }
 
+  public boolean isBatch() {
+    return batch;
+  }
+  
+  /**
+   * @deprecated Use isBatch() instead.
+   * @return true if GUI should be started.
+   */
+  @Deprecated
   public boolean isGui() {
-    return gui;
+    return !isBatch();
   }
 
   public boolean isHelp() {
