@@ -27,10 +27,4 @@
 		<nature>ccw.leiningen.nature</nature>
 		<nature>ccw.nature</nature>
 	</natures>
-	<variableList>
-		<variable>
-			<name>BANNER_DATA</name>
-			<value>file:/Users/fergusonrw/Documents/Leidos_Workspace/drae/resources/banner_data</value>
-		</variable>
-	</variableList>
 </projectDescription>

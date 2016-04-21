@@ -13,7 +13,7 @@
             [clojure.pprint :refer [pprint]]
             [clojure.java.io :refer [file]]
             [drae.manager :refer [make-layer]]
-            [drae.wset :refer [ws-images ws-make-child]]
+            [drae.wset :refer [ws-images ws-make-child ws-children ws-replace-child]]
             [drae.ext.bee :refer [bee-rep-for]]
             [drae.stats :refer [text-summary-table texts-in]]
             [drae.vtable :refer [ws-vtables extract-vtables simplify-table]]
@@ -29,7 +29,7 @@
   [ws]
   (into '() ;; return as list
         (for [vimage (ws-images ws)]
-          (ws-make-child ws "Producer: Diagram Image Selector" (:bbox vimage)))))
+          (ws-make-child ws :figure_image (:bbox vimage)))))
 
 (defn pv-paragraph-selection-producer
   "Given a WorkingSet, produce new working sets of possible
@@ -39,15 +39,29 @@
         text-blocks (simple-vtext-block-recognizer texts)
         ]
     (for [text-block text-blocks]
-      (ws-make-child ws "Text Block" (:bbox text-block)))
+      (ws-make-child ws :text_block (:bbox text-block)))
     ))
+
+(defn pv-validate-paragraphs 
+  "Given a working set with marked text block wsets, mark the blocks that are
+   true paragraphs. Full paragraphs have either an indentation at the start,
+   a ragged end on the last line, and are at least three lines long."
+  [ws]
+  (let [text-block-wsets (ws-children ws :tag :text_block)]
+    (for [text-block-wset text-block-wsets]
+      (let [vtext-block (first (.getItems text-block-wset))]
+        (if (> (count (.getItems vtext-block)) 3)
+          (.setName text-block-wset "paragraph")
+          )))))
     
 (defn pv-do-everything-you-can-producer
   "Given a WorkingSet, produce all the stuff you can."
   [ws]
   (concat (pv-diagram-selection-producer ws)
           (pv-paragraph-selection-producer ws)
-  ))
+         ; (pv-validate-paragraphs ws)
+          )
+  )
 
 (defn bee-layer-producer-ws "Run BEE on the current working set to produce a layer." [ws]
   (let [vimage (first (ws-images ws))

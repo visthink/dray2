@@ -23,6 +23,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="target/classes"/>
-	<classpathentry kind="lib" path="C:/dev/third_party/linnaeus/bin/linnaeus-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

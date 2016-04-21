@@ -392,11 +392,14 @@ public class DocumentCanvas extends JPanel {
           (int) (Math.abs(dragRect.height) * scale));
     }
 
-    // draw up button
-    g2.setColor(Color.DARK_GRAY);
-    // g2.drawRect(2, 2, 50, 15);
-    g2.setFont(caretFont);
-    g2.drawString("[^]", 10, 20);
+    // Not clear we need this, so remove for now - 4/20/2016 (rwf)
+    
+   // // draw up button
+   // 
+   // g2.setColor(Color.DARK_GRAY);
+   //  
+   // g2.setFont(caretFont);
+   // g2.drawString("[^]", 10, 20);
 
   }
 

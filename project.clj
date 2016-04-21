@@ -87,7 +87,7 @@
  
   ;; Other Java options that should be cross-platform
   
-  :javac-options ["-target" "1.7" "-source" "1.7"]
+  :javac-options ["-target" "1.8" "-source" "1.8"]
   :java-source-paths ["src/gui/BigMechViewer/src"]
 
   ;; Compilation: We first precompile many of the drae.j.* classes, then 
