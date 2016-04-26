@@ -4,11 +4,15 @@
 
 ## Documentation and API
 
+For more information, please see the [online manual].
+
 The Clojure API is documented in [./doc/API](./doc/API/index.html).
 
 The Java API is documented in [./doc/gui](./doc/gui/index.html).
 
-## Installation using a precompiled jar file
+## Quickstart
+
+### Installation using a precompiled jar file
 
 + Install [pdftoxml](http://pdf2xml.sourceforge.net/). DRAE uses pdftoxml to do initial element extraction from the PDF, and to create image backgrounds and thumbnails.
  
@@ -20,7 +24,7 @@ The Java API is documented in [./doc/gui](./doc/gui/index.html).
 
 >  `java -jar <jarfilename>.jar`
 
-## Compiling a new uberjar
+### Compiling a new uberjar
 
 To compile a new uberjar:
 
@@ -50,6 +54,8 @@ Feedback can either be sent directly to the developers
 
 Copyright © 2015-2016 Leidos Holdings, Ltd.
 
-Licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). Some libraries used by DRAE are licensed under other compatible non-viral open source licenses, as documented in the project.clj file and on the [DRAE Wiki](https://bitbucket.org/rwferguson/drae/wiki/Home).
+Licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). 
+
+Some libraries used by DRAE are licensed under other compatible non-viral open source licenses, as documented in the project.clj file and on the [DRAE Wiki](https://bitbucket.org/rwferguson/drae/wiki/Home).
 
 
