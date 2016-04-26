@@ -8,7 +8,7 @@
             [clojure.java.io :refer [file]]
             [clojure.walk :refer [keywordize-keys stringify-keys]]
             [drae.j.Doc ]
-            [drae.doc :refer [make-bbox]]
+            [drae.doc :refer [make-bbox bbox->bbox-map]]
             [drae.util :refer [uerr #_instances]]
             #_[drae.util.map :refer [remove-null-keys]]
             [drae.wset :refer [ws-make-child ws-pdf ws-items ws-page-root ws->json]]
@@ -138,10 +138,12 @@
   (cond 
     (and (coll? x) (not (map? x))) (map stringify-rep-maps x) ; recurse on lists.
     (or (visual-el? x) (not (map? x))) x ; unless true map, don't go further.
+    (instance? drae.j.BoundingBox x) (bbox->bbox-map x)
     (map? x)  ; replace map keys.
       (apply hash-map (interleave (map key->string (keys x)) (map stringify-rep-maps (vals x))))
     :else  ; If here, didn't handle some non-map case - error.
     (uerr "Internal error - Can't handle case for %s" x)))
+
 
 (defn make-layer
   "Create a new layer object with a given name, representation, and 
@@ -149,8 +151,9 @@
    in the representation map are converted to strings."
   ([name representation elements]
     (let [layer (Layer. name)
-          ensure-list #(if-not (list? %) (list %) %)
+          ensure-list #(if-not (coll? %) (list %) %)
           layer-rep (-> representation ensure-list stringify-rep-maps)]
+      (println "Representation for " name " is " layer-rep)
       (doto layer
         (.setRep layer-rep)
         (add-elements elements))))

@@ -1,12 +1,6 @@
 # DRAE: Diagrammatic Reasoning and Analysis Engine
 
-DRAE extracts elements from PDF and other vector files, and attempts to perform reasoning over those files.
-
-Web site: <https://bitbucket.org/rwferguson/drae>
-
-## License
-
-Copyright © 2015-2016 Leidos Holdings, Ltd.
+[DRAE](https://bitbucket.org/rwferguson/drae) extracts elements from PDF and other vector files, and attempts to perform reasoning over those files.
 
 ## Documentation and API
 
@@ -50,4 +44,12 @@ To compile a new uberjar:
 ## Feedback
 
 Feedback can either be sent directly to the developers 
-(*ronald.w.ferguson@leidos.com, daniel.j.powell@leidos.com*), or added as an issue on our BitBucket site.
+(*ronald.w.ferguson@leidos.com, daniel.j.powell@leidos.com*), or added as an issue on our [BitBucket site](https://bitbucket.org/rwferguson/drae).
+
+## License
+
+Copyright © 2015-2016 Leidos Holdings, Ltd.
+
+Licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). Some libraries used by DRAE are licensed under other compatible non-viral open source licenses, as documented in the project.clj file and on the [DRAE Wiki](https://bitbucket.org/rwferguson/drae/wiki/Home).
+
+

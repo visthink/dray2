@@ -21,8 +21,10 @@
 (defn ws-make-child 
   "Create a child instance of this working set with the given name and bounding box."
   [ws name bbox & {:keys [tags] :or {tags '[]}}]
-  (doto (.createChild ws name bbox)
-    (.setTags (ArrayList. tags))))
+  (let [string-name (if (keyword? name) (.getName name) name)
+        name-keyword (if (string? name) (keyword name) name)]
+    (doto (.createChild ws string-name bbox)
+      (.setTags (ArrayList. (cons string-name tags))))))
 
 (defn ws-pdf "PDF file linked to this working set." [ws] (file (.getFilename ws)))
 
@@ -53,6 +55,15 @@
 (defn- ws-has-tag? [ws tag]
   (some #(= % tag) (.getTags ws)))
 
+(defn ws-children
+  "All the child working sets of this one. If the :tag keyword is used, only 
+   returns those descendants with the given tag."
+  [ws & {:keys [tag] :or {tag nil}}]
+  (let [child-wsets (.getChildren ws)]
+    (if tag
+      (filter #(ws-has-tag? % tag) child-wsets)
+      child-wsets)))
+
 (defn ws-descendants 
   "All the descendant working sets of this one. If the :tag keyword is used, only
    returns those descendants with the given tag."
@@ -63,6 +74,13 @@
       (filter #(ws-has-tag? % tag) all-desc)
       all-desc)))
       
+(defn ws-replace-child
+  "Replace the old child working set with the new one in the 
+   parent working set's children."
+  [parent-ws old-child-ws new-child-ws]
+  (.setChildren parent-ws 
+    (replace {old-child-ws new-child-ws} (.getChildren parent-ws))))
+  
 (defn ws->map "Write working set as a re-readable map structure." [ws]
   (let [bbox (.getBbox ws)
         children (.getChildren ws)

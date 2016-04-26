@@ -37,7 +37,20 @@
     (make-bbox (.getX u) (.getY u) (.getWidth u) (.getHeight u))))
 
 
+(defn bbox->bbox-map
+  "Write a simple representation for a bounding box."
+  [bbox]
+  {:x (.getX bbox)
+   :y (.getY bbox)
+   :width (.getWidth bbox)
+   :height (.getHeight bbox)
+   }
+  )
 
+(defn bbox? [x] (instance? drae.j.BoundingBox x))
+
+
+  
 ;;; Selector and helper functions
 ;;; ------------------------------------------------------------------------------
 

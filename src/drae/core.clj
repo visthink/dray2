@@ -11,7 +11,8 @@
 (ns drae.core 
   "*Main DRAE functions.*"
   (:import (java.io File))
-  (:require [drae.util :refer [delete-current-cache-dirs]]
+  (:require [seesaw.chooser :refer [choose-file]]
+            [drae.util :refer [delete-current-cache-dirs]]
             [drae.gui :refer [run-gui populate-toys-table append-to-log]]
             [drae.producers :refer [populate-producer-table populate-layer-table]] ;; Just to ensure class creation.
             [drae.corpus :refer [corpus]]
@@ -41,7 +42,7 @@
   (println "MAIN FUNCTION: Args " args)
   (.addShutdownHook (Runtime/getRuntime) 
     (Thread. shutdown-tasks))
-  (let [gui (run-gui (cons "-g" args))]
+  (let [gui (run-gui args)]
     (populate-gui-tables)
     gui))
 

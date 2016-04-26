@@ -7,7 +7,10 @@
    This package also includes the routines for several default DRAE toys."
   (:import (com.leidos.bmech.gui ViewerApp))
   (:require [clojure.java.io :refer [file]]
+            [clojure.data.json :as json]
             [seesaw.core :refer [frame label show! visible!]]
+            [seesaw.invoke :refer [invoke-now]]
+            [seesaw.chooser :refer [choose-file]]
             [drae.util :refer [cache-directory]]
             [drae.util.inspect :refer [inspect]]
             [drae.wset :refer [ws-images ws-pdf]]
@@ -38,6 +41,8 @@
   "Returns the set of vtables in the currently selected working set."
   []
   (ws-vtables (gui-working-set)))
+
+
 
 (defn append-to-log "Append message to current GUI log panel." [msg] 
   (when @+gui+ (.appendToLog @+gui+ msg)))

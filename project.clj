@@ -24,37 +24,34 @@
       ;["pathwaycards-snapshots" "C:/dev/BigMechanism/pathway-cards-master" :extension pom] 
   :min-lein-version "2.0.0"
   ; :pedantic? :warn ;; Warn on library version conflicts
+  ;
+  ;; Libraries used by DRAE.
+  ;; 
+  ;; Licensing for libraries are as follows:
+  ;;
+  ;;  [A2]  Apache License v. 2.0, the same as DRAE
+  ;;  [E1]  Eclipse Public License v 1.0, the same as Clojure.
+  ;;  [MIT] MIT License
+  ;;  [L2]  GNU Lesser General Public License, v2.0 (non-viral)
+  ;;
   :dependencies 
-     [[org.clojure/clojure "1.6.0"]
-      [org.clojure/data.xml "0.0.8"]
-      [org.clojure/data.json "0.2.6"]
-      [pjstadig/humane-test-output "0.7.0"]
-      [commons-io/commons-io "2.4"]
-      [xerces/xercesImpl "2.11.0"] ;; Test
-      [org.apache.pdfbox/pdfbox "2.0.0-SNAPSHOT"]
-      [log4j "1.2.17"]
-      [org.clojure/tools.logging "0.3.1"]
-      [me.raynes/conch "0.8.0"]
-      [seesaw "1.4.5"]
-      [clj-http-lite "0.2.1"]
-      [org.biopax.paxtools/paxtools-core "4.3.1-SNAPSHOT"]
-      [org.biopax.paxtools/pattern "1.1.1-20141208.200840-3" :exclusions [org.biopax.paxtools/paxtools-core]]
-      [incanter "1.5.4"]
-      [org.scala-lang/scala-library "2.11.6"]
-      [args4j/args4j "2.0.25"]
-      [com.google.protobuf/protobuf-java "2.6.1"]
-      [org.jsoup/jsoup "1.7.3"]
-      [javax.json/javax.json-api "1.0"]
-      [org.glassfish/javax.json "1.0.4"]
-      [junit/junit "4.12"]
-      [org.hamcrest/hamcrest-all "1.3"]
+     [[org.clojure/clojure "1.6.0"]                 ;; [E1]
+      [org.clojure/data.xml "0.0.8"]                ;; [E1] 
+      [org.clojure/data.json "0.2.6"]               ;; [E1]
+      [commons-io/commons-io "2.4"]                 ;; [A2]
+      [xerces/xercesImpl "2.11.0"]                  ;; [A2]
+      [org.apache.pdfbox/pdfbox "2.0.0-SNAPSHOT"]   ;; [A2]
+      [seesaw "1.4.5"]                              ;; [E1]
+      [clj-http-lite "0.2.1"]                       ;; [MIT]
+      [org.biopax.paxtools/paxtools-core "4.3.1"]   ;; [L2]
+      [org.biopax.paxtools/pattern "1.1.1-20141208.200840-3" ;; [L2]
+        :exclusions [org.biopax.paxtools/paxtools-core]]
+      [incanter "1.5.4"]                            ;; [E1]
+      [args4j/args4j "2.0.25"]                      ;; [MIT]
+      [junit/junit "4.12"]                          ;; [E1]
       ]
-  :injections 
-     [(require 'pjstadig.humane-test-output)
-      (pjstadig.humane-test-output/activate!)]
   :plugins 
      [[codox "0.8.11" :exclusions [leinjacker]];; Autodocumenter.
-      [lein-ancient "0.5.5"]
       [lein-localrepo "0.5.3"]
       [lein-environ "1.0.0"]
       [lein-javadoc "0.2.0"]] 
@@ -90,7 +87,7 @@
  
   ;; Other Java options that should be cross-platform
   
-  :javac-options ["-target" "1.7" "-source" "1.7"]
+  :javac-options ["-target" "1.8" "-source" "1.8"]
   :java-source-paths ["src/gui/BigMechViewer/src"]
 
   ;; Compilation: We first precompile many of the drae.j.* classes, then 
