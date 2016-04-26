@@ -50,6 +50,6 @@ Feedback can either be sent directly to the developers
 
 Copyright © 2015-2016 Leidos Holdings, Ltd.
 
-Licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). Some libraries used by DRAE are licensed under other non-viral open source licenses, as documented in the project.clj file and on the [DRAE Wiki](https://bitbucket.org/rwferguson/drae/wiki/Home).
+Licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). Some libraries used by DRAE are licensed under other compatible non-viral open source licenses, as documented in the project.clj file and on the [DRAE Wiki](https://bitbucket.org/rwferguson/drae/wiki/Home).
 
 
