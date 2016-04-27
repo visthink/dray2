@@ -1,6 +1,8 @@
-![](https://bitbucket.org/rwferguson/drae/wiki/images/logo.png "DRAY")  ![](https://bitbucket.org/rwferguson/drae/wiki/images/1121138_PNG_by_ClipartOfcom.png "Bringing you figures and tables since 2016!")
+![](https://bitbucket.org/rwferguson/drae/wiki/images/dray-small.png "Bringing you figures and tables since 2016!")
 
 # **DRAY: A System for Document Representation and Analysis**
+
+*DRAY is currently in development.*
 
 ## Introduction
 
@@ -14,13 +16,12 @@ Current functionality is limited to marking up table and diagram content (which 
 
 [Online Manual](https://bitbucket.org/rwferguson/drae/wiki/Home)
 
-[Clojure API Documentation](http://rwferguson.bitbucket.org/drae/API/)
+[Clojure API](http://rwferguson.bitbucket.org/drae/API/)
 
 [Java API](http://rwferguson.bitbucket.org/drae/gui/index.html)
 
-[Roadmap](https://bitbucket.org/rwferguson/drae/wiki/RoadMap)
+[Development Roadmap](https://bitbucket.org/rwferguson/drae/wiki/RoadMap)
 
-[Contributors](https://bitbucket.org/rwferguson/drae/wiki/Contributors)
 
 ## Quickstart
 
@@ -68,6 +69,8 @@ Copyright © 2015-2016 Leidos Holdings, Ltd.
 
 Licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0). 
 
+## Acknowledgments
 
+Code by Ronald W. Ferguson, Daniel Powell, Yanlin Guo, and Shane Frasier. Manual written by Danniel Powell with updates from Ron Ferguson.
 
 I
