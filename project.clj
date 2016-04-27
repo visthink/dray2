@@ -6,7 +6,7 @@
 ;;;; User-specific settings for lein may also be set in a profiles.clj file.
 ;;;; See the sample-profiles.clj file for more details.
 ;;;;
-(defproject drae "0.0.9-SNAPSHOT"
+(defproject dray "0.5.0-SNAPSHOT"
   :description 
   "DRAE (Diagrammatic Reasoning and Analysis Engine) is a framework for performing graphical and 
    structural analysis of PDF and other document files. It is currently in development."
