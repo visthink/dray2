@@ -1,4 +1,4 @@
-![](https://bitbucket.org/rwferguson/drae/wiki/images/logo.png "DRAY")  ![](https://bitbucket.org/rwferguson/drae/wiki/images/dray-small.jpg "Bringing you figures and tables since 2016!")
+![](https://bitbucket.org/rwferguson/drae/wiki/images/logo.png "DRAY")  ![](https://bitbucket.org/rwferguson/drae/wiki/images/1121138_PNG_by_ClipartOfcom.png "Bringing you figures and tables since 2016!")
 
 # **DRAY: A System for Document Representation and Analysis**
 
