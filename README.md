@@ -4,11 +4,13 @@
 
 ## Documentation and API
 
-For more information, please see the [online manual].
+[Online Manual](https://bitbucket.org/rwferguson/drae/wiki/Home)
 
-The Clojure API is documented in [./doc/API](./doc/API/index.html).
+[Clojure API Documentation](http://rwferguson.bitbucket.org/drae/API/)
 
-The Java API is documented in [./doc/gui](./doc/gui/index.html).
+[Java API](http://rwferguson.bitbucket.org/drae/gui/index.html)
+
+[Roadmap]()
 
 ## Quickstart
 
