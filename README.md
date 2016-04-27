@@ -1,4 +1,4 @@
-![](https://bitbucket.org/rwferguson/drae/wiki/images/dray-small.png "Bringing you figures and tables since 2016!")
+![](https://bitbucket.org/rwferguson/dray/wiki/images/dray-small.png "Bringing you figures and tables since 2016!")
 
 # **DRAY: A System for Document Representation and Analysis**
 
@@ -14,13 +14,13 @@ Current functionality is limited to marking up table and diagram content (which 
 
 ## Documentation and API
 
-[Online Manual](https://bitbucket.org/rwferguson/drae/wiki/Home)
+[Online Manual](https://bitbucket.org/rwferguson/dray/wiki/Home)
 
-[Clojure API](http://rwferguson.bitbucket.org/drae/API/)
+[Clojure API](http://rwferguson.bitbucket.org/dray/API/)
 
-[Java API](http://rwferguson.bitbucket.org/drae/gui/index.html)
+[Java API](http://rwferguson.bitbucket.org/dray/gui/index.html)
 
-[Development Roadmap](https://bitbucket.org/rwferguson/drae/wiki/RoadMap)
+[Development Roadmap](https://bitbucket.org/rwferguson/dray/wiki/RoadMap)
 
 
 ## Quickstart
