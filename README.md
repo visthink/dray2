@@ -1,6 +1,14 @@
-# DRAE: Diagrammatic Reasoning and Analysis Engine
+![](https://bitbucket.org/rwferguson/drae/wiki/images/logo.png "DRAY")  ![](images/dray-small.jpg "Bringing you figures and tables since 2016!")
 
-[DRAE](https://bitbucket.org/rwferguson/drae) extracts elements from PDF and other vector files, and attempts to perform reasoning over those files.
+# **DRAY: A System for Document Representation and Analysis**
+
+## Introduction
+
+DRAY is a system for analyzing tables and figures in PDF documents. DRAY can read in PDF documents and then use *producers* to 1) select regions of a particular type (called *working sets*), and 2) run NLP and other recognition agents on working sets of a particular type. For example, one agent could be used to select images with captions and a second could be used to run a entity recognition system on the result.
+
+DRAY also has a GUI that allows the user to manually select working set regions and then run a set of predefined producers on those working sets.
+
+Current functionality is limited to marking up table and diagram content (which can be stored in a JSON overlay file) and generating JSON representations of table content.# DRAE: Diagrammatic Reasoning and Analysis Engine
 
 ## Documentation and API
 
@@ -10,7 +18,9 @@
 
 [Java API](http://rwferguson.bitbucket.org/drae/gui/index.html)
 
-[Roadmap]()
+[Roadmap](https://bitbucket.org/rwferguson/drae/wiki/RoadMap)
+
+[Contributors](https://bitbucket.org/rwferguson/drae/wiki/Contributors)
 
 ## Quickstart
 
@@ -60,3 +70,4 @@ Licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2
 
 
 
+I
