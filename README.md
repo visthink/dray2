@@ -14,7 +14,7 @@ Current functionality is limited to marking up table and diagram content (which 
 
 ## Documentation and API
 
-[Online Manual](https://bitbucket.org/rwferguson/dray/wiki/Home)
+[Instructional Wiki](https://bitbucket.org/rwferguson/dray/wiki/Home)
 
 [Clojure API](http://rwferguson.bitbucket.org/dray/API/)
 
@@ -27,41 +27,22 @@ Current functionality is limited to marking up table and diagram content (which 
 
 ### Installation using a precompiled jar file
 
-+ Install [pdftoxml](http://pdf2xml.sourceforge.net/). DRAE uses pdftoxml to do initial element extraction from the PDF, and to create image backgrounds and thumbnails.
++ Unzip the most recent archive from the [downloads folder](https://bitbucket.org/rwferguson/dray/downloads).
+
++ Install [pdftoxml](http://pdf2xml.sourceforge.net/). 
  
 + Edit [drae-settings.edn](./drae-settings.edn) to point to the pdftoxml executable. E.g.:
 
->  `:pdftoxml-executable "/Users/fergusonrw/bin/pdftoxml"`
+   `:pdftoxml-executable "/Users/fergusonrw/bin/pdftoxml"`
 
-+ Run the system from the jar file:
++ Run the system GUI using the drae script:
 
->  `java -jar <jarfilename>.jar`
+   `drae`
 
-### Compiling a new uberjar
-
-To compile a new uberjar:
-
-* Install [Leiningen](http://leiningen.org/), the Clojure build system based on Maven. This 
-  is done via a single downloadable script.
-
-* Create a new profiles.clj file from sample-profiles.clj. 
-
->   + Copy [sample-profiles.clj](sample-profiles.clj) to `profiles.clj` (in the same directory).  
->   + Edit `profiles.clj` to point to the Java compiler, e.g.: 
-      `:java-cmd "/Library/Java/JavaVirtualMachines/jdk1.7/bin/java"`
-
-* To compile the uberjar, use the lein command:
-
-> `lein uberjar`
-
-* You can also run the unit tests with the following command from the DRAE root directory:
-
-> `lein test`
 
 ## Feedback
 
-Feedback can either be sent directly to the developers 
-(*ronald.w.ferguson@leidos.com, daniel.j.powell@leidos.com*), or added as an issue on our [BitBucket site](https://bitbucket.org/rwferguson/drae).
+For now, feedback can be [added as an issue](https://bitbucket.org/rwferguson/dray/issues?status=new&status=open). We are hoping to add an email list in the near future.
 
 ## License
 
@@ -73,4 +54,5 @@ Licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2
 
 Code by Ronald W. Ferguson, Daniel Powell, Yanlin Guo, and Shane Frasier. Manual written by Danniel Powell with updates from Ron Ferguson.
 
-I
+Dray cart image by [Prawney Vintage](http://www.clipartof.com/portfolio/prawny-vintage). Licensed from ClipArtOf.com.
+
