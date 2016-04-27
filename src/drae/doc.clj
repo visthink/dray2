@@ -33,8 +33,9 @@
 (defn bbox-union 
   "Create a new bounding box that contains all the given bounding boxes. May be a little slow." 
   [& bboxes]
-  (let [u (reduce (fn [^Rectangle2D b1, ^Rectangle2D b2] (.createUnion b1 b2)) bboxes)]
-    (make-bbox (.getX u) (.getY u) (.getWidth u) (.getHeight u))))
+  (if-not (empty? bboxes)
+   (let [u (reduce (fn [^Rectangle2D b1, ^Rectangle2D b2] (.createUnion b1 b2)) bboxes)]
+     (make-bbox (.getX u) (.getY u) (.getWidth u) (.getHeight u)))))
 
 
 (defn bbox->bbox-map

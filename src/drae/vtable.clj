@@ -146,8 +146,10 @@
 
 (defn- vrows-from-vcols [vcols]
   ;; This is pretty limited -- we're just taking the cells in order.
-  (let [row-lists (apply map list (map #(.data-items %) vcols))]
-    (map make-vrow row-lists)))
+  ;; To avoid error in apply/map, first make sure that vcols != nil.
+  (if-not (empty? vcols)
+    (let [row-lists (apply map list (map #(.data-items %) vcols))]
+      (map make-vrow row-lists))))
 
 ;;; @@ Okay, we have the grouping sets to use for partitioning. Now we
 ;;; just need to modifiy ws->vcol appropriately (see above).
