@@ -33,8 +33,8 @@ import com.leidos.bmech.model.Layer;
 import com.leidos.bmech.model.WorkingSet;
 import com.leidos.bmech.view.DataManagerView;
 
-import drae.j.BoundingBox;
-import drae.j.VisualElement.*;
+import dray.j.BoundingBox;
+import dray.j.VisualElement.*;
 
 /**
  * the drawing canvas used to draw the document and serve as the most used

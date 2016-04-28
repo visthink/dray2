@@ -17,9 +17,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.leidos.bmech.gui.UtiliBuddy;
-import drae.j.BoundingBox;
-import drae.j.VisualElement.El;
-import drae.j.VisualElement.VText;
+import dray.j.BoundingBox;
+import dray.j.VisualElement.El;
+import dray.j.VisualElement.VText;
 
 /**
  * WorkingSet is a rectangular subsection of a pdf document
@@ -925,7 +925,7 @@ public class WorkingSet {
   }
 
   /**
-   * get a list of drae.j.VisualElement.El objects that are FULLY inside of the
+   * get a list of dray.j.VisualElement.El objects that are FULLY inside of the
    * rectangle
    * 
    * @param dragRectDescaled

@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.leidos.bmech.model.WorkingSet;
 
-import drae.j.VisualElement.VCell;
-import drae.j.VisualElement.VCol;
-import drae.j.VisualElement.VTable;
-// import drae.j.VisualElement.VText;
+import dray.j.VisualElement.VCell;
+import dray.j.VisualElement.VCol;
+import dray.j.VisualElement.VTable;
+// import dray.j.VisualElement.VText;
 
 public class EvidenceGatherer {
 	GeneGazetteer gg;

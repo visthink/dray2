@@ -1,0 +1,126 @@
+;;; Default settings for DRAE -- DO NOT MODIFY
+;;; 
+;;; To override these settings, copy this file into a file named ".drae-settings"
+;;; in either the project root directory or your home directory.
+;;;
+;;; Precedence: 1) .drae-settings in user home directory
+;;;             2) .drae-settings in project directory (location of code or jar file)
+;;;             3) .default-dray-settings in project directory
+;;;
+;;; Only overridden settings should be included in the non-default file.
+;;;
+;;; Settings are read once upon demand, and then saved in memory. Changes to this
+;;;  file will not change the settings in any running instances of the program.
+{ 
+  
+   ;; Path to python executable (default: will search for "python" using unix which command).
+
+   :python-executable ""
+  
+   ;; Location of pdftoxml executable (default: will search for "pdftoxml" using unix which command).
+   
+   :pdftoxml-executable ""
+   
+   ;; Additional locations to look for external executables (Unix or Mac only)
+   
+   :additional-executable-paths []
+
+   ;; BEE executable path. Default: Look in the ../bee_build directory.
+   
+   :bee-executable "./src/bee_build/beelibtester"
+
+   ;; If true, use Ghostscript instead of pdfbox to render full pages.
+   :use-ghostscript false
+   
+   ;; Path for Ghostscript
+   :ghostscript-executable "/usr/local/bin/gs"
+   
+   :ontologies
+   {:biopax-full 
+    {:name "BioPax Full"
+     :doc "Full instance of BioPax."
+     :path nil ;; Must set.
+     }
+    :raf-cascade
+     {:name "RAF Cascade"
+      :doc "Sample RAF Cascade data"
+      :path "resources/ontologies/RAF-Cascade.owl"}
+    :pather1
+     {:name "Pather1"
+      :doc "Panther data"
+      :path "/Users/fergusonrw/Data/Ontologies/BioPax/Pathway Commons.5.PANTHER Pathway.BIOPAX.owl"
+      }
+     }
+
+   ;; Array with paths to corpora directories. Each directory should contain a corpora.clj file
+   ;;  and a subdirectory for each corpus.
+   ;;
+   ;; The following are descriptions of the default corpora that can be used by the system.
+   ;; Individual corpora can be accessed using the `dray.corpus/corpus` function.
+   ;;
+   ;; Note that some corpora may be missing in your particular distribution due to rights issue.
+   ;; The core-test corpus is always included because it is used by the testing routines, and 
+   ;; because the included PDFs are covered by a Creative Commons license that permits 
+   ;; commercial redistribution.
+   ;;
+   :corpora 
+   {:anthrax	
+    {:name "Anthrax Sample Corpus"
+     :doc  "A set of single-page PDF extracts on anthrax and other Category A bioterror agents."
+     :path 	"resources/corpora/anthrax"
+     }
+    :core-test
+    {:name "DRAE Core Test Corpus"
+     :doc  "A set of redistributable PDFs that are used by the DRAE testing routines."
+     :path "resources/corpora/core-test"
+    }
+    :demo1
+    {:name "DEMO Set 1"
+     :doc "A set of files for the Jan 2015 demo."
+     :path "resources/corpora/demo1"
+     }
+    :icdar2013-eu
+    {:name "ICDAR 2013 - Europe"
+     :doc "PDF files used for the ICDAR 2013 competition (EU documents)"
+     :path "resources/corpora/competition-dataset-eu"
+     }
+    :icdar2013-us
+    {:name "ICDAR 2013 - US"
+     :doc "PDF files used for the ICDAR 2013 competition (US documents)"
+     :path "resources/corpora/competition-dataset-us"
+     }
+    :ebola 
+    {:name "Ebola tables full"
+     :doc "Ebola paper set - Full papers with tables"
+     :path "resources/corpora/ebola"}
+    :kinetic
+    {:name "Kinetics papers"
+     :doc "Set of kinetics paper for parameter extraction."
+     :path "resources/corpora/kinetic"}
+    :wmd
+    {:name "WMD Sample Corpus"
+     :doc  "A set of single-page PDF extracts on aspects of WMD"
+     :path "resources/corpora/wmd"
+     }
+    :wnt
+    {:name "WNT path corpus"
+     :doc "Single-page diagrams involving the WNT signalling pathway"
+     :path "resources/corpora/wnt-pv"
+     }
+    :tables
+    {:name "WNT table corpus"
+     :doc "Single-page tables involving the WNT signalling pathway"
+     :path "resources/corpora/wnt-tables"
+     }
+    :ras 
+    {:name "RAS articles"
+     :doc "Full articles and supplementary materials on RAS"
+     :path "resources/corpora/ras"
+     }
+    :ring
+    {:name "RAS Ring"
+     :doc "Selected pages from Bringing RAS back into the Ring"
+     :path "resources/corpora/ring"
+     }
+    }
+   }

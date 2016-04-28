@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.tree.TreeNode;
 import com.leidos.bmech.gui.UtiliBuddy;
-import drae.j.VisualElement.El;
-import drae.j.VisualElement.VText;
+import dray.j.VisualElement.El;
+import dray.j.VisualElement.VText;
 
 public class LayerList extends LinkedHashMap<String, Layer>{
 

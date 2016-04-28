@@ -38,7 +38,7 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#DataManager(drae.j.VisualElement.VDocument)}.
+	 * Test method for {@link com.leidos.bmech.model.DataManager#DataManager(dray.j.VisualElement.VDocument)}.
 	 */
 	@Test
 	public void testDataManagerVDocument() {
@@ -54,7 +54,7 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#loadFromVDocument(drae.j.VisualElement.VDocument)}.
+	 * Test method for {@link com.leidos.bmech.model.DataManager#loadFromVDocument(dray.j.VisualElement.VDocument)}.
 	 */
 	@Test
 	public void testLoadFromVDocument() {

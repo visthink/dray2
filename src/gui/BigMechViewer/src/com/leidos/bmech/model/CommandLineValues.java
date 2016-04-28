@@ -8,7 +8,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 /**
- * Handle the programs arguments for DRAE.
+ * Handle the programs arguments for DRAY.
  */
 public class CommandLineValues {
   
