@@ -10,7 +10,7 @@ DRAY is a system for analyzing tables and figures in PDF documents. DRAY can rea
 
 DRAY also has a GUI that allows the user to manually select working set regions and then run a set of predefined producers on those working sets.
 
-Current functionality is limited to marking up table and diagram content (which can be stored in a JSON overlay file) and generating JSON representations of table content.# DRAE: Diagrammatic Reasoning and Analysis Engine
+Current functionality is limited to marking up table and diagram content (which can be stored in a JSON overlay file) and generating JSON representations of table content.
 
 ## Documentation and API
 
