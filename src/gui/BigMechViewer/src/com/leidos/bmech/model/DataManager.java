@@ -34,15 +34,15 @@ import clojure.lang.IFn;
 import com.leidos.bmech.analysis.EvidenceGatherer;
 import com.leidos.bmech.view.DataManagerView;
 
-import drae.j.BoundingBox;
-import drae.j.Doc;
-import drae.j.Producer.Table;
-import drae.j.VisualElement.El;
-import drae.j.VisualElement.VDocument;
-import drae.j.VisualElement.VImage;
-import drae.j.VisualElement.VPage;
-import drae.j.VisualElement.VTable;
-import drae.j.VisualElement.VText;
+import dray.j.BoundingBox;
+import dray.j.Doc;
+import dray.j.Producer.Table;
+import dray.j.VisualElement.El;
+import dray.j.VisualElement.VDocument;
+import dray.j.VisualElement.VImage;
+import dray.j.VisualElement.VPage;
+import dray.j.VisualElement.VTable;
+import dray.j.VisualElement.VText;
 
 /**
  * This class is responsible for managing all of the data, as well as
@@ -193,7 +193,7 @@ public class DataManager extends Observable {
     @SuppressWarnings("rawtypes")
     List items = (List) vPage.getItems();
     for (int j = 0; j < items.size(); j++) {
-      if (items.get(j) instanceof drae.j.VisualElement.El) {
+      if (items.get(j) instanceof dray.j.VisualElement.El) {
         pageWS.addItem((El) items.get(j));
         El el = (El) items.get(j);
         if (el instanceof VText) {
@@ -254,10 +254,10 @@ public class DataManager extends Observable {
   }
 
   /**
-   * Get a reference to the drae.j.VDocument instance currently being used by
+   * Get a reference to the dray.j.VDocument instance currently being used by
    * the GUI
    * 
-   * @return the current drae.j.VDocument instance
+   * @return the current dray.j.VDocument instance
    */
   public VDocument getVDocument() {
     return vDocument;
@@ -347,7 +347,7 @@ public class DataManager extends Observable {
   }
 
   /**
-   * get a list of drae.j.VisualElement.El objects that are FULLY inside of the
+   * get a list of dray.j.VisualElement.El objects that are FULLY inside of the
    * rectangle
    * 
    * @param dragRectDescaled
@@ -786,18 +786,18 @@ public class DataManager extends Observable {
 
   private void printHelp() {
     System.out.println("Big Mechanism Table Extraction Interface");
-    System.out.println("Usage: java -jar draegui.jar <options>");
-    System.out.println("java -jar draegui.jar                    launch GUI.");
-    System.out.println("java -jar draegui.jar -h                 print this message");
-    System.out.println("java -jar draegui.jar <filename.pdf>     save rep info");
-    System.out.println("java -jar draegui.jar <directory>        save rep info for all valid pdfs");
+    System.out.println("Usage: java -jar draygui.jar <options>");
+    System.out.println("java -jar draygui.jar                    launch GUI.");
+    System.out.println("java -jar draygui.jar -h                 print this message");
+    System.out.println("java -jar draygui.jar <filename.pdf>     save rep info");
+    System.out.println("java -jar draygui.jar <directory>        save rep info for all valid pdfs");
   }
 
   private void loadClojure() {
     System.out.println("loading clojure core");
     IFn require = Clojure.var("clojure.core", "require");
-    require.invoke(Clojure.read("drae.core"));
-    IFn populateFn = Clojure.var("drae.core", "populate-gui-tables");
+    require.invoke(Clojure.read("dray.core"));
+    IFn populateFn = Clojure.var("dray.core", "populate-gui-tables");
     populateFn.invoke();
   }
 }

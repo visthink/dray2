@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/dev/BigMechanism/drae/src/gui/BigMechViewer/lib/paxtools-4.2.1.jar"/>
-	<classpathentry kind="lib" path="C:/dev/BigMechanism/drae/src/gui/BigMechViewer/lib/cpath-client-4.2.0-SNAPSHOT-fat-jar.jar"/>
-	<classpathentry kind="lib" path="C:/dev/BigMechanism/drae/src/gui/BigMechViewer/lib/PDFRenderer-0.9.1.jar"/>
+	<classpathentry kind="lib" path="C:/dev/BigMechanism/dray/src/gui/BigMechViewer/lib/paxtools-4.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/dev/BigMechanism/dray/src/gui/BigMechViewer/lib/cpath-client-4.2.0-SNAPSHOT-fat-jar.jar"/>
+	<classpathentry kind="lib" path="C:/dev/BigMechanism/dray/src/gui/BigMechViewer/lib/PDFRenderer-0.9.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

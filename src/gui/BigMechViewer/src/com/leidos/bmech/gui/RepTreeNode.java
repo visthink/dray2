@@ -6,7 +6,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import com.leidos.bmech.model.Layer;
 import com.leidos.bmech.model.LayerList;
 
-import drae.j.Producer.Table;
+import dray.j.Producer.Table;
 
 public class RepTreeNode extends DefaultMutableTreeNode {
   

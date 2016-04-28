@@ -10,9 +10,9 @@ import java.util.Set;
 import com.leidos.bmech.model.Layer;
 import com.leidos.bmech.model.WorkingSet;
 
-import drae.j.VisualElement.El;
-import drae.j.VisualElement.VText;
-import drae.j.VisualElement.VTextToken;
+import dray.j.VisualElement.El;
+import dray.j.VisualElement.VText;
+import dray.j.VisualElement.VTextToken;
 
 
 public class TextAnalyzer {

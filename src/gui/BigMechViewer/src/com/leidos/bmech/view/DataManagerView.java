@@ -7,7 +7,7 @@ import com.leidos.bmech.gui.ViewerApp;
 import com.leidos.bmech.model.DataManager;
 import com.leidos.bmech.model.WorkingSet;
 
-// import drae.j.VisualElement.El;  // Not used?
+// import dray.j.VisualElement.El;  // Not used?
 
 /**
  * DataManagerView -- this class is responsible for maintaining

@@ -1,4 +1,4 @@
-;;;; project.clj  -  Lein specification for the DRAE project.
+;;;; project.clj  -  Lein specification for the DRAY project.
 ;;;;
 ;;;; This file specifies the project dependencies using lein, a 
 ;;;; Clojure version of maven: http://leiningen.org/
@@ -8,12 +8,12 @@
 ;;;;
 (defproject dray "0.5.0-SNAPSHOT"
   :description 
-  "DRAE (Diagrammatic Reasoning and Analysis Engine) is a framework for performing graphical and 
+  "DRAY (Diagrammatic Representation and Analysis) is a framework for performing graphical and 
    structural analysis of PDF and other document files. It is currently in development."
-  :url "http://leidos.com"
+  :url "https://bitbucket.org/rwferguson/dray"
   :license 
-     {:name "Government-purpose rights"}
-  :main drae.core
+     {:name "Apache License 2.0"}
+  :main dray.core
   :repositories 
      [["java.net" "http://download.java.net/maven/2"]
       ["biopax-releases" "http://www.biopax.org/m2repo/releases/"]
@@ -25,11 +25,11 @@
   :min-lein-version "2.0.0"
   ; :pedantic? :warn ;; Warn on library version conflicts
   ;
-  ;; Libraries used by DRAE.
+  ;; Libraries used by DRAY.
   ;; 
   ;; Licensing for libraries are as follows:
   ;;
-  ;;  [A2]  Apache License v. 2.0, the same as DRAE
+  ;;  [A2]  Apache License v. 2.0, the same as DRAY
   ;;  [E1]  Eclipse Public License v 1.0, the same as Clojure.
   ;;  [MIT] MIT License
   ;;  [L2]  GNU Lesser General Public License, v2.0 (non-viral)
@@ -56,13 +56,13 @@
       [lein-environ "1.0.0"]
       [lein-javadoc "0.2.0"]] 
   :codox 
-     {:exclude [drae.ext.lisp   ;; Not used.
-                drae.ext.python 
-                drae.pipeline2
-                drae.j.paxtools ;; Hidden record def.
-                drae.test-data  ;; Hidden (not part of API).
+     {:exclude [dray.ext.lisp   ;; Not used.
+                dray.ext.python 
+                dray.pipeline2
+                dray.j.paxtools ;; Hidden record def.
+                dray.test-data  ;; Hidden (not part of API).
                 ] 
-      :project {:name "DRAE"}
+      :project {:name "DRAY"}
       :defaults {:doc/format :markdown}
       :output-dir "doc/API"
       }
@@ -90,26 +90,26 @@
   :javac-options ["-target" "1.8" "-source" "1.8"]
   :java-source-paths ["src/gui/BigMechViewer/src"]
 
-  ;; Compilation: We first precompile many of the drae.j.* classes, then 
+  ;; Compilation: We first precompile many of the dray.j.* classes, then 
   ;;              compile the Java code, then the remaining Clojure code.
   
   :prep-tasks [
                ;;-- Clojure records and generated classes
                ["compile" 
-                "drae.j.VisualElement" 
-                "drae.j.Doc"
-                "drae.j.paxtools"
-                "drae.j.Paxll"
-                "drae.j.Toys"
-                "drae.j.Producer"
+                "dray.j.VisualElement" 
+                "dray.j.Doc"
+                "dray.j.paxtools"
+                "dray.j.Paxll"
+                "dray.j.Toys"
+                "dray.j.Producer"
                 ]
                ;; -- Java code compile (for GUI)
                "javac"
-               ;; -- Compile remaining AOT-compilation items (just drae.core/main).
+               ;; -- Compile remaining AOT-compilation items (just dray.core/main).
               #_ "compile"
                ]
   
-  :aot [drae.core]
+  :aot [dray.core]
 
   :aliases {"newdoc" ["do" "clean" ["doc"] ["javadoc"]]}
 

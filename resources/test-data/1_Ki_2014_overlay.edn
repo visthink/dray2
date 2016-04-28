@@ -1,7 +1,7 @@
  {:name "document",
   :type working-set,
   :filename
-  "/Users/fergusonrw/Documents/Leidos_Workspace/drae/resources/corpora/core-test/1_Ki_2014.pdf",
+  "/Users/fergusonrw/Documents/Leidos_Workspace/dray/resources/corpora/core-test/1_Ki_2014.pdf",
   :children
   ({:name "page1",
     :bbox {:x 56.0, :y 17.0, :width 483.0, :height 738.0},

@@ -18,8 +18,8 @@ import javax.swing.tree.TreePath;
 
 import com.leidos.bmech.model.Layer;
 import com.leidos.bmech.gui.RepTreeNodeMenu;
-import drae.j.VisualElement.VText;
-import drae.j.Producer.Table;
+import dray.j.VisualElement.VText;
+import dray.j.Producer.Table;
 
 public class RepresentationJTree extends JTree {
 

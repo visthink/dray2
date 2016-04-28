@@ -1,10 +1,10 @@
 ;;;; 
-;;;; (sample-)profiles.clj   User-specific settings for the DRAE project.
+;;;; (sample-)profiles.clj   User-specific settings for the DRAY project.
 ;;;;
 ;;;; *** Resave file as profiles.clj and edit as indicated below.
 ;;;;
 ;;;; Instructions: This file, if renamed to profiles.clj, sets user-specific overrides for 
-;;;; running and compiling drae. It provides values for system-specific settings
+;;;; running and compiling dray. It provides values for system-specific settings
 ;;;; that are then used by Leiningen. 
 ;;;;
 ;;;; User-wide defaults for all lein-based projects can also be set 

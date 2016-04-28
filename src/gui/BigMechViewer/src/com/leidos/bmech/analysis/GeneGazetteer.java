@@ -9,9 +9,9 @@ import java.util.LinkedList;
 import com.leidos.bmech.gui.UtiliBuddy;
 import com.leidos.bmech.model.WorkingSet;
 
-import drae.j.VisualElement.El;
-import drae.j.VisualElement.VText;
-// import drae.j.VisualElement.VTextToken;
+import dray.j.VisualElement.El;
+import dray.j.VisualElement.VText;
+// import dray.j.VisualElement.VTextToken;
 
 public class GeneGazetteer implements Gazetteer {
 	@SuppressWarnings("rawtypes")

@@ -78,13 +78,13 @@ import com.leidos.bmech.view.DataManagerView;
 
 import clojure.java.api.Clojure;
 import clojure.lang.IFn;
-import drae.j.BoundingBox;
-import drae.j.Doc;
-import drae.j.Producer.Table;
-//import drae.j.Producer.Entry;
-import drae.j.VisualElement.El;
-// import drae.j.VisualElement.SplittableEl;
-import drae.j.VisualElement.VPage;
+import dray.j.BoundingBox;
+import dray.j.Doc;
+import dray.j.Producer.Table;
+//import dray.j.Producer.Entry;
+import dray.j.VisualElement.El;
+// import dray.j.VisualElement.SplittableEl;
+import dray.j.VisualElement.VPage;
 
 /**
  * the GUI for interacting with PDF Documents. All interractions with the data
@@ -169,7 +169,7 @@ public class ViewerApp implements Observer, ActionListener {
   /**
    * another function to start the GUI
    */
-  public static ViewerApp startDrae(String[] args) {
+  public static ViewerApp startDray(String[] args) {
     final CommandLineValues cmd = new CommandLineValues(args);
     if (!cmd.isErrorFree())
       return null;
@@ -224,15 +224,15 @@ public class ViewerApp implements Observer, ActionListener {
      * null | !file.isDirectory()){ System.out.println(
      * "WARNING: The environment variable BANNER_DATA=" + path +
      * " is not a valid directory. " +
-     * "Please set BANNER_DATA to {path/to/drae}/resources/banner_data/ " +
+     * "Please set BANNER_DATA to {path/to/dray}/resources/banner_data/ " +
      * "via your operating system. Some text parsing tools will be " +
      * "unavailable."); }
      * 
      */
     IFn require = Clojure.var("clojure.core", "require");
-    require.invoke(Clojure.read("drae.core"));
+    require.invoke(Clojure.read("dray.core"));
 
-    IFn populateFn = Clojure.var("drae.core", "populate-gui-tables");
+    IFn populateFn = Clojure.var("dray.core", "populate-gui-tables");
     // IFn populateFn = Clojure.var("clojure.core", "+");
     populateFn.invoke();
     frame = new JFrame();
