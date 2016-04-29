@@ -502,17 +502,24 @@ public class DataManager extends Observable {
   private void loadImage(final int pageNumber) throws IOException {
     pageImageStatus[pageNumber] = 0; // loading
 
+    System.out.println("Entering loadImage for page number " + pageNumber);
+    
     SwingWorker<BufferedImage, Void> worker = new SwingWorker<BufferedImage, Void>() {
+      
       @Override
       protected BufferedImage doInBackground() throws Exception {
+        System.out.println("-- Running the image loading in background for page " + pageNumber);
         if (Doc.useGhostscript()) {
+          System.out.println("Using Ghostscript");
           return ImageIO.read(Doc.getPageImageFor(getPdfFile(), pageNumber + 1));
         } else {
+          System.out.println("0. Loading the PDF file.");
           PDDocument document = PDDocument.load(getPdfFile());
           // List<PDPage> pageList =
           // document.getDocumentCatalog().getAllPages();
           // PDPageTree pgtre.getPage(pageIndex)
           PDFRenderer renderer = new PDFRenderer(document);
+          System.out.println("2. About to render the page.");
           return renderer.renderImageWithDPI(pageNumber, 600);
           /*
            * ImageFilter filter = new RGBImageFilter() { int transparentColor =
@@ -542,24 +549,39 @@ public class DataManager extends Observable {
 
       // Can safely update the GUI from this method.
       protected void done() {
+      //  System.out.println("Calling DataManager.done() for page " + pageNumber);
+      //  System.out.println("Value of view is "+view.toString());
         BufferedImage image;
         try {
+       //   System.out.println("Made it to 0.");
+          // Let's try to check if the computation was consider done or was cancelled.
+       //   System.out.println("IsDone: " + isDone() + " isCancelled: " + isCancelled());
+          if (isCancelled()) return; // Abort if the computation was cancelled.
+       //   System.out.println("Made it to 0.3");
           image = get();
+       //   System.out.println("Made it to 0.5.");
           double aspect = (double) image.getWidth() / (double) image.getHeight();
+       //   System.out.println("Made it to 1.");
           BufferedImage iconImage = new BufferedImage(128, (int) (128 / aspect), BufferedImage.TYPE_INT_RGB);
+       //   System.out.println("Made it to 2.");
           Graphics2D g = iconImage.createGraphics();
+      //    System.out.println("Made it to 3.");
           g.drawImage(image, 0, 0, 128, (int) (128 / aspect), null);
           setImage(image, pageNumber);
           setIcon(iconImage, pageNumber);
+      //    System.out.println("Made it to 4.");
           pageImageStatus[pageNumber] = 1; // loading
           setChanged();// Observable Pattern: inform gui that images have
                        // changed
+      //    System.out.println("Made it to 5.");
           notifyObservers();
         } catch (InterruptedException e) {
           // TODO Auto-generated catch block
+          System.out.println("Interrupted exception in DataManager.done()");
           e.printStackTrace();
         } catch (ExecutionException e) {
           // TODO Auto-generated catch block
+          System.out.println("Execution exception in DataManager.done()");
           e.printStackTrace();
         }
 
