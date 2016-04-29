@@ -1,0 +1,46 @@
+#/bin/bash
+#
+# make-distribution - Short script to create a distribution package.
+#
+# Create a distribution package containing the uberjar, the configuration files, and
+# the documentation, and then zips it up.
+#
+
+echo "** Creating a distribution for DRAY."
+
+#echo "** Running cleanup."
+#lein clean
+
+echo "** Creating the uberjar."
+lein uberjar
+
+echo "** Generating documentation."
+lein doc
+lein javadoc
+
+# Set up timestamp variable
+distrodir=$( date "+DRAY-0.5.0-%Y.%m.%d" )
+
+echo "** Creating distibution" $distrodir
+
+# rm -r $distrodir
+
+if [ ! -d $distrodir ]
+then
+  echo "** Creating distribution directory."
+  mkdir $installdir
+fi
+
+echo "** Copying jar file into distribution directory."
+cp target/*standalone*.jar $distrodir
+
+echo "** Copying documentation."
+cp README.md $distrodir
+cp -r doc $distrodir
+
+echo "** Copying configuration files."
+cp dray*-settings.edn $distrodir
+
+echo "** Done."
+
+
