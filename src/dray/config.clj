@@ -22,7 +22,10 @@
   "Returns a map of all the dray settings, based on the 
    current settings retrieved from the set of dray settings files."
   []
-  (apply merge (map #(-> % slurp edn/read-string) (dray-settings-files))))
+  (let [settings-file-list (dray-settings-files)]
+    (if (empty? settings-file-list)
+      (uerr "Could not find config file dray-settings.edn")
+     (apply merge (map #(-> % slurp edn/read-string) settings-file-list)))))
 
 (def dray-settings 
   "Returns a map of all the dray settings, based on the settings retrieved 
