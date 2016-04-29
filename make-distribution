@@ -28,7 +28,7 @@ echo "** Creating distibution" $distrodir
 if [ ! -d $distrodir ]
 then
   echo "** Creating distribution directory."
-  mkdir $installdir
+  mkdir $distrodir
 fi
 
 echo "** Copying jar file into distribution directory."
@@ -40,6 +40,9 @@ cp -r doc $distrodir
 
 echo "** Copying configuration files."
 cp dray*-settings.edn $distrodir
+
+echo "** Copying run script."
+cp resources/scripts/dray-run-local $distrodir/dray
 
 echo "** Done."
 
