@@ -22,6 +22,9 @@ public class Layer {
 
 	// CONSTRUCTOR
 	
+	/*
+	 * Create an empty layer with a name.
+	 */
 	public Layer(String name) {
 		this.name = name;
 		items = new ArrayList<El>();
