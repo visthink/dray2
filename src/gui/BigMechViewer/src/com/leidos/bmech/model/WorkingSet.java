@@ -125,6 +125,7 @@ public class WorkingSet {
   public void setTags(List<String> val) {
     this.tags = val;
   }
+  
   public boolean isAutoTableReady() {
     return true;//this.getChildrenWithTag(TypeTag.COLUMN).size() > 1;
 }

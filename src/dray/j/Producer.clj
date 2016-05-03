@@ -3,6 +3,8 @@
   (:import  (java.util ArrayList Map)
             (java.lang String))
   (:require [clojure.data.json :as json]
+            [clojure.edn :as edn]
+            [clojure.walk :refer [prewalk]]
             [seesaw.invoke :refer [invoke-now]]
             [seesaw.chooser :refer [choose-file]]
             #_[dray.gui :refer [gui-save-map-as-json]]
@@ -20,7 +22,9 @@
                 ^{:static true} [getWSProducer [java.lang.String] java.util.Map]
                 ^{:static true} [getLayerProducer [java.lang.String] java.util.Map]
                 ^{:static true} [layerRepToJSON [java.lang.Object] java.lang.String]
+                ^{:static true} [layerToJSONString [java.lang.Object] java.lang.String] 
                 ^{:static true} [stringToKeyword [java.lang.String] clojure.lang.Keyword]
+                ^{:static true} [parseProducerList [java.lang.String] java.util.ArrayList]
                 ]
                
             )
@@ -135,6 +139,11 @@
   (invoke-now 
     (choose-file #_(.getFrame (current-gui)) :type :save)))
 
+(defn layer-as-JSON-string 
+  "Return a JSON value as a formatted string."
+  [m]
+  (with-out-str (json/pprint m)))
+    
 (defn gui-save-map-as-json 
   "Save the given map (or other json-writable form) as a JSON file."
  [m]
@@ -142,6 +151,10 @@
    (when filename
      (let [res (with-out-str (json/pprint m))]
        (spit filename res)))))
+
+(defn -layerToJSONString "Given a hashmap, return the hashmap as a JSON representation string."
+  [layer-rep]
+  (layer-as-JSON-string layer-rep))
 
 (defn -layerRepToJSON "Given a hashmap, return the hashmap as a JSON representation string."
   [layer-rep]
@@ -153,5 +166,22 @@
   (gui-save-map-as-json layer-rep))
 
 (defn -stringToKeyword [s] (keyword s))
+
+(defn -parseProducerList 
+  "Parse the input string, which is a Clojure array of arrays expression,
+   and return the array of arrays."
+  [s]
+  (let [stringify-fn #(if (symbol? %) (str %) %)
+        result (prewalk stringify-fn (edn/read-string s))] ;; Parse, then replace symbols with strings.
+    ;; If array-of-arrays, we're good.
+    ;; If array of strings, then we need to nest one more level.
+    ;; No error checking at this point, alas.
+    (cond
+      (string? (first result))         ;; One level deep, make into two-level deep singleton.
+        (ArrayList. (list (ArrayList. result)))
+      (coll? (first result))           ;; Two level deep, keep as array of arrays.
+        (ArrayList. (map #(ArrayList. %) result)) 
+      :else 
+        (uerr "Could not parse producer string of %s." s))))
 
 

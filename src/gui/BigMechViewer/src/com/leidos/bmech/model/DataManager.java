@@ -45,8 +45,7 @@ import dray.j.VisualElement.VTable;
 import dray.j.VisualElement.VText;
 
 /**
- * This class is responsible for managing all of the data, as well as
- * interfacing with the external code (e.g. Clojure)
+ * The DataManager manages all of the data for a single PDF file.
  * 
  * @author powelldan
  *
@@ -67,6 +66,7 @@ public class DataManager extends Observable {
   EvidenceGatherer                 eg;
   int                              preprocessState; // -1: not started; 0:
                                                     // underway; 1: done
+  ArrayList<?>                     defaultProducers;
 
   public DataManager() {
     super();
@@ -81,7 +81,7 @@ public class DataManager extends Observable {
   }
 
   /**
-   * initialize DataManager with data from a vdocument
+   * Initialize DataManager with data from a VDocument object.
    * 
    * @param doc
    */
@@ -91,10 +91,10 @@ public class DataManager extends Observable {
   }
 
   /**
-   * initialize Datamanager with data from pdf. Don't load images
+   * Initialize Datamanager from PDF file, but don't load images.
    * 
    * @param pdf
-   *          the pdf to load
+   *          The PDF file to load
    */
   public DataManager(File pdf) {
     this();
@@ -103,8 +103,8 @@ public class DataManager extends Observable {
   }
 
   /**
-   * initialize DataManager with data from pdf. Internal vdocument will be
-   * loaded by the constructor.
+   * Initialize DataManager from PDF file. Internal vdocument will be
+   * loaded by the constructor. Load images for GUI display.
    * 
    * @param pdf
    * @param lazyLoadImages
@@ -121,7 +121,7 @@ public class DataManager extends Observable {
   }
 
   public void loadFromVDocument(VDocument doc) {
-    // call clojure to populate the VDocument
+
     vDocument = doc;
     headWS = new WorkingSet(null, "document");
     headWS.setFilename((String) doc.getFilename());
@@ -129,7 +129,6 @@ public class DataManager extends Observable {
     @SuppressWarnings("rawtypes")
     List vPages = (List) vDocument.getItems();
     pageIconList = new BufferedImage[vPages.size()];
-    // pageImageList = new BufferedImage[vPages.size()];
 
     for (int i = 0; i < vPages.size(); i++) {
       createPageWS(i);
@@ -144,27 +143,28 @@ public class DataManager extends Observable {
    * when they are used
    */
   public void loadFromPdf(boolean lazyLoadImages) {
+    
     setPreprocessState(-1);
 
     if (pdfFile == null) {
-      System.err.println("ERROR: pdfFile is null");
+      System.err.println("ERROR: PDF file pointer is null");
       return;
     }
+    
     if (!pdfFile.exists()) {
-      System.err.println("ERROR: pdfFile doesnt exist");
+      System.err.println("ERROR: PDF file " + pdfFile.toString() + " doesnt exist.");
       return;
     }
-    System.out.println(pdfFile);
-    // call clojure to populate the VDocument
+    
+    // System.out.println(pdfFile);
+    // Call Clojure to populate the VDocument
+    
     vDocument = (VDocument) Doc.getVDocument(pdfFile);
+    
     headWS = new WorkingSet(null, "document");
-    try {
-      headWS.setFilename(pdfFile.getCanonicalPath().replace('\\', '/'));
-    } catch (IOException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
+    headWS.setFilename(replaceFilenameBackslashes(pdfFile)); // For Windows.
     view.setCurrentWS(headWS);
+    
     @SuppressWarnings("rawtypes")
     List vPages = (List) vDocument.getItems();
     pageImageList = new BufferedImage[vPages.size()];
@@ -177,13 +177,26 @@ public class DataManager extends Observable {
     }
 
     for (int i = 0; i < vPages.size(); i++) {
-      System.out.println("Creating page ws " + i);
+      // System.out.println("Creating page ws " + i);
       createPageWS(i);
     }
-    System.out.println("Done creating pages");
+    // System.out.println("Done creating pages");
 
   }
 
+  // Helper method - Replace backslashes for Windows filenames.
+  static private String replaceFilenameBackslashes (File myfile) {
+    String newFilename = "";
+    try {
+      newFilename = myfile.getCanonicalPath().replace('\\', '/');
+    } catch (IOException e1) {
+      System.out.println("Attempted but failed to replace backslashes with slashes for " 
+                         + myfile.toString());
+      e1.printStackTrace();
+    }
+    return newFilename;
+  }
+  
   private void createPageWS(int pageIndex) {
     @SuppressWarnings("rawtypes")
     List vPages = (List) vDocument.getItems();
@@ -262,11 +275,6 @@ public class DataManager extends Observable {
   public VDocument getVDocument() {
     return vDocument;
   }
-
-  // @SuppressWarnings("unused")
-  // private void setVDocument(VDocument vdoc) {
-  // this.vDocument = vdoc;
-  // }
 
   public WorkingSet getHeadWorkingSet() {
     return headWS;
@@ -508,42 +516,13 @@ public class DataManager extends Observable {
       
       @Override
       protected BufferedImage doInBackground() throws Exception {
-        System.out.println("-- Running the image loading in background for page " + pageNumber);
         if (Doc.useGhostscript()) {
           System.out.println("Using Ghostscript");
           return ImageIO.read(Doc.getPageImageFor(getPdfFile(), pageNumber + 1));
         } else {
-          System.out.println("0. Loading the PDF file.");
           PDDocument document = PDDocument.load(getPdfFile());
-          // List<PDPage> pageList =
-          // document.getDocumentCatalog().getAllPages();
-          // PDPageTree pgtre.getPage(pageIndex)
           PDFRenderer renderer = new PDFRenderer(document);
-          System.out.println("2. About to render the page.");
           return renderer.renderImageWithDPI(pageNumber, 600);
-          /*
-           * ImageFilter filter = new RGBImageFilter() { int transparentColor =
-           * Color.white.getRGB() | 0xFF000000;
-           * 
-           * public final int filterRGB(int x, int y, int rgb) { if ((rgb |
-           * 0xFF000000) == transparentColor) { return 0x00FFFFFF & rgb; } else
-           * { return rgb; } } };
-           * 
-           * ImageProducer filteredImgProd = new
-           * FilteredImageSource(image.getSource(), filter); Image
-           * transparentImg =
-           * Toolkit.getDefaultToolkit().createImage(filteredImgProd);
-           * BufferedImage ret = new
-           * BufferedImage(transparentImg.getWidth(null),
-           * transparentImg.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-           * Graphics2D bGr = ret.createGraphics();
-           * bGr.drawImage(transparentImg, 0, 0, null); bGr.dispose();
-           * 
-           * return ret;
-           */
-
-          // return renderer.renderImage(pageNumber);
-          // return document.getPage(pageNumber).convertToImage();
         }
       }
 
@@ -598,7 +577,6 @@ public class DataManager extends Observable {
       return;
     }
     pageImageList[pageNum] = image;
-
   }
 
   public void setIcon(BufferedImage image, int pageNum) {
@@ -607,14 +585,10 @@ public class DataManager extends Observable {
       return;
     }
     pageIconList[pageNum] = image;
-
   }
 
   public void AnalyzeEvidence() {
-    // TODO Auto-generated method stub
-
     // eg.loadGeneGazetteer(this.getPageWS(view.getCurrentPage()));
-
     LayerList ll = view.getCurrentWS().getLayerList();
     for (String layerName : ll.keySet()) {
       if (layerName.contains("Labeled table")) {
@@ -627,23 +601,24 @@ public class DataManager extends Observable {
   }
 
   public void PreprocessDocument() {
+    
     setPreprocessState(0);// underway
+    
     SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+      
       protected Void doInBackground() throws Exception {
         eg.loadGeneGazetteer(getHeadWorkingSet());
         return null;
-
       }
 
       protected void done() {
-
         setPreprocessState(1);
         setChanged();
         notifyObservers();
       }
     };
+    
     worker.execute();
-
   }
 
   public static void main(String[] args) {
@@ -731,11 +706,13 @@ public class DataManager extends Observable {
   }
 
   public void commandLine(CommandLineValues cmd) {
-    if (cmd.isHelp())
-      return;
-    if (!cmd.hasInput()) {
+    
+   
+    if (cmd.isHelp() || !cmd.hasInput()) { // Skip if help or no input.
       return;
     }
+    
+    // If directory, process each PDF in the directory.
     if (cmd.getFile().isDirectory()) {
       loadClojure();
       System.out.println("Converting all files in directory " + cmd.getFile());
@@ -756,64 +733,59 @@ public class DataManager extends Observable {
       String s = currentRelativePath.toAbsolutePath().toString();
       System.out.println("Use absolute path or relative path from:");
       System.out.println(s);
-      printHelp();
     }
 
   }
 
   private void processRepTablesInFile(File pdf, File out) {
-    System.out.println("Processing file " + pdf);
-
+    
     int ext = pdf.getAbsolutePath().lastIndexOf('.');
     String fileStr = pdf.getAbsolutePath().substring(0, ext);
     File jsonFile = new File(fileStr + ".json");
+    
     if (!jsonFile.exists()) {
-      // System.out.println("No JSON file for " +pdf);
+      System.out.println("No JSON file for " + pdf);
       return;
     }
+    
     System.out.println("Converting file " + pdf);
     this.setPdfFile(pdf, true);
+    
+    System.out.println("Restoring overlay.");
     Doc.restoreWSfromOverlay(this, jsonFile);
+    
+    int tableCounter = 0;
+    
     for (WorkingSet pg : this.getHeadWorkingSet().getChildren()) {
+      
       for (WorkingSet table : pg.getChildrenWithTag("TABLE")) {
+        
+        tableCounter = tableCounter+1;
+        
         @SuppressWarnings("unchecked")
         List<Layer> layers = (List<Layer>) Table.applyLayerProducer("simple-table", table);
         System.out.println("Created " + layers.size() + " layers");
         PrintWriter writer;
+        String outputFilename = fileStr + "." + tableCounter + ".json";
         try {
-          if (out == null) {
-            out = new File(fileStr + "." + table.getName() + ".json");
-          }
+          out = new File(outputFilename);
           writer = new PrintWriter(out, "UTF-8");
-          System.out.println("Writing to " + out);
+          // System.out.println("Writing to " + out);
           for (Layer layer : layers) {
-            writer.println(Table.layerRepToJSON(layer.getRep()));
+            writer.println(Table.layerToJSONString(layer.getRep()));
           }
           writer.close();
         } catch (FileNotFoundException e) {
-          // TODO Auto-generated catch block
+          System.out.println("ERROR: File could not be created: " + outputFilename);
           e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         }
 
       }
     }
-    // for(Entry prod : (List<Entry>)Table.allLayerProducers()){
-    // System.out.println(prod.key + " " + prod.doc);
-    // }
-
   }
 
-  private void printHelp() {
-    System.out.println("Big Mechanism Table Extraction Interface");
-    System.out.println("Usage: java -jar draygui.jar <options>");
-    System.out.println("java -jar draygui.jar                    launch GUI.");
-    System.out.println("java -jar draygui.jar -h                 print this message");
-    System.out.println("java -jar draygui.jar <filename.pdf>     save rep info");
-    System.out.println("java -jar draygui.jar <directory>        save rep info for all valid pdfs");
-  }
 
   private void loadClojure() {
     System.out.println("loading clojure core");
