@@ -14,15 +14,26 @@
   []
   (filter  #(.exists %)
           (list (file "./dray-default-settings.edn")
-                (file "./dray-settings.edn")
                 (file (home-dir) "dray-settings.edn")
+                (file "./dray-settings.edn")
                 )))
+
+(defn check-dray-settings-files 
+  "Runs a test to determine if it  an find at least one of the DRAY
+   settings files. If not, issues a warning."
+  []
+  (if (empty? (dray-settings-files))
+    (println "Warning: Could not locate any dray-settings files."
+  )))
 
 (defn- dray-settings-current
   "Returns a map of all the dray settings, based on the 
    current settings retrieved from the set of dray settings files."
   []
-  (apply merge (map #(-> % slurp edn/read-string) (dray-settings-files))))
+  (let [settings-file-list (dray-settings-files)]
+    (if (empty? settings-file-list)
+      (uerr "Could not find config file dray-settings.edn")
+     (apply merge (map #(-> % slurp edn/read-string) settings-file-list)))))
 
 (def dray-settings 
   "Returns a map of all the dray settings, based on the settings retrieved 

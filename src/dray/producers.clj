@@ -7,7 +7,6 @@
   (:import (java.io File)
            (com.leidos.bmech.gui ViewerApp)
            (com.leidos.bmech.model WorkingSet Layer LayerList)
-          #_ (com.leidos.bmech.analysis TextAnalyzer)
            )
   (:require [dray.j.Producer :refer [add-ws-producer add-layer-producer]]
             [clojure.pprint :refer [pprint]]
@@ -72,8 +71,6 @@
       (println (str "\n Returning LAYER " layer))
       (list layer))))
 
-#_(defn gene-layer-producer-ws "Run Arizona Processor on the current working set to produce a layer." [ws]
-  (list (TextAnalyzer/produceGeneLayer ws)))
 
 (defn text-stats-producer-ws "Run stats on texts in current working set to produce a layer." [ws]
   (let [texts (texts-in (.getItems ws))
