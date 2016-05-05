@@ -14,9 +14,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
+//import com.leidos.bmech.gui.Task;
 import com.leidos.bmech.gui.UtiliBuddy;
+//import com.leidos.bmech.gui.Task.TaskType;
+
 import dray.j.BoundingBox;
 import dray.j.VisualElement.El;
 import dray.j.VisualElement.VText;
@@ -274,14 +278,22 @@ public class WorkingSet {
   }
 
   public String toString() {
-    // return "<WS "+getName()+" " + getChildren().size() + " children"+" " +
-    // getItems().size() + " items>";
     return getName();
   }
 
+  /*
+   * addTag - Add a single tag to this working set. 
+   *          Takes the first token of the string and lowercases it to
+   *          create canonical tag.
+   * 
+   * @param   tag 
+   *          The token as a String.
+   */
   public void addTag(String tag) {
-    if (!tags.contains(tag.toLowerCase())) {
-      tags.add(tag.toLowerCase());
+	StringTokenizer tokenizer = new StringTokenizer(tag);
+	String cleanTag = tokenizer.nextToken().toLowerCase();
+    if (!tags.contains(cleanTag)) {
+      tags.add(cleanTag);
     }
   }
 
@@ -300,6 +312,10 @@ public class WorkingSet {
       return true;
     } else
       return false;
+  }
+  
+  public boolean isLeaf () {
+	  return this.getChildren().isEmpty();
   }
 
   public boolean isDeletable() {
@@ -324,6 +340,11 @@ public class WorkingSet {
     return getChildrenWithTag(tag.name());
   }
 
+  public static String cleanTag (String inputTag) {
+	  StringTokenizer tokenizer = new StringTokenizer(inputTag);
+	  return tokenizer.nextToken();
+  }
+  
   public static Set<TypeTag> getSuggestedTags(List<String> tagList) {
     Set<TypeTag> tags = new HashSet<TypeTag>();
     if (tagList == null || tagList.isEmpty()) {
@@ -331,7 +352,7 @@ public class WorkingSet {
       tags.add(TypeTag.FIGURE);
     }
     for (String tagStr : tagList) {
-      TypeTag tag = TypeTag.valueOf(tagStr.trim().toUpperCase());
+      TypeTag tag = TypeTag.valueOf(cleanTag(tagStr).toUpperCase());
       switch (tag) {
       case TABLE:
         tags.add(TypeTag.COLUMN);
@@ -848,6 +869,45 @@ public class WorkingSet {
 
     return ret;
   }
+
+ /*
+  * doAutoTableWS - Attempt to auto-detect the rows and columns in 
+  *                 a Table working set.
+  *                 
+  * @parm currentWS - The table working set to examine.
+  * 
+  * @returns A list of new column and row working sets.
+  */
+ public List<WorkingSet> doAutoTableWS () {
+	  
+	 WorkingSet tableWS = this;
+	 
+	 List<WorkingSet> autoCols = tableWS.AutoCols();
+     
+     List<WorkingSet> autoRows = tableWS.AutoRows();
+     
+     List<WorkingSet> newWorkingSets = new ArrayList<WorkingSet>();
+     newWorkingSets.addAll(autoCols);
+     newWorkingSets.addAll(autoRows);
+     
+     return newWorkingSets;
+     
+//	 for (WorkingSet colWS : autoCols) {
+//	      //appendToLog("Creating new working set with tag: " + "column");
+//	      insertWS(colWS);
+//	      //taskHistory.add(new Task(TaskType.ADD_WS, colWS));
+//	    }
+
+//	    List<WorkingSet> autoRows = currentWS.AutoRows();
+//	    for (WorkingSet rowWS : autoRows) {
+//	      //appendToLog("Creating new working set with tag: " + "row");
+//	      rowWS.setName("ROW" + (currentWS.getChildrenWithTag("row").size() + 1));
+//	      rowWS.addTag("row".toLowerCase());
+//	      insertWS(rowWS);
+//	      //taskHistory.add(new Task(TaskType.ADD_WS, rowWS));
+//	    }
+	    
+ }
 
   public static double round(double value, int places) {
     if (places < 0)

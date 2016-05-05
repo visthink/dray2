@@ -48,27 +48,34 @@ public class CommandLineValues {
           )
   private boolean skipOverlays = false;
   
-  // Configuration file to use.
-  @Option(name = "-c",
-//          aliases = {"--config"},
-          metaVar = "config-file",
-          required = false,
-          usage = "Configuration file to use instead of default.")
-  private String configFileString = "";
+//  // Configuration file to use.
+//  @Option(name = "-c",
+////          aliases = {"--config"},
+//          metaVar = "config-file",
+//          required = false,
+//          usage = "Configuration file to use instead of default.")
+//  private String configFileString = "";
   
-  @Option(name = "-p",
- //         aliases = {"--producer"},
-          required = false,
-          metaVar = "producer-list",
-          usage = "Bracketed list of lists with working set tags and producers.")
-  private String producers = "";
-  
+//  @Option(name = "-p",
+// //         aliases = {"--producer"},
+//          required = false,
+//          metaVar = "producer-list",
+//          usage = "Bracketed list of lists with working set tags and producers.")
+//  private String producers = "";
+
+  // Should we run the table detection code?
+  @Option(name = "-t",
+		  required = false,
+		  usage = "Run the table detection code on all table working sets in the loaded file.")
+  private boolean useTableCode;
+
   // Single argument - PDF file or directory with PDF files.
   @Argument(index = 0,
             required = false,
             metaVar = "source",
             usage = "PDF file (or directory containing PDF files).")
   String sourceName = "";
+  
   
   private boolean      errorFree         = true;
 
@@ -156,12 +163,12 @@ public class CommandLineValues {
     }
 
     // Handle the set of producers to run.
-    if (producers == "") {
-      producerList = new ArrayList<Object>();
-    } else {
-      producerList = Table.parseProducerList(producers);
-    }
-    System.out.println("Producers are " + producerList.toString());
+//    if (producers == "") {
+//      producerList = new ArrayList<Object>();
+//    } else {
+//      producerList = Table.parseProducerList(producers);
+//    }
+//    System.out.println("Producers are " + producerList.toString());
     
     if (getFile() != null) {
       hasInput = true;
@@ -196,6 +203,10 @@ public class CommandLineValues {
 
   public boolean isBatch() {
     return batch;
+  }
+  
+  public boolean isTableCode() {
+	return useTableCode;
   }
 
   /**

@@ -87,8 +87,8 @@ import dray.j.VisualElement.El;
 import dray.j.VisualElement.VPage;
 
 /**
- * the GUI for interacting with PDF Documents. All interractions with the data
- * are done through the DocumentManager class. Only gui related things are
+ * the GUI for interacting with PDF Documents. All interactions with the data
+ * are done through the DocumentManager class. Only GUI related things are
  * exposed in this class.
  * 
  * @author powelldan
@@ -101,8 +101,7 @@ public class ViewerApp implements Observer, ActionListener {
   public CheckBoxList       layerCheckList;
 
   JTextArea                 textArea;
-  @SuppressWarnings("rawtypes")
-  JList                     pagePickerList;
+  JList<Object>                  pagePickerList;
   private CanvasButtonPanel canvasButtonPanel;
   private DataManager       dataManager;
   JTree                     visualTree;
@@ -121,13 +120,11 @@ public class ViewerApp implements Observer, ActionListener {
 
     final CommandLineValues cmd = new CommandLineValues(args);
     
-    if (!cmd.isErrorFree())
-      return;
+    if (cmd.isHelp() || !cmd.isErrorFree()) {
     
-    if (cmd.isHelp()) 
-      return; // Already printed out help info, so exit.
-    
-    if (cmd.isBatch()) {
+       return;
+       
+    } else if (cmd.isBatch()) {
     
       DataManager dataManager = new DataManager();
       dataManager.commandLine(cmd);
@@ -135,23 +132,11 @@ public class ViewerApp implements Observer, ActionListener {
     } else {
       
       EventQueue.invokeLater(new Runnable() {
+    	  
         public void run() {
-          try {
-            ViewerApp window = new ViewerApp();
-            window.frame.setVisible(true);
-            if (cmd.hasInput()) {
-              window.getDataManager().setPdfFile(cmd.getFile());
-              window.getDataManager().getView().setCurrentPage(1);
-              window.refreshPageIconList();
-              window.refreshLayerList();
-              window.workingSetTree.reload();
-              window.reloadRepTree();
-              window.frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-              window.viewWSUpdated();
-            }
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
+        	
+          createViewerAppWindow(cmd);
+        	
         }
       });
     }
@@ -170,36 +155,79 @@ public class ViewerApp implements Observer, ActionListener {
    * another function to start the GUI
    */
   public static ViewerApp startDray(String[] args) {
+	  
     final CommandLineValues cmd = new CommandLineValues(args);
-    if (!cmd.isErrorFree())
+    
+    ViewerApp window = null;
+    
+    if (!cmd.isErrorFree() || cmd.isHelp()) {
+    	
       return null;
-    if (cmd.isBatch()) {
+      
+    } else if (cmd.isBatch()) {
+    	
       // Command Line Mode
       DataManager dataManager = new DataManager();
       dataManager.commandLine(cmd);
 
     } else {
-      try {
-        ViewerApp window = new ViewerApp();
-        window.frame.setVisible(true);
-        if (cmd.hasInput()) {
-          window.getDataManager().setPdfFile(cmd.getFile());
-          window.getDataManager().getView().setCurrentPage(1);
-          window.refreshPageIconList();
-          window.refreshLayerList();
-          window.workingSetTree.reload();
-          window.reloadRepTree();
-          window.frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-          window.viewWSUpdated();
-        }
-        return window;
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+    	
+      window = createViewerAppWindow (cmd);
+    
     }
-    return null;
+    return window;
   }
 
+  public static ViewerApp createViewerAppWindow (CommandLineValues cmd) {
+
+	  ViewerApp window = new ViewerApp();
+	  
+	  try {
+          window.frame.setVisible(true);
+          
+          DataManager dm = window.getDataManager();
+          
+          if (cmd.hasInput()) {
+          	File pdfFile = cmd.getFile();
+          	
+            dm.setPdfFile(pdfFile);
+            dm.getView().setCurrentPage(1);
+            if (!cmd.skipOverlays()) {
+              dm.restoreDefaultOverlay(pdfFile);
+            }
+            
+            if (cmd.isTableCode()) {
+            	
+            	for (WorkingSet pg : dm.getHeadWorkingSet().getChildren()) {
+
+        			for (WorkingSet tableWS : pg.getChildrenWithTag("TABLE")) {
+
+        				if (tableWS.isLeaf()) { // If table is empty, run AutoTable.
+        					tableWS.doAutoTableWS();
+        				}
+
+        				Table.applyLayerProducer("simple-table", tableWS);
+
+        			}
+
+        		}
+            	
+            }
+            
+            window.refreshPageIconList();
+            window.refreshLayerList();
+            window.workingSetTree.reload();
+            window.reloadRepTree();
+            window.frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            window.viewWSUpdated();
+          }
+          
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      return window;
+  }
+  
   /**
    * Create the application.
    */
@@ -217,18 +245,6 @@ public class ViewerApp implements Observer, ActionListener {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   private void initialize() {
     taskHistory = new ArrayList<Task>();
-    /*
-     * System.out.println("BANNER_DATA=" + System.getenv("BANNER_DATA"));
-     * //check if banner data is set String path =
-     * ""+System.getenv("BANNER_DATA"); File file = new File(path); if(file ==
-     * null | !file.isDirectory()){ System.out.println(
-     * "WARNING: The environment variable BANNER_DATA=" + path +
-     * " is not a valid directory. " +
-     * "Please set BANNER_DATA to {path/to/dray}/resources/banner_data/ " +
-     * "via your operating system. Some text parsing tools will be " +
-     * "unavailable."); }
-     * 
-     */
     IFn require = Clojure.var("clojure.core", "require");
     require.invoke(Clojure.read("dray.core"));
 
@@ -236,10 +252,7 @@ public class ViewerApp implements Observer, ActionListener {
     // IFn populateFn = Clojure.var("clojure.core", "+");
     populateFn.invoke();
     frame = new JFrame();
-    frame.setTitle("Document Viewer");// dataManager.getPdfFile().getName() + "
-                                      // - " + getView().getCurrentWS());
-    // frame.setBounds(100, 100, 587, 492);
-    // frame.s
+    frame.setTitle("Document Viewer");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     /* MENU BAR */
@@ -606,7 +619,6 @@ public class ViewerApp implements Observer, ActionListener {
    * Triggers the reloading of the page icons into the page icon list the pages
    * should already be in memory
    */
-  @SuppressWarnings("unchecked")
   private void refreshPageIconList() {
     List<JPanel> pageArray = new ArrayList<JPanel>();
 
@@ -795,8 +807,9 @@ public class ViewerApp implements Observer, ActionListener {
     reloadRepTree();
   }
 
-  public void insertWS(WorkingSet added) {
-    workingSetTree.insertWorkingSetNode(getView().getCurrentWS(), added);
+  public void insertWS(WorkingSet addedWS) {
+    WorkingSet currentWS = getView().getCurrentWS();
+    workingSetTree.insertWorkingSetNode(currentWS, addedWS);
   }
 
   public DataManagerView getView() {
@@ -904,28 +917,21 @@ public class ViewerApp implements Observer, ActionListener {
 
   public void doAutoTable() {
 
-    List<WorkingSet> autoCols = dataManager.getView().getCurrentWS().AutoCols();
-    for (WorkingSet ws : autoCols) {
-      appendToLog("Creating new working set with tag: " + "column");
-
-      insertWS(ws);
-      taskHistory.add(new Task(TaskType.ADD_WS, ws));
+	WorkingSet currentWS = dataManager.getView().getCurrentWS();
+	
+	List<WorkingSet> newWorkingSets = currentWS.doAutoTableWS();
+	
+    for (WorkingSet newWS : newWorkingSets) {
+    	insertWS(newWS);
+    	//taskHistory.add(new Task(TaskType.ADD_WS, colWS));
     }
 
-    List<WorkingSet> autoRows = dataManager.getView().getCurrentWS().AutoRows();
-    for (WorkingSet ws : autoRows) {
-      appendToLog("Creating new working set with tag: " + "row");
-      ws.setName("ROW" + (dataManager.getView().getCurrentWS().getChildrenWithTag("row").size() + 1));
-      ws.addTag("row".toLowerCase());
-      insertWS(ws);
-      taskHistory.add(new Task(TaskType.ADD_WS, ws));
-    }
-    workingSetTree.reload();
+	workingSetTree.reload();
     this.viewWSUpdated();
     reloadRepTree();
 
   }
-
+  
   public boolean isSplitModeEnabled() {
     // TODO Auto-generated method stub
     return canvasButtonPanel.isSplitModeEnabled();

@@ -8,15 +8,15 @@
 
 echo "** Creating a distribution for DRAY."
 
-#echo "** Running cleanup."
-#lein clean
+echo "** Running cleanup."
+lein clean
 
-#echo "** Creating the uberjar."
-#lein uberjar
+echo "** Creating the uberjar."
+lein uberjar
 
-#echo "** Generating documentation."
-#lein doc
-#lein javadoc
+echo "** Generating documentation."
+lein doc
+lein javadoc
 
 # Set up timestamp variable
 distrodir=$( date "+DRAY-0.5.0-%Y.%m.%d" )
