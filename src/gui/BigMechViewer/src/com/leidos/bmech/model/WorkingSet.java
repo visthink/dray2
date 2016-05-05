@@ -26,7 +26,7 @@ import dray.j.VisualElement.El;
 import dray.j.VisualElement.VText;
 
 /**
- * WorkingSet is a rectangular subsection of a pdf document
+ * WorkingSet is a rectangular subsection of a PDF document.
  * 
  * @author powelldan
  *
@@ -51,9 +51,9 @@ public class WorkingSet {
 	 * Create a WorkingSet
 	 * 
 	 * @param p
-	 *            the parent of this working set
+	 *            The parent of this working set.
 	 * @param n
-	 *            the name of this working set
+	 *            The name of this working set.
 	 */
 	public WorkingSet(WorkingSet p, String n) {
 
@@ -76,44 +76,74 @@ public class WorkingSet {
 
 	// ACCESSORS
 
+	/*
+	 * Return the working sets contained in this one.
+	 */
 	public List<WorkingSet> getChildren() {
 		return children;
 	}
 
+	/*
+	 * Return the working set that contains this one.
+	 */
 	public WorkingSet getParent() {
 		return parent;
 	}
 
+	/* 
+	 * Return the visual elements contained in this working set.
+	 */
 	public List<El> getItems() {
 		return layerList.getBase().getItems();
 	}
 
+	/*
+	 * Return the bounding box for this working set.
+	 */
 	public Rectangle getBbox() {
 		return bbox;
 	}
 
+	/*
+	 * Return the name of this working set.
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/*
+	 * Returns the page that this working set is contained in.
+	 */
 	public int getPage() {
 		return page;
 	}
 
+	/*
+	 * Return the layers the represent this working set.
+	 */
 	public LayerList getLayerList() {
 		return layerList;
 	}
 
+	/*
+	 * Return the filename of the source PDF file.
+	 */
 	public String getFilename() {
 		return filename;
 	}
 
+	/*
+	 * Return the list of tags added to this working set.
+	 */
 	public List<String> getTags() {
 		return tags;
 	}
 
 	// SETTERS
 
+	/*
+	 * Set the name of this working set.
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -138,9 +168,10 @@ public class WorkingSet {
 	 * add an item to the working set and expand the rectangle to fit this item
 	 * 
 	 * @param el
-	 *            the item to add
+	 *            The item to add
 	 */
 	public void addItem(El el) {
+		
 		// check if item's bbox should expand the WS bbox
 
 		BoundingBox bb2 = (BoundingBox) el.getBbox();
@@ -152,14 +183,28 @@ public class WorkingSet {
 		}
 		// if this is a page, add everything to the base layer
 		// since it wont be added in the for loop
-		if (getParent() != null && getParent().getParent() == null)
+		WorkingSet parentWS = getParent();
+		
+		if (parentWS != null && parentWS.getParent() == null)
 			layerList.getBase().add(el);
 
 		// copy the layer information from the parent to the child
-		for (Layer layer : getParent().getLayerList().values()) {
+		for (Layer layer : parentWS.getLayerList().values()) {
 			if (layer.containsEl(el)) {
 				layerList.addElementToLayer(layer.getName(), el);
 			}
+		}
+	}
+	
+	/*
+	 * Add a List of items to the current working set.
+	 * 
+	 * @param els
+	 *            List of visual elements to add.
+	 */
+	public void addItems (List<El> els) {
+		for (El el : els) {
+			this.addItem(el);
 		}
 	}
 
@@ -207,13 +252,13 @@ public class WorkingSet {
 	}
 
 	/**
-	 * takes a working set and adds it to the calling workingset as a child. If
+	 * takes a working set and adds it to the calling working set as a child. If
 	 * there already is a child that has the same dimensions, then it merges the
 	 * children together
 	 * 
 	 * @param added
 	 *            the WorkingSet to merge
-	 * @return the added workingset
+	 * @return the added working set
 	 */
 	public WorkingSet mergeChild(WorkingSet added) {
 		boolean needToAdd = true;
@@ -232,7 +277,7 @@ public class WorkingSet {
 			}
 		}
 		if (needToAdd) {
-			// the workingset we wanted to add wasnt merged with an existing
+			// the working set we wanted to add wasn't merged with an existing
 			// child, so
 			// we need to add it here
 			children.add(added);
@@ -404,13 +449,7 @@ public class WorkingSet {
 			Rectangle topRectangle = rectangleList.remove(0); // Pop rectangle
 																// off list.
 
-			// Rectangle testColumn = new Rectangle(topRectangle); // Create
-			// test column from rectangle.
-			// testColumn.grow(0, 1000);
-			Rectangle testColumn = expandedRectangle(topRectangle, 0, 1000); // Expand
-																				// along
-																				// y
-																				// axis.
+			Rectangle testColumn = expandedRectangle(topRectangle, 0, 1000); // Expand along x-axis.
 
 			// Collect all rectangles that intersect the candidate column.
 
@@ -507,10 +546,7 @@ public class WorkingSet {
 
 		for (Rectangle bbox : bboxList) {
 
-			Rectangle candidateRow = expandedRectangle(bbox, 1000, 0); // Expand
-																		// along
-																		// x
-																		// axis.
+			Rectangle candidateRow = expandedRectangle(bbox, 1000, 0); // Expand along x-axis.
 
 			// Count the number of intersections with other rectangles.
 			int intersectionCount = (int) bboxList.stream().filter(otherBbox -> candidateRow.intersects(otherBbox))
@@ -521,9 +557,7 @@ public class WorkingSet {
 
 		for (Rectangle bbox : bboxList) {
 
-			Rectangle horizTest = expandedRectangle(bbox, 1000, 0); // Expand
-																	// along x
-																	// axis.
+			Rectangle horizTest = expandedRectangle(bbox, 1000, 0); // Expand along x-axis.
 			long collisions = bboxList.stream().filter(otherBbox -> horizTest.intersects(otherBbox)).count();
 			if (collisions > 2) {
 				columnList.add(bbox);
@@ -595,22 +629,22 @@ public class WorkingSet {
 		List<WorkingSet> ret = new ArrayList<WorkingSet>();
 		List<Rectangle> bbs = getItemBBoxes();
 		bbs = groupHorizUniqueSections(bbs);
-		for (Rectangle r : bbs) {
-			List<El> x1 = this.getElsIn(r);
-			System.out.println("HUnique region: " + x1);
-		}
+//		for (Rectangle r : bbs) {
+//			List<El> x1 = this.getElsIn(r);
+//			System.out.println("HUnique region: " + x1);
+//		}
 		List<Rectangle> columns = determineColumns(bbs);
-		for (Rectangle r : columns) {
-			List<El> x1 = this.getElsIn(r);
-			System.out.println("column: " + x1);
-		}
+//		for (Rectangle r : columns) {
+//			List<El> x1 = this.getElsIn(r);
+//			System.out.println("column: " + x1);
+//		}
 		Rectangle headerRow = determineHeaderRow(columns);
 
-		System.out.println("Final: ");
+//		System.out.println("Final: ");
 
 		for (Rectangle r : columns) {
 
-			System.out.println("  -" + this.getElsIn(r));
+//			System.out.println("  -" + this.getElsIn(r));
 			// create and add columns now
 			WorkingSet child = this.createChild("AUTO_COL", r);
 			child.setName("COLUMN" + (this.getChildrenWithTag("column").size() + 1));
@@ -620,7 +654,7 @@ public class WorkingSet {
 
 		if (headerRow != null) {
 			List<El> els = this.getElsIn(headerRow);
-			System.out.println("header row els: " + els);
+//			System.out.println("header row els: " + els);
 			// create and add header_row now
 			WorkingSet headerRowWS = this.createChild("AUTO_HEADER_ROW", headerRow);
 			headerRowWS.setName("HEADER_ROW" + (this.getChildrenWithTag("header_row").size() + 1));
@@ -706,8 +740,9 @@ public class WorkingSet {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	public List<WorkingSet> AutoCols2() {
+
+/*	public List<WorkingSet> AutoCols2() {
+		
 		List<WorkingSet> ret = new ArrayList<WorkingSet>();
 		List<El> candidates = new ArrayList<El>(this.getItems());
 		// map from x coord to list of elements near that x coord
@@ -826,9 +861,10 @@ public class WorkingSet {
 			child.setName("COLUMN" + (this.getChildrenWithTag("column").size() + 1));
 			child.addTag("column".toLowerCase());
 			ret.add(child);
-			for (El el : colItems.get(colX)) {
-				child.addItem(el);
-			}
+//			for (El el : colItems.get(colX)) {
+//				child.addItem(el);
+//			}
+			child.addItems(colItems.get(colX));
 		}
 
 		// create and add header_row now
@@ -836,13 +872,14 @@ public class WorkingSet {
 		headerRowWS.setName("HEADER_ROW" + (this.getChildrenWithTag("header_row").size() + 1));
 		headerRowWS.addTag("header_row".toLowerCase());
 		ret.add(headerRowWS);
-		for (El el : headerRow) {
-			headerRowWS.addItem(el);
-		}
+//		for (El el : headerRow) {
+//			headerRowWS.addItem(el);
+//		}
+		headerRowWS.addItems(headerRow);
 
 		return ret;
 	}
-
+*/
 	public List<WorkingSet> AutoRows() {
 		List<WorkingSet> ret = new ArrayList<WorkingSet>();
 		// List<WorkingSet> rows = this.getChildrenWithTag(TypeTag.ROW);
@@ -871,13 +908,15 @@ public class WorkingSet {
 		for (Double rowTop : newRows.keySet()) {
 			WorkingSet child = this.createChild("AUTO_ROW");
 			ret.add(child);
-			for (El el : newRows.get(rowTop)) {
-				child.addItem(el);
-			}
+//			for (El el : newRows.get(rowTop)) {
+//				child.addItem(el);
+//			}
+			child.addItems(newRows.get(rowTop));
 		}
 
 		return ret;
 	}
+
 
 	/*
 	 * doAutoTableWS - Attempt to auto-detect the rows and columns in a Table
@@ -900,22 +939,6 @@ public class WorkingSet {
 		newWorkingSets.addAll(autoRows);
 
 		return newWorkingSets;
-
-		// for (WorkingSet colWS : autoCols) {
-		// //appendToLog("Creating new working set with tag: " + "column");
-		// insertWS(colWS);
-		// //taskHistory.add(new Task(TaskType.ADD_WS, colWS));
-		// }
-
-		// List<WorkingSet> autoRows = currentWS.AutoRows();
-		// for (WorkingSet rowWS : autoRows) {
-		// //appendToLog("Creating new working set with tag: " + "row");
-		// rowWS.setName("ROW" + (currentWS.getChildrenWithTag("row").size() +
-		// 1));
-		// rowWS.addTag("row".toLowerCase());
-		// insertWS(rowWS);
-		// //taskHistory.add(new Task(TaskType.ADD_WS, rowWS));
-		// }
 
 	}
 
@@ -984,9 +1007,10 @@ public class WorkingSet {
 		}
 		this.getChildren().removeAll(wsToRemove);
 
-		for (El el : newEls) {
-			this.addItem(el);
-		}
+		this.addItems(newEls);
+//		for (El el : newEls) {
+//			this.addItem(el);
+//		}
 		for (El el : lostEls) {
 			this.getItems().remove(el);
 		}
