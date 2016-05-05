@@ -22,6 +22,8 @@ Current functionality is limited to marking up table and diagram content (which 
 
 [Development Roadmap](https://bitbucket.org/rwferguson/dray/wiki/RoadMap)
 
+[Changelog](https://bitbucket.org/rwferguson/dray/wiki/Changelog)
+
 
 ## Quickstart
 
@@ -55,4 +57,3 @@ Licensed under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2
 Code by Ronald W. Ferguson, Daniel Powell, Yanlin Guo, and Shane Frasier. Manual written by Danniel Powell with updates from Ron Ferguson.
 
 Dray cart image by [Prawney Vintage](http://www.clipartof.com/portfolio/prawny-vintage). Licensed from ClipArtOf.com.
-
