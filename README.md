@@ -35,11 +35,11 @@ Current functionality is limited to marking up table and diagram content (which 
  
 + Edit [dray-settings.edn](./dray-settings.edn) to point to the pdftoxml executable. E.g.:
 
-   `:pdftoxml-executable "/Users/fergusonrw/bin/pdftoxml"`
+    `:pdftoxml-executable "/Users/fergusonrw/bin/pdftoxml"`
 
 + Run the system GUI using the dray script:
 
-   `dray`
+    `dray`
 
 
 ## Feedback
