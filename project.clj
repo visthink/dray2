@@ -40,7 +40,7 @@
       [org.clojure/data.json "0.2.6"]               ;; [E1]
       [commons-io/commons-io "2.4"]                 ;; [A2]
       [xerces/xercesImpl "2.11.0"]                  ;; [A2]
-      [org.apache.pdfbox/pdfbox "2.0.0-SNAPSHOT"]   ;; [A2]
+      [org.apache.pdfbox/pdfbox "2.0.1"]            ;; [A2]
       [seesaw "1.4.5"]                              ;; [E1]
       [clj-http-lite "0.2.1"]                       ;; [MIT]
       [org.biopax.paxtools/paxtools-core "4.3.1"]   ;; [L2]
