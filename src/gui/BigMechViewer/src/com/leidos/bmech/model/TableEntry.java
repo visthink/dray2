@@ -5,12 +5,12 @@ package com.leidos.bmech.model;
 //import dray.j.VisualElement.VText;
 
 public class TableEntry {
-//	@SuppressWarnings("unused")
-//	private VText vtext;
-	
-//	List<Evidence> evidenceList;
-	
-//	public TableEntry(VText v){
-//		vtext = v;
-//	}
+	// @SuppressWarnings("unused")
+	// private VText vtext;
+
+	// List<Evidence> evidenceList;
+
+	// public TableEntry(VText v){
+	// vtext = v;
+	// }
 }

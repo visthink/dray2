@@ -10,18 +10,18 @@ import java.util.Map;
 import dray.j.VisualElement.El;
 
 public class Layer {
-	
+
 	// FIELDS
-	
-	private String   name;
-	private List<El> items;
-	private boolean  highlight;
-	private Color    color;
-	
-	private List<Map<String, Object>> representation;
+
+	private String								name;
+	private List<El>							items;
+	private boolean							highlight;
+	private Color								color;
+
+	private List<Map<String, Object>>	representation;
 
 	// CONSTRUCTOR
-	
+
 	/*
 	 * Create an empty layer with a name.
 	 */
@@ -31,41 +31,65 @@ public class Layer {
 		representation = new ArrayList<Map<String, Object>>();
 		setColor(Color.BLUE);
 	}
-	
+
 	// SELECTORS
-	
-	public String    getName()  { return name; }
 
-	public List<El>  getItems() { return items; }
+	public String getName() {
+		return name;
+	}
 
-	public Color     getColor() { return color; }
+	public List<El> getItems() {
+		return items;
+	}
 
-	public List<Map<String, Object>> 
-	
-	                 getRep()   { return representation; }
+	public Color getColor() {
+		return color;
+	}
 
-    // SETTERS
+	public List<Map<String, Object>>
 
-	public void    addElement(El el)  { items.add(el); }
-     
-	public boolean add(El el)         { return items.add(el); }
+			getRep() {
+		return representation;
+	}
 
-	public void    setColor(Color c)  { this.color = c;}
+	// SETTERS
 
-	public void    setHighlight(boolean highlight) 
-	                                  
-	                                  { this.highlight = highlight; }
-	
-	public void    setRep(List<Map<String, Object>> representation) 
-	
-	                                  { this.representation = representation; }
-	
-    // PREDICATES
-    
-    public boolean isEmpty()          { return items.isEmpty(); }
+	public void addElement(El el) {
+		items.add(el);
+	}
 
-	public boolean isHighlight()      { return highlight; }
+	public boolean add(El el) {
+		return items.add(el);
+	}
 
-	public boolean containsEl(El el)  { return items.contains(el); }
-	
+	public void setColor(Color c) {
+		this.color = c;
+	}
+
+	public void setHighlight(boolean highlight)
+
+	{
+		this.highlight = highlight;
+	}
+
+	public void setRep(List<Map<String, Object>> representation)
+
+	{
+		this.representation = representation;
+	}
+
+	// PREDICATES
+
+	public boolean isEmpty() {
+		return items.isEmpty();
+	}
+
+	public boolean isHighlight() {
+		return highlight;
+	}
+
+	public boolean containsEl(El el) {
+		return items.contains(el);
+	}
+
 }

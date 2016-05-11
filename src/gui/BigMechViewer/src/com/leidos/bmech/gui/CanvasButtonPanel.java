@@ -21,26 +21,25 @@ import com.leidos.bmech.model.TypeTag;
 
 @SuppressWarnings("serial")
 public class CanvasButtonPanel extends JPanel {
-	JButton goBack;
-	JButton merge;
-	JToggleButton split;
-	JToggleButton quickTagToggle;
+	JButton								goBack;
+	JButton								merge;
+	JToggleButton						split;
+	JToggleButton						quickTagToggle;
 	@SuppressWarnings("rawtypes")
-	JComboBox quickTags; 
+	JComboBox							quickTags;
 	@SuppressWarnings("rawtypes")
-	DefaultComboBoxModel dcm;
-	List<TypeTag> tags;
-	Map<JToggleButton, TypeTag> mapBtnToTag;
-	ViewerApp mainApp;
-	Cursor scissorCursor;
-	
-	
+	DefaultComboBoxModel				dcm;
+	List<TypeTag>						tags;
+	Map<JToggleButton, TypeTag>	mapBtnToTag;
+	ViewerApp							mainApp;
+	Cursor								scissorCursor;
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public CanvasButtonPanel(ViewerApp app){
+	public CanvasButtonPanel(ViewerApp app) {
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.mainApp = app;
 		mapBtnToTag = new HashMap<JToggleButton, TypeTag>();
-		tags =  new ArrayList<TypeTag>();
+		tags = new ArrayList<TypeTag>();
 		tags.add(TypeTag.TABLE);
 		tags.add(TypeTag.COLUMN);
 		tags.add(TypeTag.ROW);
@@ -49,70 +48,70 @@ public class CanvasButtonPanel extends JPanel {
 		tags.add(TypeTag.CAPTION);
 		tags.add(TypeTag.FIGURE);
 		tags.add(TypeTag.IGNORE);
-		
+
 		goBack = new JButton("^");
 		goBack.addActionListener(mainApp);
 		goBack.setActionCommand("go_up");
-		goBack.setMargin(new Insets(0,0,0,0));
+		goBack.setMargin(new Insets(0, 0, 0, 0));
 		add(goBack);
-		
+
 		merge = new JButton("Merge WS");
 		merge.addActionListener(mainApp);
-		merge.setMargin(new Insets(0,0,0,0));
+		merge.setMargin(new Insets(0, 0, 0, 0));
 		merge.setActionCommand("merge");
 		add(merge);
-		
+
 		split = new JToggleButton("Split text");
-		split.setMargin(new Insets(0,0,0,0));
+		split.setMargin(new Insets(0, 0, 0, 0));
 		add(split);
-		
-		for(TypeTag tag : tags){
+
+		for (TypeTag tag : tags) {
 			JToggleButton tog = new JToggleButton(tag.name());
 			tog.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent ev) {
 					// TODO Auto-generated method stub
-					if(ev.getStateChange()==ItemEvent.SELECTED){
-						for(JToggleButton btn : mapBtnToTag.keySet()){
-							
-							if(!btn.equals(ev.getSource())){
-								//unselect all other buttons
+					if (ev.getStateChange() == ItemEvent.SELECTED) {
+						for (JToggleButton btn : mapBtnToTag.keySet()) {
+
+							if (!btn.equals(ev.getSource())) {
+								// unselect all other buttons
 								btn.setSelected(false);
-								//btn.setEnabled(false);
-								
+								// btn.setEnabled(false);
+
 							}
 						}
 					}
 				}
 			});
-			mapBtnToTag.put( tog, tag);
-			tog.setMargin(new Insets(0,0,0,0));
+			mapBtnToTag.put(tog, tag);
+			tog.setMargin(new Insets(0, 0, 0, 0));
 			tog.setEnabled(false);
 			add(tog);
 		}
 		dcm = new DefaultComboBoxModel();
 		quickTags = new JComboBox(dcm);
 	}
-	
-	public boolean isQuickTagEnabled(){
-		for(JToggleButton btn : mapBtnToTag.keySet()){
-			if(btn.isEnabled() && btn.isSelected()){
+
+	public boolean isQuickTagEnabled() {
+		for (JToggleButton btn : mapBtnToTag.keySet()) {
+			if (btn.isEnabled() && btn.isSelected()) {
 				return true;
 			}
 		}
-		return false;//quickTagToggle.getModel().isSelected();
+		return false;// quickTagToggle.getModel().isSelected();
 	}
-	
-	public boolean isSplitModeEnabled(){
-		if(split.isEnabled() && split.isSelected()){
+
+	public boolean isSplitModeEnabled() {
+		if (split.isEnabled() && split.isSelected()) {
 			return true;
 		}
-		return false;//quickTagToggle.getModel().isSelected();
+		return false;// quickTagToggle.getModel().isSelected();
 	}
-	
-	public String getTag(){
-		for(JToggleButton btn : mapBtnToTag.keySet()){
-			if(btn.isSelected()){
+
+	public String getTag() {
+		for (JToggleButton btn : mapBtnToTag.keySet()) {
+			if (btn.isSelected()) {
 				return btn.getText();
 			}
 		}
@@ -120,16 +119,13 @@ public class CanvasButtonPanel extends JPanel {
 	}
 
 	public void setQuickTags(Set<TypeTag> suggestedTags) {
-		for(JToggleButton btn : mapBtnToTag.keySet()){
+		for (JToggleButton btn : mapBtnToTag.keySet()) {
 			btn.setEnabled(suggestedTags.contains(mapBtnToTag.get(btn)));
-			if(!btn.isEnabled() && btn.isSelected()){
+			if (!btn.isEnabled() && btn.isSelected()) {
 				btn.setSelected(false);
 			}
 		}
-		
+
 	}
 
-
-	
-	
 }

@@ -22,22 +22,22 @@ import javax.swing.Action;
 
 public class TagEditDialog extends JDialog {
 
-	private static final long serialVersionUID = 2471204031276037497L;
+	private static final long	serialVersionUID	= 2471204031276037497L;
 
-	private final JPanel contentPanel = new JPanel();
-	private JTextField textField;
+	private final JPanel			contentPanel		= new JPanel();
+	private JTextField			textField;
 	@SuppressWarnings("rawtypes")
-	private DefaultListModel listModel;
+	private DefaultListModel	listModel;
 	@SuppressWarnings("rawtypes")
-	private JList list;
-	
+	private JList					list;
+
 	// ACTIONS
-	private final Action addAction    = new AddAction();
-	private final Action removeAction = new RemoveAction();
-	private final Action okAction     = new OkAction();
-	private final Action cancelAction = new CancelAction();
-	
-	private List<String> returnValue;
+	private final Action			addAction			= new AddAction();
+	private final Action			removeAction		= new RemoveAction();
+	private final Action			okAction				= new OkAction();
+	private final Action			cancelAction		= new CancelAction();
+
+	private List<String>			returnValue;
 
 	/**
 	 * Launch the application.
@@ -58,7 +58,7 @@ public class TagEditDialog extends JDialog {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public TagEditDialog(List<String> data, String name) {
 		setModal(true);
-		//save the list incase the user cancels
+		// save the list incase the user cancels
 		returnValue = data;
 		setTitle("Edit tags for " + name);
 		setBounds(100, 100, 450, 300);
@@ -68,7 +68,7 @@ public class TagEditDialog extends JDialog {
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
 			listModel = new DefaultListModel();
-			for(String tag : data){
+			for (String tag : data) {
 				listModel.addElement(tag);
 			}
 			list = new JList(listModel);
@@ -86,7 +86,7 @@ public class TagEditDialog extends JDialog {
 				JButton btnAddTag = new JButton("Add");
 				btnAddTag.setAction(addAction);
 				panel.add(btnAddTag);
-				//this button will be pressed when the user hits enter
+				// this button will be pressed when the user hits enter
 				getRootPane().setDefaultButton(btnAddTag);
 			}
 			{
@@ -104,7 +104,7 @@ public class TagEditDialog extends JDialog {
 				okButton.setAction(okAction);
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
-				
+
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
@@ -115,72 +115,76 @@ public class TagEditDialog extends JDialog {
 		}
 	}
 
-	List<String> showDialog(){
+	List<String> showDialog() {
 		setVisible(true);
 		return returnValue;
 	}
-	
+
 	private class AddAction extends AbstractAction {
 		private static final long serialVersionUID = 1724547324L;
+
 		public AddAction() {
 			putValue(NAME, "Add");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
+
 		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent e) {
 			String str = textField.getText().replaceAll("[^a-zA-Z\\s0-9]", "");
-			for(String token : str.split("\\s+")){	
-				if( !listModel.contains(token.toLowerCase())){
+			for (String token : str.split("\\s+")) {
+				if (!listModel.contains(token.toLowerCase())) {
 					listModel.addElement(token.toLowerCase());
 				}
 			}
 			textField.setText("");
 		}
 	}
+
 	private class RemoveAction extends AbstractAction {
 		private static final long serialVersionUID = -8169215852422710101L;
-		
+
 		public RemoveAction() {
 			putValue(NAME, "Remove");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
-		
+
 		public void actionPerformed(ActionEvent e) {
-			for(Object tagObj : list.getSelectedValuesList()){
+			for (Object tagObj : list.getSelectedValuesList()) {
 				listModel.removeElement(tagObj);
 			}
 		}
 	}
-	
+
 	private class OkAction extends AbstractAction {
 		private static final long serialVersionUID = 4382439560279118291L;
-		
+
 		public OkAction() {
 			putValue(NAME, "OK");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
+
 		public void actionPerformed(ActionEvent e) {
-			//first, prepare the list to be returned
-			returnValue = new ArrayList<String>();		
-			for(int i=0; i < listModel.getSize(); i++){
+			// first, prepare the list to be returned
+			returnValue = new ArrayList<String>();
+			for (int i = 0; i < listModel.getSize(); i++) {
 				returnValue.add((String) listModel.getElementAt(i));
 			}
-			//Now exit, returning control to the showDialog() function
+			// Now exit, returning control to the showDialog() function
 			setVisible(false);
 			dispose();
 		}
 	}
-	
+
 	private class CancelAction extends AbstractAction {
 		private static final long serialVersionUID = 6578350625229901655L;
-		
+
 		public CancelAction() {
 			putValue(NAME, "Cancel");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
-	
+
 		public void actionPerformed(ActionEvent e) {
-			//Now exit, returning control to the showDialog() function
+			// Now exit, returning control to the showDialog() function
 			setVisible(false);
 			dispose();
 		}

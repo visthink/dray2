@@ -52,21 +52,21 @@ import dray.j.VisualElement.VText;
  */
 public class DataManager extends Observable {
 
-	private File pdfFile;
-	private VDocument vDocument;
-	private BufferedImage[] pageIconList;
-	private BufferedImage[] pageImageList;
-	private int[] pageImageStatus;
-	private int offsetX;
-	private int offsetY;
-	private WorkingSet headWS;
-	private Map<String, Rectangle2D> imageBBMap;
-	private DataManagerView view;
-	BufferedImage defaultImage;
-	EvidenceGatherer eg;
-	int preprocessState; // -1: not started; 0:
-							// underway; 1: done
-	ArrayList<?> defaultProducers;
+	private File							pdfFile;
+	private VDocument						vDocument;
+	private BufferedImage[]				pageIconList;
+	private BufferedImage[]				pageImageList;
+	private int[]							pageImageStatus;
+	private int								offsetX;
+	private int								offsetY;
+	private WorkingSet					headWS;
+	private Map<String, Rectangle2D>	imageBBMap;
+	private DataManagerView				view;
+	BufferedImage							defaultImage;
+	EvidenceGatherer						eg;
+	int										preprocessState;	// -1: not started; 0:
+	// underway; 1: done
+	ArrayList<?>							defaultProducers;
 
 	public DataManager() {
 		super();
@@ -94,7 +94,7 @@ public class DataManager extends Observable {
 	 * Initialize Datamanager from PDF file, but don't load images.
 	 * 
 	 * @param pdf
-	 *            The PDF file to load
+	 *           The PDF file to load
 	 */
 	public DataManager(File pdf) {
 		this();
@@ -103,12 +103,12 @@ public class DataManager extends Observable {
 	}
 
 	/**
-	 * Initialize DataManager from PDF file. Internal vdocument will be loaded
-	 * by the constructor. Load images for GUI display.
+	 * Initialize DataManager from PDF file. Internal vdocument will be loaded by
+	 * the constructor. Load images for GUI display.
 	 * 
 	 * @param pdf
 	 * @param lazyLoadImages
-	 *            false if should load images, true if should not load images
+	 *           false if should load images, true if should not load images
 	 */
 	public DataManager(File pdf, boolean lazyLoadImages) {
 		this();
@@ -260,8 +260,8 @@ public class DataManager extends Observable {
 	private void runBEE() {
 		/*
 		 * String dataSubDir =
-		 * FilenameUtils.removeExtension(pdfFile.getAbsolutePath()) +
-		 * ".xml_data"; System.out.println(dataSubDir);
+		 * FilenameUtils.removeExtension(pdfFile.getAbsolutePath()) + ".xml_data";
+		 * System.out.println(dataSubDir);
 		 */
 	}
 
@@ -351,11 +351,11 @@ public class DataManager extends Observable {
 	}
 
 	/**
-	 * get a list of dray.j.VisualElement.El objects that are FULLY inside of
-	 * the rectangle
+	 * get a list of dray.j.VisualElement.El objects that are FULLY inside of the
+	 * rectangle
 	 * 
 	 * @param dragRectDescaled
-	 *            the rectangle
+	 *           the rectangle
 	 * @return
 	 * 
 	 */
@@ -426,7 +426,7 @@ public class DataManager extends Observable {
 	 * working set switches to the parent of the deleted node.
 	 * 
 	 * @param victim
-	 *            -- the working set to be deleted
+	 *           -- the working set to be deleted
 	 */
 	public void deleteWS(WorkingSet victim) {
 		// check if null
@@ -467,8 +467,7 @@ public class DataManager extends Observable {
 
 	public BufferedImage getPageImage(int pageNumber) {
 		if (pageNumber > pageImageList.length || pageNumber < 1) {
-			System.out
-					.println("Can't get page " + pageNumber + ". Must be between 1 and " + pageImageList.length + ".");
+			System.out.println("Can't get page " + pageNumber + ". Must be between 1 and " + pageImageList.length + ".");
 			return null;
 		}
 		if (pageImageStatus[pageNumber - 1] == -1) {
@@ -552,8 +551,8 @@ public class DataManager extends Observable {
 					// System.out.println("Made it to 4.");
 					pageImageStatus[pageNumber] = 1; // loading
 					setChanged();// Observable Pattern: inform gui that images
-									// have
-									// changed
+										// have
+										// changed
 					// System.out.println("Made it to 5.");
 					notifyObservers();
 				} catch (InterruptedException e) {
@@ -745,37 +744,38 @@ public class DataManager extends Observable {
 	static private boolean isPdfFile(File f) {
 		return (f.exists() && f.getName().endsWith(".pdf"));
 	}
-	
-	static private File swapExtensionFor (File inputFile, String newExtension) {
-		
+
+	static private File swapExtensionFor(File inputFile, String newExtension) {
+
 		String pathstring = inputFile.getAbsolutePath();
-		
+
 		int ext = pathstring.lastIndexOf('.');
 		String fileStr = pathstring.substring(0, ext);
 		return new File(fileStr + newExtension);
 	}
-	
+
 	/*
-	 * restoreDefaultOverlay -- Restore the default overlay for the given PDF file.
+	 * restoreDefaultOverlay -- Restore the default overlay for the given PDF
+	 * file.
 	 * 
 	 * @param pdfFile - PDF file pointer.
 	 */
-	public void restoreDefaultOverlay (File pdfFile) {
-		
-		File jsonFile = swapExtensionFor(pdfFile,".json");
+	public void restoreDefaultOverlay(File pdfFile) {
+
+		File jsonFile = swapExtensionFor(pdfFile, ".json");
 
 		if (!jsonFile.exists()) {
 			System.out.println("No JSON file for " + pdfFile);
 			return;
 		}
-		
+
 		Doc.restoreWSfromOverlay(this, jsonFile);
 	}
-	
+
 	private void processRepTablesInFile(File pdf, File out) {
-		
+
 		this.setPdfFile(pdf, true);
-		
+
 		restoreDefaultOverlay(pdf);
 
 		int tableCounter = 0;
@@ -794,24 +794,25 @@ public class DataManager extends Observable {
 				List<Layer> layers = (List<Layer>) Table.applyLayerProducer("table", tableWS);
 
 				File repFile = swapExtensionFor(pdf, ("." + tableCounter + ".json"));
-				
-				writeLayers(layers,repFile);
+
+				writeLayers(layers, repFile);
 
 			}
 
 		}
 	}
-   /*
-    * writeLayers - Given a list of Layer objects, write the representations
-    *               to the given output JSON output file.
-    *               
-    * @param layerList - A list of layer objects.
-    * 
-    * @param output - The JSON output file.	
-    */
-	private void writeLayers (List<Layer> layerList, File output) {
+
+	/*
+	 * writeLayers - Given a list of Layer objects, write the representations to
+	 * the given output JSON output file.
+	 * 
+	 * @param layerList - A list of layer objects.
+	 * 
+	 * @param output - The JSON output file.
+	 */
+	private void writeLayers(List<Layer> layerList, File output) {
 		PrintWriter writer;
-		
+
 		try {
 			writer = new PrintWriter(output, "UTF-8");
 			for (Layer layer : layerList) {
@@ -825,7 +826,7 @@ public class DataManager extends Observable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void loadClojure() {
 		System.out.println("Loading clojure core");
 		IFn require = Clojure.var("clojure.core", "require");

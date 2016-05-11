@@ -38,7 +38,9 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#DataManager(dray.j.VisualElement.VDocument)}.
+	 * Test method for
+	 * {@link com.leidos.bmech.model.DataManager#DataManager(dray.j.VisualElement.VDocument)}
+	 * .
 	 */
 	@Test
 	public void testDataManagerVDocument() {
@@ -46,7 +48,8 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#DataManager(java.io.File)}.
+	 * Test method for
+	 * {@link com.leidos.bmech.model.DataManager#DataManager(java.io.File)}.
 	 */
 	@Test
 	public void testDataManagerFile() {
@@ -54,7 +57,9 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#loadFromVDocument(dray.j.VisualElement.VDocument)}.
+	 * Test method for
+	 * {@link com.leidos.bmech.model.DataManager#loadFromVDocument(dray.j.VisualElement.VDocument)}
+	 * .
 	 */
 	@Test
 	public void testLoadFromVDocument() {
@@ -62,7 +67,8 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#getLayerList()}.
+	 * Test method for {@link com.leidos.bmech.model.DataManager#getLayerList()}
+	 * .
 	 */
 	@Test
 	public void testGetLayerList() {
@@ -78,7 +84,8 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#setPdfFile(java.io.File)}.
+	 * Test method for
+	 * {@link com.leidos.bmech.model.DataManager#setPdfFile(java.io.File)}.
 	 */
 	@Test
 	public void testSetPdfFileFile() {
@@ -86,7 +93,8 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#getVDocument()}.
+	 * Test method for {@link com.leidos.bmech.model.DataManager#getVDocument()}
+	 * .
 	 */
 	@Test
 	public void testGetVDocument() {
@@ -102,7 +110,8 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#getPageIcon(int)}.
+	 * Test method for
+	 * {@link com.leidos.bmech.model.DataManager#getPageIcon(int)}.
 	 */
 	@Test
 	public void testGetPageIcon() {
@@ -110,7 +119,9 @@ public class DataManagerTest extends DataManager {
 	}
 
 	/**
-	 * Test method for {@link com.leidos.bmech.model.DataManager#addSeparator(int, java.awt.geom.Line2D)}.
+	 * Test method for
+	 * {@link com.leidos.bmech.model.DataManager#addSeparator(int, java.awt.geom.Line2D)}
+	 * .
 	 */
 	@Test
 	public void testAddSeparator() {

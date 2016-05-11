@@ -35,15 +35,15 @@ public class WorkingSet {
 
 	// FIELDS
 
-	private WorkingSet parent;
-	private List<WorkingSet> children;
-	private LayerList layerList;
-	private Rectangle bbox;
-	private String name;
-	private int page;
-	private String filename;
-	private List<String> tags;
-	private List<Line2D> separators;
+	private WorkingSet			parent;
+	private List<WorkingSet>	children;
+	private LayerList				layerList;
+	private Rectangle				bbox;
+	private String					name;
+	private int						page;
+	private String					filename;
+	private List<String>			tags;
+	private List<Line2D>			separators;
 
 	// CONSTRUCTOR
 
@@ -51,9 +51,9 @@ public class WorkingSet {
 	 * Create a WorkingSet
 	 * 
 	 * @param p
-	 *            The parent of this working set.
+	 *           The parent of this working set.
 	 * @param n
-	 *            The name of this working set.
+	 *           The name of this working set.
 	 */
 	public WorkingSet(WorkingSet p, String n) {
 
@@ -90,7 +90,7 @@ public class WorkingSet {
 		return parent;
 	}
 
-	/* 
+	/*
 	 * Return the visual elements contained in this working set.
 	 */
 	public List<El> getItems() {
@@ -168,10 +168,10 @@ public class WorkingSet {
 	 * add an item to the working set and expand the rectangle to fit this item
 	 * 
 	 * @param el
-	 *            The item to add
+	 *           The item to add
 	 */
 	public void addItem(El el) {
-		
+
 		// check if item's bbox should expand the WS bbox
 
 		BoundingBox bb2 = (BoundingBox) el.getBbox();
@@ -184,7 +184,7 @@ public class WorkingSet {
 		// if this is a page, add everything to the base layer
 		// since it wont be added in the for loop
 		WorkingSet parentWS = getParent();
-		
+
 		if (parentWS != null && parentWS.getParent() == null)
 			layerList.getBase().add(el);
 
@@ -195,14 +195,13 @@ public class WorkingSet {
 			}
 		}
 	}
-	
+
 	/*
 	 * Add a List of items to the current working set.
 	 * 
-	 * @param els
-	 *            List of visual elements to add.
+	 * @param els List of visual elements to add.
 	 */
-	public void addItems (List<El> els) {
+	public void addItems(List<El> els) {
 		for (El el : els) {
 			this.addItem(el);
 		}
@@ -221,7 +220,7 @@ public class WorkingSet {
 	 * create a working set as a child to this one
 	 * 
 	 * @param name
-	 *            the name of the working set
+	 *           the name of the working set
 	 * @return the created working set
 	 */
 	public WorkingSet createChild(String name) {
@@ -235,9 +234,9 @@ public class WorkingSet {
 	 * parent into the child.
 	 * 
 	 * @param name
-	 *            The name of the working set
+	 *           The name of the working set
 	 * @param rect
-	 *            The bounding box of items to add to the new WS
+	 *           The bounding box of items to add to the new WS
 	 * @return the working set that was just created
 	 */
 	public WorkingSet createChild(String name, Rectangle2D rect) {
@@ -257,7 +256,7 @@ public class WorkingSet {
 	 * children together
 	 * 
 	 * @param added
-	 *            the WorkingSet to merge
+	 *           the WorkingSet to merge
 	 * @return the added working set
 	 */
 	public WorkingSet mergeChild(WorkingSet added) {
@@ -291,7 +290,7 @@ public class WorkingSet {
 	 * origin
 	 * 
 	 * @param obj
-	 *            the working set to compare to
+	 *           the working set to compare to
 	 * @return
 	 */
 	public boolean equalsIgnoreChildren(Object obj) {
@@ -398,25 +397,25 @@ public class WorkingSet {
 		for (String tagStr : tagList) {
 			TypeTag tag = TypeTag.valueOf(cleanTag(tagStr).toUpperCase());
 			switch (tag) {
-			case TABLE:
-				tags.add(TypeTag.COLUMN);
-				tags.add(TypeTag.ROW);
-				tags.add(TypeTag.HEADER_ROW);
-				tags.add(TypeTag.COLUMN);
-				tags.add(TypeTag.CAPTION);
-				tags.add(TypeTag.IGNORE);
-				tags.add(TypeTag.MERGE);
-				break;
-			case FIGURE:
-				tags.add(TypeTag.CAPTION);
-				break;
-			case COLUMN:
-			case ROW:
-				tags.add(TypeTag.HEADER);
-				tags.add(TypeTag.MERGE);
-				break;
-			default:
-				break;
+				case TABLE:
+					tags.add(TypeTag.COLUMN);
+					tags.add(TypeTag.ROW);
+					tags.add(TypeTag.HEADER_ROW);
+					tags.add(TypeTag.COLUMN);
+					tags.add(TypeTag.CAPTION);
+					tags.add(TypeTag.IGNORE);
+					tags.add(TypeTag.MERGE);
+					break;
+				case FIGURE:
+					tags.add(TypeTag.CAPTION);
+					break;
+				case COLUMN:
+				case ROW:
+					tags.add(TypeTag.HEADER);
+					tags.add(TypeTag.MERGE);
+					break;
+				default:
+					break;
 			}
 		}
 		return tags;
@@ -435,7 +434,7 @@ public class WorkingSet {
 	 * Used for column detection.
 	 * 
 	 * @param inputRectangleList
-	 *            - a list of rectangle objects.
+	 *           - a list of rectangle objects.
 	 * @return A list of rectangles organized into potential columns.
 	 */
 	public List<Rectangle> groupHorizUniqueSections(List<Rectangle> inputRectangleList) {
@@ -447,14 +446,16 @@ public class WorkingSet {
 		while (consecutiveRejections < rectangleList.size()) {
 
 			Rectangle topRectangle = rectangleList.remove(0); // Pop rectangle
-																// off list.
+			// off list.
 
-			Rectangle testColumn = expandedRectangle(topRectangle, 0, 1000); // Expand along x-axis.
+			Rectangle testColumn = expandedRectangle(topRectangle, 0, 1000); // Expand
+			// along
+			// x-axis.
 
 			// Collect all rectangles that intersect the candidate column.
 
-			List<Rectangle> columnCandidates = rectangleList.stream()
-					.filter(candidate -> candidate.intersects(testColumn)).collect(Collectors.toList());
+			List<Rectangle> columnCandidates = rectangleList.stream().filter(candidate -> candidate.intersects(testColumn))
+					.collect(Collectors.toList());
 
 			boolean mergedSomething = false;
 
@@ -512,11 +513,11 @@ public class WorkingSet {
 	/**
 	 * 
 	 * @param inputRectangle
-	 *            - The original rectangle
+	 *           - The original rectangle
 	 * @param x
-	 *            - Amount to grow x
+	 *           - Amount to grow x
 	 * @param y
-	 *            - Amount to grow y
+	 *           - Amount to grow y
 	 * @return New rectangle with the expanded dimensions.
 	 */
 	public static Rectangle expandedRectangle(Rectangle inputRectangle, int x, int y) {
@@ -535,7 +536,7 @@ public class WorkingSet {
 	 * determineColumns - Find likely columns from a set of item bounding boxes.
 	 * 
 	 * @param bboxList
-	 *            - A list of Rectangles
+	 *           - A list of Rectangles
 	 * @return A list of columns from that bbox list.
 	 */
 	public List<Rectangle> determineColumns(List<Rectangle> bboxList) {
@@ -546,7 +547,9 @@ public class WorkingSet {
 
 		for (Rectangle bbox : bboxList) {
 
-			Rectangle candidateRow = expandedRectangle(bbox, 1000, 0); // Expand along x-axis.
+			Rectangle candidateRow = expandedRectangle(bbox, 1000, 0); // Expand
+			// along
+			// x-axis.
 
 			// Count the number of intersections with other rectangles.
 			int intersectionCount = (int) bboxList.stream().filter(otherBbox -> candidateRow.intersects(otherBbox))
@@ -557,7 +560,9 @@ public class WorkingSet {
 
 		for (Rectangle bbox : bboxList) {
 
-			Rectangle horizTest = expandedRectangle(bbox, 1000, 0); // Expand along x-axis.
+			Rectangle horizTest = expandedRectangle(bbox, 1000, 0); // Expand
+			// along
+			// x-axis.
 			long collisions = bboxList.stream().filter(otherBbox -> horizTest.intersects(otherBbox)).count();
 			if (collisions > 2) {
 				columnList.add(bbox);
@@ -629,22 +634,22 @@ public class WorkingSet {
 		List<WorkingSet> ret = new ArrayList<WorkingSet>();
 		List<Rectangle> bbs = getItemBBoxes();
 		bbs = groupHorizUniqueSections(bbs);
-//		for (Rectangle r : bbs) {
-//			List<El> x1 = this.getElsIn(r);
-//			System.out.println("HUnique region: " + x1);
-//		}
+		// for (Rectangle r : bbs) {
+		// List<El> x1 = this.getElsIn(r);
+		// System.out.println("HUnique region: " + x1);
+		// }
 		List<Rectangle> columns = determineColumns(bbs);
-//		for (Rectangle r : columns) {
-//			List<El> x1 = this.getElsIn(r);
-//			System.out.println("column: " + x1);
-//		}
+		// for (Rectangle r : columns) {
+		// List<El> x1 = this.getElsIn(r);
+		// System.out.println("column: " + x1);
+		// }
 		Rectangle headerRow = determineHeaderRow(columns);
 
-//		System.out.println("Final: ");
+		// System.out.println("Final: ");
 
 		for (Rectangle r : columns) {
 
-//			System.out.println("  -" + this.getElsIn(r));
+			// System.out.println(" -" + this.getElsIn(r));
 			// create and add columns now
 			WorkingSet child = this.createChild("AUTO_COL", r);
 			child.setName("COLUMN" + (this.getChildrenWithTag("column").size() + 1));
@@ -654,7 +659,7 @@ public class WorkingSet {
 
 		if (headerRow != null) {
 			List<El> els = this.getElsIn(headerRow);
-//			System.out.println("header row els: " + els);
+			// System.out.println("header row els: " + els);
 			// create and add header_row now
 			WorkingSet headerRowWS = this.createChild("AUTO_HEADER_ROW", headerRow);
 			headerRowWS.setName("HEADER_ROW" + (this.getChildrenWithTag("header_row").size() + 1));
@@ -740,146 +745,91 @@ public class WorkingSet {
 		}
 	}
 
-
-/*	public List<WorkingSet> AutoCols2() {
-		
-		List<WorkingSet> ret = new ArrayList<WorkingSet>();
-		List<El> candidates = new ArrayList<El>(this.getItems());
-		// map from x coord to list of elements near that x coord
-		Map<Double, ArrayList<El>> colItems = new HashMap<Double, ArrayList<El>>();
-		for (El candidate : candidates) {
-			BoundingBox bbox = (BoundingBox) candidate.getBbox();
-			// round to the nearest 10
-			double top = round(bbox.getMinX() / 10, 0) * 10;
-
-			/// create a new 'row' if there isnt one
-			if (!colItems.containsKey(top)) {
-				colItems.put(top, new ArrayList<El>());
-			}
-			colItems.get(top).add(candidate);
-		}
-		ArrayList<Double> headerLines = new ArrayList<Double>();
-		ArrayList<Double> tooFewItems = new ArrayList<Double>();
-		for (Double colX : colItems.keySet()) {
-			System.out.println("col at " + colX);
-			ArrayList<El> col = colItems.get(colX);
-			// remove anything where there's only one item
-			if (col.size() <= 1) {
-				System.out.println("dropping 1 element column");
-				tooFewItems.add(colX);
-			} else {
-
-				// remove too-longs
-				// find the left edge of the column to the right of this one
-				Double xOfNextCol = 99999.0;
-				for (Double x : colItems.keySet()) {
-					if (x > colX) {
-						xOfNextCol = Math.min(xOfNextCol, x);
-					}
-				}
-				System.out.println("next column: " + xOfNextCol);
-				// remove any els from this column who extend past that
-				ArrayList<El> toRemove = new ArrayList<El>();
-				for (El el : col) {
-					if (((BoundingBox) el.getBbox()).getMaxX() > xOfNextCol) {
-						System.out.println("removing " + el + ": " + ((BoundingBox) el.getBbox()).getMaxX());
-						toRemove.add(el);
-					}
-				}
-				col.removeAll(toRemove);
-				toRemove.clear();
-
-				// label headers
-				System.out.println("finding headers...");
-				Map lastStyle = new HashMap();
-				int numFontChange = 0;
-
-				for (El el : col) {
-					System.out.println(el);
-					// get number of and location of font change
-
-					if (el instanceof VText) {
-						VText txt = (VText) el;
-						System.out.println(((Map) txt.style).entrySet());
-						if (!((Map) txt.style).equals(lastStyle)) {
-							System.out.println("Style changed");
-							lastStyle = (Map) txt.style;
-							numFontChange++;
-							if (numFontChange == 2) {
-								headerLines.add(((BoundingBox) el.getBbox()).getMinY());
-							}
-						}
-
-					}
-
-				}
-			}
-
-		}
-		for (Double colX : tooFewItems) {
-			colItems.remove(colX);
-		}
-		// done with each column, ready to determine header row
-		Double[] a = new Double[0];
-		double trueHeaderLine = UtiliBuddy.mode(headerLines.toArray(a));
-
-		// second pass
-		ArrayList<El> headerRow = new ArrayList<El>();
-		for (Double colX : colItems.keySet()) {
-			ArrayList<El> data = new ArrayList<El>();
-			ArrayList<El> col = colItems.get(colX);
-			// identify headers based on font change
-			for (El el : col) {
-				BoundingBox bb = (BoundingBox) el.getBbox();
-				if (bb.getMinY() < trueHeaderLine - 1) {
-					headerRow.add(el);
-				} else {
-					data.add(el);
-				}
-			}
-
-			// remove statistical anomalies
-			double stddevThreshold = 3.0;
-			double[] widths = new double[data.size()];
-			for (int i = 0; i < widths.length; ++i) {
-				widths[i] += ((BoundingBox) data.get(i).getBbox()).width;
-			}
-			double widthSD = UtiliBuddy.stddev(widths);
-			double widthMean = UtiliBuddy.mean(widths);
-			System.out.println("SD|mean: " + widthSD + " " + widthMean);
-			ArrayList<El> toRemove = new ArrayList<El>();
-			for (El el : data) {
-
-				if (Math.abs(((BoundingBox) el.getBbox()).width - widthMean) > stddevThreshold * widthSD) {
-					toRemove.add(el);
-				}
-			}
-			colItems.get(colX).removeAll(toRemove);
-
-			// create and add columns now
-			WorkingSet child = this.createChild("AUTO_COL");
-			child.setName("COLUMN" + (this.getChildrenWithTag("column").size() + 1));
-			child.addTag("column".toLowerCase());
-			ret.add(child);
-//			for (El el : colItems.get(colX)) {
-//				child.addItem(el);
-//			}
-			child.addItems(colItems.get(colX));
-		}
-
-		// create and add header_row now
-		WorkingSet headerRowWS = this.createChild("AUTO_HEADER_ROW");
-		headerRowWS.setName("HEADER_ROW" + (this.getChildrenWithTag("header_row").size() + 1));
-		headerRowWS.addTag("header_row".toLowerCase());
-		ret.add(headerRowWS);
-//		for (El el : headerRow) {
-//			headerRowWS.addItem(el);
-//		}
-		headerRowWS.addItems(headerRow);
-
-		return ret;
-	}
-*/
+	/*
+	 * public List<WorkingSet> AutoCols2() {
+	 * 
+	 * List<WorkingSet> ret = new ArrayList<WorkingSet>(); List<El> candidates =
+	 * new ArrayList<El>(this.getItems()); // map from x coord to list of
+	 * elements near that x coord Map<Double, ArrayList<El>> colItems = new
+	 * HashMap<Double, ArrayList<El>>(); for (El candidate : candidates) {
+	 * BoundingBox bbox = (BoundingBox) candidate.getBbox(); // round to the
+	 * nearest 10 double top = round(bbox.getMinX() / 10, 0) * 10;
+	 * 
+	 * /// create a new 'row' if there isnt one if (!colItems.containsKey(top)) {
+	 * colItems.put(top, new ArrayList<El>()); }
+	 * colItems.get(top).add(candidate); } ArrayList<Double> headerLines = new
+	 * ArrayList<Double>(); ArrayList<Double> tooFewItems = new
+	 * ArrayList<Double>(); for (Double colX : colItems.keySet()) {
+	 * System.out.println("col at " + colX); ArrayList<El> col =
+	 * colItems.get(colX); // remove anything where there's only one item if
+	 * (col.size() <= 1) { System.out.println("dropping 1 element column");
+	 * tooFewItems.add(colX); } else {
+	 * 
+	 * // remove too-longs // find the left edge of the column to the right of
+	 * this one Double xOfNextCol = 99999.0; for (Double x : colItems.keySet()) {
+	 * if (x > colX) { xOfNextCol = Math.min(xOfNextCol, x); } }
+	 * System.out.println("next column: " + xOfNextCol); // remove any els from
+	 * this column who extend past that ArrayList<El> toRemove = new
+	 * ArrayList<El>(); for (El el : col) { if (((BoundingBox)
+	 * el.getBbox()).getMaxX() > xOfNextCol) { System.out.println("removing " +
+	 * el + ": " + ((BoundingBox) el.getBbox()).getMaxX()); toRemove.add(el); } }
+	 * col.removeAll(toRemove); toRemove.clear();
+	 * 
+	 * // label headers System.out.println("finding headers..."); Map lastStyle =
+	 * new HashMap(); int numFontChange = 0;
+	 * 
+	 * for (El el : col) { System.out.println(el); // get number of and location
+	 * of font change
+	 * 
+	 * if (el instanceof VText) { VText txt = (VText) el;
+	 * System.out.println(((Map) txt.style).entrySet()); if (!((Map)
+	 * txt.style).equals(lastStyle)) { System.out.println("Style changed");
+	 * lastStyle = (Map) txt.style; numFontChange++; if (numFontChange == 2) {
+	 * headerLines.add(((BoundingBox) el.getBbox()).getMinY()); } }
+	 * 
+	 * }
+	 * 
+	 * } }
+	 * 
+	 * } for (Double colX : tooFewItems) { colItems.remove(colX); } // done with
+	 * each column, ready to determine header row Double[] a = new Double[0];
+	 * double trueHeaderLine = UtiliBuddy.mode(headerLines.toArray(a));
+	 * 
+	 * // second pass ArrayList<El> headerRow = new ArrayList<El>(); for (Double
+	 * colX : colItems.keySet()) { ArrayList<El> data = new ArrayList<El>();
+	 * ArrayList<El> col = colItems.get(colX); // identify headers based on font
+	 * change for (El el : col) { BoundingBox bb = (BoundingBox) el.getBbox(); if
+	 * (bb.getMinY() < trueHeaderLine - 1) { headerRow.add(el); } else {
+	 * data.add(el); } }
+	 * 
+	 * // remove statistical anomalies double stddevThreshold = 3.0; double[]
+	 * widths = new double[data.size()]; for (int i = 0; i < widths.length; ++i)
+	 * { widths[i] += ((BoundingBox) data.get(i).getBbox()).width; } double
+	 * widthSD = UtiliBuddy.stddev(widths); double widthMean =
+	 * UtiliBuddy.mean(widths); System.out.println("SD|mean: " + widthSD + " " +
+	 * widthMean); ArrayList<El> toRemove = new ArrayList<El>(); for (El el :
+	 * data) {
+	 * 
+	 * if (Math.abs(((BoundingBox) el.getBbox()).width - widthMean) >
+	 * stddevThreshold * widthSD) { toRemove.add(el); } }
+	 * colItems.get(colX).removeAll(toRemove);
+	 * 
+	 * // create and add columns now WorkingSet child =
+	 * this.createChild("AUTO_COL"); child.setName("COLUMN" +
+	 * (this.getChildrenWithTag("column").size() + 1));
+	 * child.addTag("column".toLowerCase()); ret.add(child); // for (El el :
+	 * colItems.get(colX)) { // child.addItem(el); // }
+	 * child.addItems(colItems.get(colX)); }
+	 * 
+	 * // create and add header_row now WorkingSet headerRowWS =
+	 * this.createChild("AUTO_HEADER_ROW"); headerRowWS.setName("HEADER_ROW" +
+	 * (this.getChildrenWithTag("header_row").size() + 1));
+	 * headerRowWS.addTag("header_row".toLowerCase()); ret.add(headerRowWS); //
+	 * for (El el : headerRow) { // headerRowWS.addItem(el); // }
+	 * headerRowWS.addItems(headerRow);
+	 * 
+	 * return ret; }
+	 */
 	public List<WorkingSet> AutoRows() {
 		List<WorkingSet> ret = new ArrayList<WorkingSet>();
 		// List<WorkingSet> rows = this.getChildrenWithTag(TypeTag.ROW);
@@ -908,15 +858,14 @@ public class WorkingSet {
 		for (Double rowTop : newRows.keySet()) {
 			WorkingSet child = this.createChild("AUTO_ROW");
 			ret.add(child);
-//			for (El el : newRows.get(rowTop)) {
-//				child.addItem(el);
-//			}
+			// for (El el : newRows.get(rowTop)) {
+			// child.addItem(el);
+			// }
 			child.addItems(newRows.get(rowTop));
 		}
 
 		return ret;
 	}
-
 
 	/*
 	 * doAutoTableWS - Attempt to auto-detect the rows and columns in a Table
@@ -1008,9 +957,9 @@ public class WorkingSet {
 		this.getChildren().removeAll(wsToRemove);
 
 		this.addItems(newEls);
-//		for (El el : newEls) {
-//			this.addItem(el);
-//		}
+		// for (El el : newEls) {
+		// this.addItem(el);
+		// }
 		for (El el : lostEls) {
 			this.getItems().remove(el);
 		}
@@ -1020,17 +969,17 @@ public class WorkingSet {
 	}
 
 	/**
-	 * get a list of dray.j.VisualElement.El objects that are FULLY inside of
-	 * the rectangle
+	 * get a list of dray.j.VisualElement.El objects that are FULLY inside of the
+	 * rectangle
 	 * 
 	 * @param dragRectDescaled
-	 *            the rectangle
+	 *           the rectangle
 	 * @return
 	 */
 	public List<El> getElsIn(Rectangle2D dragRectDescaled) {
 		dragRectDescaled.setRect((Math.min(dragRectDescaled.getMinX(), dragRectDescaled.getMaxX())),
-				(Math.min(dragRectDescaled.getMinY(), dragRectDescaled.getMaxY())),
-				Math.abs(dragRectDescaled.getWidth()), Math.abs(dragRectDescaled.getHeight()));
+				(Math.min(dragRectDescaled.getMinY(), dragRectDescaled.getMaxY())), Math.abs(dragRectDescaled.getWidth()),
+				Math.abs(dragRectDescaled.getHeight()));
 		List<El> ret = new ArrayList<El>();
 		for (El el : getItems()) {
 			BoundingBox bb = (BoundingBox) el.getBbox();

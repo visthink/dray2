@@ -46,565 +46,578 @@ import dray.j.VisualElement.*;
  */
 
 public class DocumentCanvas extends JPanel {
-  private static final long serialVersionUID = 1L;
-
-  List<DocumentElement>     currentlySelected;
-  DocumentElement           lastSelected;
-  El                        lastSelectedEl;
-  ViewerApp                 mainApp;
-  private float             scale;
-  boolean                   mouseDown;
-  Rectangle                 dragRect;
-  DocumentCanvas            pThis;
-  Point                     rightDragLast;
-  boolean                   dragged;
-  WorkingSet                lastWS;
-  WorkingSet                resizing;
-  int                       hResize;
-  int                       vResize;
-  final static float        minScale         = 0.2f;
-  final static float        maxScale         = 4.0f;
-  final static int          buffer           = 20;
-
-  private DataManagerView   view;
-  private boolean           retainViewZoom;
-  
-  private Font labelFont;
-  
-  private Font caretFont;
-
-  /**
-   * initialize variables and add mouse listeners
-   * 
-   * @param parent
-   */
-  public DocumentCanvas(ViewerApp parent) {
-
-    setBackground(Color.WHITE);
-    pThis = this;
-    retainViewZoom = false;
-    mouseDown = false;
-    mainApp = parent;
-    view = mainApp.getDataManager().getView();
-    scale = 1.0f;
-    currentlySelected = new ArrayList<DocumentElement>();
-    dragged = false;
-    
-    labelFont = new Font("Helvetica", Font.ITALIC, 10);
-    caretFont = new Font("Helvetica", Font.BOLD, 24);
-    
-    final List<Object> selectedEls = view.getSelected();
-        
-        
-    addMouseListener(new MouseAdapter() {
-
-      public void mouseClicked(MouseEvent e) {
-      
-        if (noDocumentLoaded()) { return; }; // Exit if no doc loaded.
-        
-        Point clickLoc = e.getPoint(); 
-        int   clickCount = e.getClickCount();
-        
-        El targetEl = mainApp.getDataManager().getElAt(scaleToCanvas(clickLoc));
-        
-        List<WorkingSet> childrenClicked = mainApp.getDataManager().getWSAt(scaleToCanvas(clickLoc));
-
-        if (SwingUtilities.isLeftMouseButton(e)) {
-
-          // if double click, drill down to child WS
-          if (clickCount == 2) {
-          
-            // only drill down if unambiguous
-            for (WorkingSet clicked : childrenClicked) {
-              if (selectedEls.contains(clicked)) {
-                view.setCurrentWS(childrenClicked.get(0));
-                mainApp.viewWSUpdated();
-                break;
-              }
-            }
-            
-          } else if (clickCount == 1) {
-          
-            Object clickedObj = null;
-            if (childrenClicked.size() > 0) {
-              clickedObj = childrenClicked.get(0);
-            } else {
-              selectedEls.add(targetEl);
-              clickedObj = targetEl;
-            }
-            
-            // if ctrl is pressed, don't clear the selection, just toggle the
-            // clicked el
-            if ((e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
-              if (selectedEls.contains(clickedObj)) {
-                selectedEls.remove(clickedObj);
-              } else {
-                selectedEls.add(clickedObj);
-              }
-            } else {
-              // clear selected and add the clicked el
-              selectedEls.clear();
-              selectedEls.add(clickedObj);
-            }
-
-            mainApp.selectedChanged();
-            // }
-            if (lastSelectedEl != null) {
-              mainApp.appendToLog(lastSelectedEl.toString());
-            };
-          }
-
-        } else if (SwingUtilities.isRightMouseButton(e)) {
-          boolean selectionClicked = false;
-          // Object clickedObj = null;
-          if (dragRect != null) {
-            Rectangle2D dragRectDescaled = new Rectangle((int) (dragRect.getX() + offX()),
-                (int) (dragRect.getY() + offY()), (int) (dragRect.getWidth()), (int) (dragRect.getHeight()));
-            if (dragRectDescaled
-                .contains( new Point((int) ((e.getX() / scale + offX())), (int) ((e.getY() / scale + offY()))))) {
-              selectionClicked = true;
-            }
-          }
-          DocumentMenu menu;
-
-          if (selectionClicked)
-            menu = new DocumentMenu(mainApp, null, targetEl);
-          else if (childrenClicked.size() > 0 && childrenClicked.get(0) instanceof WorkingSet) {
-            menu = new DocumentMenu(mainApp, (WorkingSet) childrenClicked.get(0), targetEl);
-          } else {
-            menu = new DocumentMenu(mainApp, view.getCurrentWS(), targetEl);
-          }
-          menu.show(e.getComponent(), e.getX(), e.getY());
-        }
-        repaint();
-      };
-
-      public void mousePressed(MouseEvent e) {
-
-        // check if anything has been loaded
-
-        if (noDocumentLoaded()) { return; }
-
-        if (e.getButton() == MouseEvent.BUTTON1) {
-          mouseDown = true;
-          // check to see if we should be resizing a working set boundary
-          // these ints are the mouse point in ws space
-          int wsX = (int) ((e.getX() / scale + offX()));
-          int wsY = (int) ((e.getY() / scale + offY()));
-
-          List<WorkingSet> clickedWS = mainApp.getDataManager().getWSEdgeAt(wsX, wsY);
-
-          if (clickedWS.size() > 0) {
-            System.out.println(view.getSelected().contains(clickedWS.get(0)));
-
-            if (view.getSelected().contains(clickedWS.get(0))) {
-              resizing = clickedWS.get(0);
-              Rectangle tmp = new Rectangle(clickedWS.get(0).getBbox());
-              // checkToSee vertical vs Horizontal resize
-              hResize = clickedWS.get(0).isHorizontalEdge(wsX);
-              vResize = clickedWS.get(0).isVerticalEdge(wsY);
-
-              dragRect = new Rectangle((int) (tmp.getX() - offX()), (int) (tmp.getY() - offY()), (int) (tmp.getWidth()),
-                  (int) (tmp.getHeight()));
-            }
-
-          } else {
-
-            dragRect = new Rectangle(new Point((int) (e.getX() / scale), (int) (e.getY() / scale)));
-          }
-        } else if (SwingUtilities.isRightMouseButton(e)) {
-          rightDragLast = e.getLocationOnScreen();
-          pThis.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-        }
-      }
-
-      public void mouseReleased(MouseEvent e) {
-        // check if anything has been loaded1
-        if (noDocumentLoaded()) { return; };
-        
-        if (e.getButton() == MouseEvent.BUTTON1) {
-          if (dragged) {
-            // if ctrl not pressed, clear list
-
-            // translate the rectangle from screen space to VDocument space
-            Rectangle dragRectDescaled = new Rectangle((int) (dragRect.getX() + offX()),
-                (int) (dragRect.getY() + offY()), (int) (dragRect.getWidth()), (int) (dragRect.getHeight()));
-            if (resizing == null) {
-              // create new WS
-              if ((e.getModifiers() & ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK) {
-                view.getSelected().clear();
-
-              }
-              // normalize
-              dragRectDescaled.setRect((Math.min(dragRectDescaled.getMinX(), dragRectDescaled.getMaxX())),
-                  (Math.min(dragRectDescaled.getMinY(), dragRectDescaled.getMaxY())),
-                  Math.abs(dragRectDescaled.getWidth()), Math.abs(dragRectDescaled.getHeight()));
-              if (mainApp.isSplitModeEnabled()) {
-                mainApp.createSeparator(new Line2D.Double(dragRectDescaled.getMinX(), dragRectDescaled.getMinY(),
-                    dragRectDescaled.getX(), dragRectDescaled.getMaxY()));
-                // remember old viewport information, this will get lost when we
-                // reload the workingsets based on the split
-                pThis.retainViewZoom = true;
-                repaint();
-
-              } else {
-                mainApp.rectangleDrawn(dragRectDescaled);
-              }
-            } else {
-              // resize WS using rectangle
-              mainApp.rectangleDrawn(resizing, dragRectDescaled);
-            }
-          }
-          dragged = false;
-          mouseDown = false;
-          resizing = null;
-        } else if (SwingUtilities.isRightMouseButton(e)) {
-          pThis.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        }
-
-      }
-
-    });
-
-    addMouseWheelListener(new MouseWheelListener() {
-
-      public void mouseWheelMoved(MouseWheelEvent e) {
-
-        if (mainApp.getDataManager().getVDocument() != null) {
-          if (e.getWheelRotation() < 0) {
-            zoomIn();
-          } else {
-            zoomOut();
-          }
-          ;
-        }
-      }
-    });
-
-    // float newScale;
-    // newScale = Math.min(scale + 0.1f, maxScale);
-    // } else {
-    // newScale = Math.max(scale - 0.1f, minScale);
-    // }
-    // pThis.setZoom(newScale);
-    //
-    // }
-    // });
-
-    addMouseMotionListener(new MouseMotionListener() {
-
-      @Override
-      public void mouseDragged(MouseEvent e) {
-        
-        if (noDocumentLoaded()) { return;}
-        
-        // adjust the width of the rectangle and scale
-        if (SwingUtilities.isLeftMouseButton(e)) {
-          dragged = true;
-          // check if we are resizing a WS
-          if (resizing != null) {
-            double x = dragRect.getMinX();
-            double y = dragRect.getMinY();
-            double h = dragRect.getHeight();
-            double w = dragRect.getWidth();
-            if (pThis.hResize == 1)
-              w = (e.getX() / scale - x);
-            if (pThis.hResize == -1) {
-              w = dragRect.getMaxX() - (e.getX() / scale);
-              x = (e.getX() / scale);
-            }
-            if (pThis.vResize == 1)
-              h = (e.getY() / scale - y);
-            if (pThis.vResize == -1) {
-              h = dragRect.getMaxY() - (e.getY() / scale);
-              y = (e.getY() / scale);
-            }
-            // dont allow dragging inverse rectangle
-            if (w > 0 && h > 0) {
-              dragRect.setFrame(x, y, w, h);
-            }
-
-          } else if (mainApp.isSplitModeEnabled()) {
-            // split line
-            dragRect.setSize(0, (int) ((e.getY() / scale - dragRect.y)));
-
-          } else {// regular drag
-            //TODO BUGGY -- something is coming up as null. dragRect??
-            if (dragRect != null) {
-               dragRect.setSize((int) ((e.getX() / scale - dragRect.x)), (int) ((e.getY() / scale - dragRect.y)));
-            }
-          }
-        } else if (SwingUtilities.isRightMouseButton(e)) {
-          JViewport viewPort = (JViewport) pThis.getParent();
-          double deltaX = rightDragLast.getX() - e.getLocationOnScreen().getX();
-          double deltaY = rightDragLast.getY() - e.getLocationOnScreen().getY();
-          Point vpp = viewPort.getViewPosition();
-          vpp.translate((int) deltaX, (int) deltaY);
-          pThis.scrollRectToVisible(new Rectangle(vpp, viewPort.getSize()));
-          rightDragLast = e.getLocationOnScreen();
-        }
-        repaint();
-      }
-
-      @Override
-      public void mouseMoved(MouseEvent e) {
-        if (pThis.lastWS == null)
-          return;
-        int wsX = (int) ((e.getX() / scale + offX()));
-        int wsY = (int) ((e.getY() / scale + offY()));
-        List<WorkingSet> clickedWS = mainApp.getDataManager().getWSEdgeAt(wsX, wsY);
-
-        if (clickedWS.size() > 0) {
-          if (view.getSelected().contains(clickedWS.get(0))) {
-            int h = clickedWS.get(0).isHorizontalEdge(wsX);
-            int v = clickedWS.get(0).isVerticalEdge(wsY);
-            if (h != 0 && v == 0) {
-              pThis.setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
-            } else if (h == 0 && v != 0) {
-              pThis.setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
-            } else if ((h == 1 && v == 1) || (h == -1 && v == -1)) {
-              pThis.setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
-            } else if ((h == 1 && v == -1) || (h == -1 && v == 1)) {
-              pThis.setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
-            }
-
-          }
-        } else {
-          pThis.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        }
-
-      }
-
-    });
-
-  }
-
-  @Override
-  public void paintComponent(Graphics g) {
-    Graphics2D g2;
-    g2 = (Graphics2D) g;
-    super.paintComponent(g);
-    paintUsingVDocument(g);
-    if (dragRect != null) {
-      g2.setColor(new Color(0f, 1f, 0f));
-      g2.drawRect((int) (Math.min(dragRect.getMinX(), dragRect.getMaxX()) * scale),
-          (int) (Math.min(dragRect.getMinY(), dragRect.getMaxY()) * scale), (int) (Math.abs(dragRect.width) * scale),
-          (int) (Math.abs(dragRect.height) * scale));
-    }
-
-    // Not clear we need this, so remove for now - 4/20/2016 (rwf)
-    
-   // // draw up button
-   // 
-   // g2.setColor(Color.DARK_GRAY);
-   //  
-   // g2.setFont(caretFont);
-   // g2.drawString("[^]", 10, 20);
-
-  }
-
-  /**
-   * Draw the VDocument objects on the canvas
-   * 
-   * @param g
-   */
-  public void paintUsingVDocument(Graphics g) {
-    Graphics2D g2;
-    g2 = (Graphics2D) g;
-    if (noDocumentLoaded()) {
-      g2.setFont(caretFont);
-      g2.drawString("No Document Loaded", 200, 200);
-      return;
-    }
-    int x = mainApp.getDataManager().getOffsetX();
-    int y = mainApp.getDataManager().getOffsetY();
-    // check if working set has changed so we can refocus if needed
-    if (view.getCurrentWS() != lastWS) {
-      lastWS = view.getCurrentWS();
-      if (!retainViewZoom) {
-        scale = (float) Math.min(getVisibleRect().getWidth() / (lastWS.getBbox().getWidth() + scale * buffer * 2),
-            getVisibleRect().getHeight() / (lastWS.getBbox().getHeight() + scale * buffer * 2));
-        this.scrollRectToVisible(new Rectangle());
-      }
-      dragRect = null;
-      retainViewZoom = false;
-    }
-    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    @SuppressWarnings("rawtypes")
-    List pages = (List) mainApp.getDataManager().getVDocument().getItems();
-    VPage page = (VPage) pages.get(view.getCurrentPage() - 1);
-    BoundingBox pagebb = (BoundingBox) page.getBbox();
-    BufferedImage pageImage = mainApp.getDataManager().getPageImage(view.getCurrentPage());
-    double factor = (double) pageImage.getWidth() / pagebb.getWidth();
-    // draw rectangles around child WSs
-    drawChildWSRecursive(g2, view.getCurrentWS(), 1);
-
-    // draw image
-    for (El el : view.getCurrentWS().getItems()) {
-      BoundingBox bb = (BoundingBox) el.getBbox();
-
-      g2.drawImage(pageImage, (int) ((bb.getMinX() - offX()) * scale), (int) ((bb.getMinY() - offY()) * scale),
-          (int) ((bb.getMaxX() - offX()) * scale), (int) ((bb.getMaxY() - offY()) * scale), (int) (bb.x * factor) + x,
-          (int) (bb.y * factor) + y, (int) ((bb.x + bb.width) * factor) + x, (int) ((bb.y + bb.height) * factor) + y,
-          null);
-    }
-    // draw working set and El boxes
-    if (view.getSelected() != null) {
-      g2.setColor(new Color(0f, 1f, 0f, .3f));
-      for (Object obj : view.getSelected()) {
-        if (obj != null) {
-          Rectangle bb = null;
-          if (obj instanceof El) {
-            bb = ((BoundingBox) ((El) obj).getBbox()).getBounds();
-          } else if (obj instanceof WorkingSet) {
-            bb = ((WorkingSet) obj).getBboxWide();
-            // g2.setColor(((WorkingSet) obj).getColor());
-          }
-          if (bb != null) {
-            g2.fill(new Rectangle((int) ((bb.getMinX() - offX()) * scale), (int) ((bb.getMinY() - offY()) * scale),
-                (int) (bb.getWidth() * scale), (int) (bb.getHeight() * scale)));
-          }
-        }
-
-      }
-
-    }
-
-    for (Line2D sep : mainApp.getDataManager().getPageWS(view.getCurrentPage()).getSeparators()) {
-
-      Graphics2D g2d = (Graphics2D) g.create();
-      g2d.setColor(Color.RED);
-      Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 3 }, 0);
-      g2d.setStroke(dashed);
-      g2d.drawLine((int) ((sep.getX1() - offX()) * scale), (int) ((sep.getY1() - offY()) * scale),
-          (int) ((sep.getX2() - offX()) * scale), (int) ((sep.getY2() - offY()) * scale));
-      // gets rid of the copy
-      g2d.dispose();
-
-    }
-
-    // List<Layer> layers = mainApp.getDataManager().getLayerList().
-    Rectangle2D imageBB = new Rectangle();
-    for (Layer layer : mainApp.getDataManager().getLayerList().values()) {
-      if (layer.isHighlight()) {
-        g2.setColor(UtiliBuddy.makeTransparent(layer.getColor(), 0.1f));
-
-        for (El el : layer.getItems()) {
-          if (el != null) {
-            BoundingBox bb = (BoundingBox) el.getBbox();
-            g2.fill(new Rectangle((int) ((bb.getMinX() - offX()) * scale), (int) ((bb.getMinY() - offY()) * scale),
-                (int) (bb.getWidth() * scale), (int) (bb.getHeight() * scale)));
-          }
-        }
-
-        // System.out.println(layer.getRep());
-        for (Map<String, Object> hm : layer.getRep()) {
-          // System.out.println("Rep " + hm.keySet());
-          if (hm.containsKey("File")) {
-            imageBB = mainApp.getDataManager().getBBFromImg(new File((String) hm.get("File")).getName());
-            double bee2pdfX = imageBB.getWidth() / ((Long) hm.get("imageWidth")).doubleValue();
-            double bee2pdfY = imageBB.getHeight() / ((Long) hm.get("imageHeight")).doubleValue();
-            if (hm.containsKey("Blobs")) {
-              @SuppressWarnings("rawtypes")
-              List blobs = (List) hm.get("Blobs");
-              for (Object obj : blobs) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> blob = (Map<String, Object>) obj;
-                g2.setColor((Color) blob.get("color"));
-                g2.setStroke(new BasicStroke(3));
-                BoundingBox bb = (BoundingBox) blob.get("bbox");
-                g2.draw(new Rectangle((int) ((bb.getMinX() * bee2pdfX - offX() + imageBB.getX()) * scale),
-                    (int) ((bb.getMinY() * bee2pdfY - offY() + imageBB.getY()) * scale),
-                    (int) (bb.getWidth() * scale * bee2pdfX), (int) (bb.getHeight() * scale * bee2pdfY)));
-              }
-            }
-          }
-        }
-      }
-    }
-
-  }
-
-  private void drawChildWSRecursive(Graphics2D g2, WorkingSet parent, int depth) {
-    
-    g2.setStroke(new BasicStroke(1.5f));
-    
-    g2.setFont(labelFont);
-
-    for (WorkingSet child : parent.getChildren()) {
-
-      // first delve deeper so that top most WS are drawn over children
-      drawChildWSRecursive(g2, child, depth + 1);
-
-      g2.setColor(UtiliBuddy.makeTransparent(child.getColor(), 0.3f / (depth + 1)));
-      
-      Rectangle bb = child.getBboxWide();
-      Rectangle highlightRectangle = new Rectangle((int) ((bb.getMinX() - offX()) * scale), 
-                                                   (int) ((bb.getMinY() - offY()) * scale),
-                                                   (int) (bb.getWidth() * scale), 
-                                                   (int) (bb.getHeight() * scale));
-      g2.fill(highlightRectangle);
-      g2.setColor(Color.BLACK);
-      g2.draw(highlightRectangle);
-      
-      // only draw WS title for first level
-      if (depth == 1) {
-        g2.drawString(child.getName(), (int) ((bb.getMinX() - offX()) * scale),
-            (int) ((bb.getMinY() - offY()) * scale) - 2);
-      }
-    }
-  }
-
-  private int offX() {
-    return (int) lastWS.getBbox().getX() - buffer;
-  }
-
-  private int offY() {
-    return (int) lastWS.getBbox().getY() - buffer;
-  }
-
-  private void setZoom(float zoom) {
-    this.scale = zoom;
-    @SuppressWarnings("rawtypes")
-    List pages = (List) mainApp.getDataManager().getVDocument().getItems();
-    VPage page = (VPage) pages.get(view.getCurrentPage() - 1);
-    BoundingBox pagebb = (BoundingBox) page.getBbox();
-    pThis.setPreferredSize(new Dimension((int) (pagebb.getWidth() * scale), (int) (pagebb.getHeight() * scale)));
-    pThis.revalidate();
-    repaint();
-  }
-
-  private void zoomIn() {
-    setZoom(Math.min(scale + 0.1f, maxScale));
-  }
-
-  private void zoomOut() {
-    setZoom(Math.max(scale - 0.1f, minScale));
-  }
-
-  // if (e.getWheelRotation() < 0) {
-  // newScale = Math.min(scale + 0.1f, maxScale);
-  // } else {
-  // newScale = Math.max(scale - 0.1f, minScale);
-  // }
-
-  /*
-   * HELPER FUNCTIONS
-   */
-   
-   /**
-   * Scale a point to proper position on canvas given offset and scale.
-   * 
-   * @param p
-   */
-  private Point scaleToCanvas(Point p) {
-    return new Point((int)(p.x / scale + offX()),
-                     (int)(p.y / scale + offY()));
-  }
-  
-  private boolean noDocumentLoaded () {
-    return (mainApp.getDataManager().getVDocument() == null);
-  }
-  
-  
+	private static final long	serialVersionUID	= 1L;
+
+	List<DocumentElement>		currentlySelected;
+	DocumentElement				lastSelected;
+	El									lastSelectedEl;
+	ViewerApp						mainApp;
+	private float					scale;
+	boolean							mouseDown;
+	Rectangle						dragRect;
+	DocumentCanvas					pThis;
+	Point								rightDragLast;
+	boolean							dragged;
+	WorkingSet						lastWS;
+	WorkingSet						resizing;
+	int								hResize;
+	int								vResize;
+	final static float			minScale				= 0.2f;
+	final static float			maxScale				= 4.0f;
+	final static int				buffer				= 20;
+
+	private DataManagerView		view;
+	private boolean				retainViewZoom;
+
+	private Font					labelFont;
+
+	private Font					caretFont;
+
+	/**
+	 * initialize variables and add mouse listeners
+	 * 
+	 * @param parent
+	 */
+	public DocumentCanvas(ViewerApp parent) {
+
+		setBackground(Color.WHITE);
+		pThis = this;
+		retainViewZoom = false;
+		mouseDown = false;
+		mainApp = parent;
+		view = mainApp.getDataManager().getView();
+		scale = 1.0f;
+		currentlySelected = new ArrayList<DocumentElement>();
+		dragged = false;
+
+		labelFont = new Font("Helvetica", Font.ITALIC, 10);
+		caretFont = new Font("Helvetica", Font.BOLD, 24);
+
+		final List<Object> selectedEls = view.getSelected();
+
+		addMouseListener(new MouseAdapter() {
+
+			public void mouseClicked(MouseEvent e) {
+
+				if (noDocumentLoaded()) {
+					return;
+				}
+				; // Exit if no doc loaded.
+
+				Point clickLoc = e.getPoint();
+				int clickCount = e.getClickCount();
+
+				El targetEl = mainApp.getDataManager().getElAt(scaleToCanvas(clickLoc));
+
+				List<WorkingSet> childrenClicked = mainApp.getDataManager().getWSAt(scaleToCanvas(clickLoc));
+
+				if (SwingUtilities.isLeftMouseButton(e)) {
+
+					// if double click, drill down to child WS
+					if (clickCount == 2) {
+
+						// only drill down if unambiguous
+						for (WorkingSet clicked : childrenClicked) {
+							if (selectedEls.contains(clicked)) {
+								view.setCurrentWS(childrenClicked.get(0));
+								mainApp.viewWSUpdated();
+								break;
+							}
+						}
+
+					} else if (clickCount == 1) {
+
+						Object clickedObj = null;
+						if (childrenClicked.size() > 0) {
+							clickedObj = childrenClicked.get(0);
+						} else {
+							selectedEls.add(targetEl);
+							clickedObj = targetEl;
+						}
+
+						// if ctrl is pressed, don't clear the selection, just
+						// toggle the
+						// clicked el
+						if ((e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
+							if (selectedEls.contains(clickedObj)) {
+								selectedEls.remove(clickedObj);
+							} else {
+								selectedEls.add(clickedObj);
+							}
+						} else {
+							// clear selected and add the clicked el
+							selectedEls.clear();
+							selectedEls.add(clickedObj);
+						}
+
+						mainApp.selectedChanged();
+						// }
+						if (lastSelectedEl != null) {
+							mainApp.appendToLog(lastSelectedEl.toString());
+						}
+						;
+					}
+
+				} else if (SwingUtilities.isRightMouseButton(e)) {
+					boolean selectionClicked = false;
+					// Object clickedObj = null;
+					if (dragRect != null) {
+						Rectangle2D dragRectDescaled = new Rectangle((int) (dragRect.getX() + offX()),
+								(int) (dragRect.getY() + offY()), (int) (dragRect.getWidth()), (int) (dragRect.getHeight()));
+						if (dragRectDescaled.contains(
+								new Point((int) ((e.getX() / scale + offX())), (int) ((e.getY() / scale + offY()))))) {
+							selectionClicked = true;
+						}
+					}
+					DocumentMenu menu;
+
+					if (selectionClicked)
+						menu = new DocumentMenu(mainApp, null, targetEl);
+					else if (childrenClicked.size() > 0 && childrenClicked.get(0) instanceof WorkingSet) {
+						menu = new DocumentMenu(mainApp, (WorkingSet) childrenClicked.get(0), targetEl);
+					} else {
+						menu = new DocumentMenu(mainApp, view.getCurrentWS(), targetEl);
+					}
+					menu.show(e.getComponent(), e.getX(), e.getY());
+				}
+				repaint();
+			};
+
+			public void mousePressed(MouseEvent e) {
+
+				// check if anything has been loaded
+
+				if (noDocumentLoaded()) {
+					return;
+				}
+
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					mouseDown = true;
+					// check to see if we should be resizing a working set
+					// boundary
+					// these ints are the mouse point in ws space
+					int wsX = (int) ((e.getX() / scale + offX()));
+					int wsY = (int) ((e.getY() / scale + offY()));
+
+					List<WorkingSet> clickedWS = mainApp.getDataManager().getWSEdgeAt(wsX, wsY);
+
+					if (clickedWS.size() > 0) {
+						System.out.println(view.getSelected().contains(clickedWS.get(0)));
+
+						if (view.getSelected().contains(clickedWS.get(0))) {
+							resizing = clickedWS.get(0);
+							Rectangle tmp = new Rectangle(clickedWS.get(0).getBbox());
+							// checkToSee vertical vs Horizontal resize
+							hResize = clickedWS.get(0).isHorizontalEdge(wsX);
+							vResize = clickedWS.get(0).isVerticalEdge(wsY);
+
+							dragRect = new Rectangle((int) (tmp.getX() - offX()), (int) (tmp.getY() - offY()),
+									(int) (tmp.getWidth()), (int) (tmp.getHeight()));
+						}
+
+					} else {
+
+						dragRect = new Rectangle(new Point((int) (e.getX() / scale), (int) (e.getY() / scale)));
+					}
+				} else if (SwingUtilities.isRightMouseButton(e)) {
+					rightDragLast = e.getLocationOnScreen();
+					pThis.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				}
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				// check if anything has been loaded1
+				if (noDocumentLoaded()) {
+					return;
+				}
+				;
+
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					if (dragged) {
+						// if ctrl not pressed, clear list
+
+						// translate the rectangle from screen space to
+						// VDocument space
+						Rectangle dragRectDescaled = new Rectangle((int) (dragRect.getX() + offX()),
+								(int) (dragRect.getY() + offY()), (int) (dragRect.getWidth()), (int) (dragRect.getHeight()));
+						if (resizing == null) {
+							// create new WS
+							if ((e.getModifiers() & ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK) {
+								view.getSelected().clear();
+
+							}
+							// normalize
+							dragRectDescaled.setRect((Math.min(dragRectDescaled.getMinX(), dragRectDescaled.getMaxX())),
+									(Math.min(dragRectDescaled.getMinY(), dragRectDescaled.getMaxY())),
+									Math.abs(dragRectDescaled.getWidth()), Math.abs(dragRectDescaled.getHeight()));
+							if (mainApp.isSplitModeEnabled()) {
+								mainApp.createSeparator(new Line2D.Double(dragRectDescaled.getMinX(),
+										dragRectDescaled.getMinY(), dragRectDescaled.getX(), dragRectDescaled.getMaxY()));
+								// remember old viewport information, this will
+								// get lost when we
+								// reload the workingsets based on the split
+								pThis.retainViewZoom = true;
+								repaint();
+
+							} else {
+								mainApp.rectangleDrawn(dragRectDescaled);
+							}
+						} else {
+							// resize WS using rectangle
+							mainApp.rectangleDrawn(resizing, dragRectDescaled);
+						}
+					}
+					dragged = false;
+					mouseDown = false;
+					resizing = null;
+				} else if (SwingUtilities.isRightMouseButton(e)) {
+					pThis.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+
+			}
+
+		});
+
+		addMouseWheelListener(new MouseWheelListener() {
+
+			public void mouseWheelMoved(MouseWheelEvent e) {
+
+				if (mainApp.getDataManager().getVDocument() != null) {
+					if (e.getWheelRotation() < 0) {
+						zoomIn();
+					} else {
+						zoomOut();
+					}
+					;
+				}
+			}
+		});
+
+		// float newScale;
+		// newScale = Math.min(scale + 0.1f, maxScale);
+		// } else {
+		// newScale = Math.max(scale - 0.1f, minScale);
+		// }
+		// pThis.setZoom(newScale);
+		//
+		// }
+		// });
+
+		addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+
+				if (noDocumentLoaded()) {
+					return;
+				}
+
+				// adjust the width of the rectangle and scale
+				if (SwingUtilities.isLeftMouseButton(e)) {
+					dragged = true;
+					// check if we are resizing a WS
+					if (resizing != null) {
+						double x = dragRect.getMinX();
+						double y = dragRect.getMinY();
+						double h = dragRect.getHeight();
+						double w = dragRect.getWidth();
+						if (pThis.hResize == 1)
+							w = (e.getX() / scale - x);
+						if (pThis.hResize == -1) {
+							w = dragRect.getMaxX() - (e.getX() / scale);
+							x = (e.getX() / scale);
+						}
+						if (pThis.vResize == 1)
+							h = (e.getY() / scale - y);
+						if (pThis.vResize == -1) {
+							h = dragRect.getMaxY() - (e.getY() / scale);
+							y = (e.getY() / scale);
+						}
+						// dont allow dragging inverse rectangle
+						if (w > 0 && h > 0) {
+							dragRect.setFrame(x, y, w, h);
+						}
+
+					} else if (mainApp.isSplitModeEnabled()) {
+						// split line
+						dragRect.setSize(0, (int) ((e.getY() / scale - dragRect.y)));
+
+					} else {// regular drag
+						// TODO BUGGY -- something is coming up as null.
+						// dragRect??
+						if (dragRect != null) {
+							dragRect.setSize((int) ((e.getX() / scale - dragRect.x)), (int) ((e.getY() / scale - dragRect.y)));
+						}
+					}
+				} else if (SwingUtilities.isRightMouseButton(e)) {
+					JViewport viewPort = (JViewport) pThis.getParent();
+					double deltaX = rightDragLast.getX() - e.getLocationOnScreen().getX();
+					double deltaY = rightDragLast.getY() - e.getLocationOnScreen().getY();
+					Point vpp = viewPort.getViewPosition();
+					vpp.translate((int) deltaX, (int) deltaY);
+					pThis.scrollRectToVisible(new Rectangle(vpp, viewPort.getSize()));
+					rightDragLast = e.getLocationOnScreen();
+				}
+				repaint();
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				if (pThis.lastWS == null)
+					return;
+				int wsX = (int) ((e.getX() / scale + offX()));
+				int wsY = (int) ((e.getY() / scale + offY()));
+				List<WorkingSet> clickedWS = mainApp.getDataManager().getWSEdgeAt(wsX, wsY);
+
+				if (clickedWS.size() > 0) {
+					if (view.getSelected().contains(clickedWS.get(0))) {
+						int h = clickedWS.get(0).isHorizontalEdge(wsX);
+						int v = clickedWS.get(0).isVerticalEdge(wsY);
+						if (h != 0 && v == 0) {
+							pThis.setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+						} else if (h == 0 && v != 0) {
+							pThis.setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
+						} else if ((h == 1 && v == 1) || (h == -1 && v == -1)) {
+							pThis.setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
+						} else if ((h == 1 && v == -1) || (h == -1 && v == 1)) {
+							pThis.setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
+						}
+
+					}
+				} else {
+					pThis.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+
+			}
+
+		});
+
+	}
+
+	@Override
+	public void paintComponent(Graphics g) {
+		Graphics2D g2;
+		g2 = (Graphics2D) g;
+		super.paintComponent(g);
+		paintUsingVDocument(g);
+		if (dragRect != null) {
+			g2.setColor(new Color(0f, 1f, 0f));
+			g2.drawRect((int) (Math.min(dragRect.getMinX(), dragRect.getMaxX()) * scale),
+					(int) (Math.min(dragRect.getMinY(), dragRect.getMaxY()) * scale),
+					(int) (Math.abs(dragRect.width) * scale), (int) (Math.abs(dragRect.height) * scale));
+		}
+
+		// Not clear we need this, so remove for now - 4/20/2016 (rwf)
+
+		// // draw up button
+		//
+		// g2.setColor(Color.DARK_GRAY);
+		//
+		// g2.setFont(caretFont);
+		// g2.drawString("[^]", 10, 20);
+
+	}
+
+	/**
+	 * Draw the VDocument objects on the canvas
+	 * 
+	 * @param g
+	 */
+	public void paintUsingVDocument(Graphics g) {
+		Graphics2D g2;
+		g2 = (Graphics2D) g;
+		if (noDocumentLoaded()) {
+			g2.setFont(caretFont);
+			g2.drawString("No Document Loaded", 200, 200);
+			return;
+		}
+		int x = mainApp.getDataManager().getOffsetX();
+		int y = mainApp.getDataManager().getOffsetY();
+		// check if working set has changed so we can refocus if needed
+		if (view.getCurrentWS() != lastWS) {
+			lastWS = view.getCurrentWS();
+			if (!retainViewZoom) {
+				scale = (float) Math.min(getVisibleRect().getWidth() / (lastWS.getBbox().getWidth() + scale * buffer * 2),
+						getVisibleRect().getHeight() / (lastWS.getBbox().getHeight() + scale * buffer * 2));
+				this.scrollRectToVisible(new Rectangle());
+			}
+			dragRect = null;
+			retainViewZoom = false;
+		}
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		@SuppressWarnings("rawtypes")
+		List pages = (List) mainApp.getDataManager().getVDocument().getItems();
+		VPage page = (VPage) pages.get(view.getCurrentPage() - 1);
+		BoundingBox pagebb = (BoundingBox) page.getBbox();
+		BufferedImage pageImage = mainApp.getDataManager().getPageImage(view.getCurrentPage());
+		double factor = (double) pageImage.getWidth() / pagebb.getWidth();
+		// draw rectangles around child WSs
+		drawChildWSRecursive(g2, view.getCurrentWS(), 1);
+
+		// draw image
+		for (El el : view.getCurrentWS().getItems()) {
+			BoundingBox bb = (BoundingBox) el.getBbox();
+
+			g2.drawImage(pageImage, (int) ((bb.getMinX() - offX()) * scale), (int) ((bb.getMinY() - offY()) * scale),
+					(int) ((bb.getMaxX() - offX()) * scale), (int) ((bb.getMaxY() - offY()) * scale),
+					(int) (bb.x * factor) + x, (int) (bb.y * factor) + y, (int) ((bb.x + bb.width) * factor) + x,
+					(int) ((bb.y + bb.height) * factor) + y, null);
+		}
+		// draw working set and El boxes
+		if (view.getSelected() != null) {
+			g2.setColor(new Color(0f, 1f, 0f, .3f));
+			for (Object obj : view.getSelected()) {
+				if (obj != null) {
+					Rectangle bb = null;
+					if (obj instanceof El) {
+						bb = ((BoundingBox) ((El) obj).getBbox()).getBounds();
+					} else if (obj instanceof WorkingSet) {
+						bb = ((WorkingSet) obj).getBboxWide();
+						// g2.setColor(((WorkingSet) obj).getColor());
+					}
+					if (bb != null) {
+						g2.fill(
+								new Rectangle((int) ((bb.getMinX() - offX()) * scale), (int) ((bb.getMinY() - offY()) * scale),
+										(int) (bb.getWidth() * scale), (int) (bb.getHeight() * scale)));
+					}
+				}
+
+			}
+
+		}
+
+		for (Line2D sep : mainApp.getDataManager().getPageWS(view.getCurrentPage()).getSeparators()) {
+
+			Graphics2D g2d = (Graphics2D) g.create();
+			g2d.setColor(Color.RED);
+			Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 3 }, 0);
+			g2d.setStroke(dashed);
+			g2d.drawLine((int) ((sep.getX1() - offX()) * scale), (int) ((sep.getY1() - offY()) * scale),
+					(int) ((sep.getX2() - offX()) * scale), (int) ((sep.getY2() - offY()) * scale));
+			// gets rid of the copy
+			g2d.dispose();
+
+		}
+
+		// List<Layer> layers = mainApp.getDataManager().getLayerList().
+		Rectangle2D imageBB = new Rectangle();
+		for (Layer layer : mainApp.getDataManager().getLayerList().values()) {
+			if (layer.isHighlight()) {
+				g2.setColor(UtiliBuddy.makeTransparent(layer.getColor(), 0.1f));
+
+				for (El el : layer.getItems()) {
+					if (el != null) {
+						BoundingBox bb = (BoundingBox) el.getBbox();
+						g2.fill(
+								new Rectangle((int) ((bb.getMinX() - offX()) * scale), (int) ((bb.getMinY() - offY()) * scale),
+										(int) (bb.getWidth() * scale), (int) (bb.getHeight() * scale)));
+					}
+				}
+
+				// System.out.println(layer.getRep());
+				for (Map<String, Object> hm : layer.getRep()) {
+					// System.out.println("Rep " + hm.keySet());
+					if (hm.containsKey("File")) {
+						imageBB = mainApp.getDataManager().getBBFromImg(new File((String) hm.get("File")).getName());
+						double bee2pdfX = imageBB.getWidth() / ((Long) hm.get("imageWidth")).doubleValue();
+						double bee2pdfY = imageBB.getHeight() / ((Long) hm.get("imageHeight")).doubleValue();
+						if (hm.containsKey("Blobs")) {
+							@SuppressWarnings("rawtypes")
+							List blobs = (List) hm.get("Blobs");
+							for (Object obj : blobs) {
+								@SuppressWarnings("unchecked")
+								Map<String, Object> blob = (Map<String, Object>) obj;
+								g2.setColor((Color) blob.get("color"));
+								g2.setStroke(new BasicStroke(3));
+								BoundingBox bb = (BoundingBox) blob.get("bbox");
+								g2.draw(new Rectangle((int) ((bb.getMinX() * bee2pdfX - offX() + imageBB.getX()) * scale),
+										(int) ((bb.getMinY() * bee2pdfY - offY() + imageBB.getY()) * scale),
+										(int) (bb.getWidth() * scale * bee2pdfX), (int) (bb.getHeight() * scale * bee2pdfY)));
+							}
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	private void drawChildWSRecursive(Graphics2D g2, WorkingSet parent, int depth) {
+
+		g2.setStroke(new BasicStroke(1.5f));
+
+		g2.setFont(labelFont);
+
+		for (WorkingSet child : parent.getChildren()) {
+
+			// first delve deeper so that top most WS are drawn over children
+			drawChildWSRecursive(g2, child, depth + 1);
+
+			g2.setColor(UtiliBuddy.makeTransparent(child.getColor(), 0.3f / (depth + 1)));
+
+			Rectangle bb = child.getBboxWide();
+			Rectangle highlightRectangle = new Rectangle((int) ((bb.getMinX() - offX()) * scale),
+					(int) ((bb.getMinY() - offY()) * scale), (int) (bb.getWidth() * scale), (int) (bb.getHeight() * scale));
+			g2.fill(highlightRectangle);
+			g2.setColor(Color.BLACK);
+			g2.draw(highlightRectangle);
+
+			// only draw WS title for first level
+			if (depth == 1) {
+				g2.drawString(child.getName(), (int) ((bb.getMinX() - offX()) * scale),
+						(int) ((bb.getMinY() - offY()) * scale) - 2);
+			}
+		}
+	}
+
+	private int offX() {
+		return (int) lastWS.getBbox().getX() - buffer;
+	}
+
+	private int offY() {
+		return (int) lastWS.getBbox().getY() - buffer;
+	}
+
+	private void setZoom(float zoom) {
+		this.scale = zoom;
+		@SuppressWarnings("rawtypes")
+		List pages = (List) mainApp.getDataManager().getVDocument().getItems();
+		VPage page = (VPage) pages.get(view.getCurrentPage() - 1);
+		BoundingBox pagebb = (BoundingBox) page.getBbox();
+		pThis.setPreferredSize(new Dimension((int) (pagebb.getWidth() * scale), (int) (pagebb.getHeight() * scale)));
+		pThis.revalidate();
+		repaint();
+	}
+
+	private void zoomIn() {
+		setZoom(Math.min(scale + 0.1f, maxScale));
+	}
+
+	private void zoomOut() {
+		setZoom(Math.max(scale - 0.1f, minScale));
+	}
+
+	// if (e.getWheelRotation() < 0) {
+	// newScale = Math.min(scale + 0.1f, maxScale);
+	// } else {
+	// newScale = Math.max(scale - 0.1f, minScale);
+	// }
+
+	/*
+	 * HELPER FUNCTIONS
+	 */
+
+	/**
+	 * Scale a point to proper position on canvas given offset and scale.
+	 * 
+	 * @param p
+	 */
+	private Point scaleToCanvas(Point p) {
+		return new Point((int) (p.x / scale + offX()), (int) (p.y / scale + offY()));
+	}
+
+	private boolean noDocumentLoaded() {
+		return (mainApp.getDataManager().getVDocument() == null);
+	}
+
 }
