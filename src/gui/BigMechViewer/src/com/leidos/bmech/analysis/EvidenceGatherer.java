@@ -1,7 +1,6 @@
 package com.leidos.bmech.analysis;
 
 import java.util.ArrayList;
-// import java.util.HashMap;
 import java.util.List;
 
 import com.leidos.bmech.model.WorkingSet;
@@ -9,16 +8,25 @@ import com.leidos.bmech.model.WorkingSet;
 import dray.j.VisualElement.VCell;
 import dray.j.VisualElement.VCol;
 import dray.j.VisualElement.VTable;
-// import dray.j.VisualElement.VText;
 
+/*
+ * An evidence gathering object for a particular GeneGazetteer object.
+ */
 public class EvidenceGatherer {
+	
 	GeneGazetteer gg;
 
+	/* 
+	 * Load a gene gazetteer for a particular working set.
+	 */
 	public void loadGeneGazetteer(WorkingSet ws) {
 		gg = new GeneGazetteer(ws);
 		System.out.println("loaded gene gazetteer " + gg);
 	}
 
+	/*
+	 * Gather evidence for a particular column??
+	 */
 	public void gatherEvidence(VTable table) {
 
 		EvidenceTable evMap = (EvidenceTable) table.evidence_table;
@@ -35,9 +43,10 @@ public class EvidenceGatherer {
 
 	}
 
+	/*
+	 * Gather evidence for an individual table cell.
+	 */
 	public void gatherEvidenceForCell(VCell cell, EvidenceTable evMap) {
-		// List<Evidence> ret = new ArrayList<Evidence>();
-		// List<VText> texts = (List<VText>) cell.items;
 		String text = (String) cell.getText();
 		for (String word : text.split(" ")) {
 			String classification = gg.getItemClass(word.toLowerCase());
@@ -45,9 +54,6 @@ public class EvidenceGatherer {
 				evMap.addEvidence(cell, classification, "BANNER-" + word, 0.75);
 			}
 		}
-
-		// if(evMap.getEvidenceFor(cell).size())
-
 	}
 
 	public void gatherEvidenceForCol(VCol col, EvidenceTable evMap) {

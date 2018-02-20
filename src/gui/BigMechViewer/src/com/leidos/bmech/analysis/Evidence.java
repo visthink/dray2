@@ -16,6 +16,9 @@ public class Evidence extends HashMap<String, Object> implements Comparable<Obje
 
 	private static final long serialVersionUID = 1L;
 
+	/*
+	 * Create an Evidence object with the given belief level, support, and classification.
+	 */
 	public Evidence(Double b, Object support, String classification) {
 		this.put("belief", b);
 		this.put("support", support);
@@ -23,6 +26,10 @@ public class Evidence extends HashMap<String, Object> implements Comparable<Obje
 		this.put("name", this.toString()); // Modified to use new string method.
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	public int compareTo(Object o1) {
 		if (this.get("belief") == ((Evidence) o1).get("belief"))
 			return 0;
@@ -35,7 +42,7 @@ public class Evidence extends HashMap<String, Object> implements Comparable<Obje
 	/**
 	 * Returns a belief level between 0.0 and 1.0 for the given Evidence.
 	 * 
-	 * @return the belief level.
+	 * @return belief level.
 	 */
 	public Double getBelief() {
 		return (Double) get("belief");

@@ -1,34 +1,36 @@
 package com.leidos.bmech.analysis;
 
-// import java.util.HashSet;
 import java.util.List;
 
-//import com.leidos.bmech.model.TypeTag;
-
+/*
+ * Gazetteer object for looking up entity names for particular types.
+ */
 public interface Gazetteer {
-	// private LoadState loadState;
 
-	// void makeGazetter(List<String> classes); // Not used.
-
+	/*
+	 * The name of the Gazetteer.
+	 */
 	String getName();
 
+	/*
+	 * The item class as a string.
+	 */
 	String getItemClass(Object item);
 
+	/*
+	 * A list of all items classes for this object.
+	 */
 	List<String> getItemClasses(Object item);
 
-	void addItemsToClass(List<Object> items, String destClass);
-
+	/* 
+	 * Add a single item to the classification. 
+	 */
 	void addItemToClass(Object item, String destClass);
 
 	/*
-	 * public enum LoadState{ NOT_LOADED, LOADING, LOADED }
-	 * 
-	 * public void setLoaded(){ loadState=LoadState.LOADED; } public void
-	 * setLoading(){ loadState=LoadState.LOADING; } public void setNotLoaded(){
-	 * loadState=LoadState.LOADED; } public boolean isLoaded(){ return
-	 * loadState==LoadState.LOADED; } public boolean isLoading(){ return
-	 * loadState==LoadState.LOADING; } public boolean isNotLoaded(){ return
-	 * loadState==LoadState.NOT_LOADED; }
+	 * Add multiple items to a classification.
 	 */
+	void addItemsToClass(List<Object> items, String destClass);
 
+	
 }

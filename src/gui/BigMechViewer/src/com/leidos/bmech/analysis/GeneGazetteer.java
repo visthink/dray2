@@ -11,8 +11,13 @@ import com.leidos.bmech.model.WorkingSet;
 
 import dray.j.VisualElement.El;
 import dray.j.VisualElement.VText;
-// import dray.j.VisualElement.VTextToken;
 
+/**
+ * A Gazetteer for gene names. Not functional at the moment.
+ * 
+ * @author Dan Powell
+ *
+ */
 public class GeneGazetteer implements Gazetteer {
 	@SuppressWarnings("rawtypes")
 	Set		set;
@@ -59,14 +64,6 @@ public class GeneGazetteer implements Gazetteer {
 		}
 	}
 
-	// public String getTextInElList(List<El> elist) {
-	// String combined = "";
-	// for (El el : elist) {
-	// if (el instanceof VText) { combined += el.getText();}
-	// };
-	// return combined;
-	// }
-
 	public List<El> allContainedEls(WorkingSet headWS, Set<El> exclusions) {
 		List<El> res = new ArrayList<El>();
 		for (WorkingSet page : headWS.getChildren()) {
@@ -102,12 +99,6 @@ public class GeneGazetteer implements Gazetteer {
 		}
 	}
 
-	// @Override
-	// public void makeGazetter(List<String> classes) {
-	// TODO Auto-generated method stub
-
-	// }
-
 	@Override
 	public String getName() {
 		return "AZ-BANNER";
@@ -115,7 +106,6 @@ public class GeneGazetteer implements Gazetteer {
 
 	@Override
 	public String getItemClass(Object item) {
-		// TODO Auto-generated method stub
 		if (set.contains(item.toString().toLowerCase())) {
 			return thisClassName;
 		}
@@ -125,10 +115,8 @@ public class GeneGazetteer implements Gazetteer {
 	@Override
 	public List<String> getItemClasses(Object item) {
 		// Return a list of potential classes for this item.
-		if (set.contains(item.toString().toLowerCase())) { // Note: Always
-			// singleton, so
-			// just return it in
-			// a list.
+		if (set.contains(item.toString().toLowerCase())) { 
+			// Note: Always singleton, so return as a list.
 			LinkedList<String> res = new LinkedList<String>();
 			res.add(thisClassName.toString());
 			return res;
