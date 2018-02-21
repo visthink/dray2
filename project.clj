@@ -51,7 +51,7 @@
       [junit/junit "4.12"]                          ;; [E1]
       ]
   :plugins 
-     [[codox "0.8.11" :exclusions [leinjacker]];; Autodocumenter.
+     [;; [codox "0.8.11" :exclusions [leinjacker]];; Autodocumenter.
       [lein-localrepo "0.5.3"]
       [lein-environ "1.0.0"]
       [lein-javadoc "0.2.0"]] 
