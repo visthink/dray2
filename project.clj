@@ -55,17 +55,7 @@
       [lein-localrepo "0.5.3"]
       [lein-environ "1.0.0"]
       [lein-javadoc "0.2.0"]] 
-  :codox 
-     {:exclude [dray.ext.lisp   ;; Not used.
-                dray.ext.python 
-                dray.pipeline2
-                dray.j.paxtools ;; Hidden record def.
-                dray.test-data  ;; Hidden (not part of API).
-                ] 
-      :project {:name "DRAY"}
-      :defaults {:doc/format :markdown}
-      :output-dir "doc/API"
-      }
+
   :eastwood {:exclude-linters [:constant-test]}
   :javadoc-opts
   {:package-names ["com.leidos.bmech.model"
